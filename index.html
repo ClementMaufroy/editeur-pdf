@@ -150,7 +150,7 @@ svg{flex:none}
 .textLayer br::selection{background:transparent}
 .textLayer .endOfContent{display:block;position:absolute;inset:100% 0 0;z-index:-1;cursor:default;user-select:none}
 .textLayer .endOfContent.active{top:0}
-.viewer:not(.t-select) .textLayer{pointer-events:none}
+.viewer:not(.t-select):not(.t-highlight):not(.t-underline):not(.t-strike) .textLayer{pointer-events:none}
 .hl{z-index:3;pointer-events:none}
 .hl div{position:absolute;background:rgba(255,196,0,.38);border-radius:2px}
 .hl div.cur{background:rgba(255,120,0,.55);outline:2px solid rgba(220,90,0,.8)}
@@ -320,8 +320,9 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
 .citem{padding:6px 8px;border:1px solid var(--line-2);border-radius:7px;margin-bottom:4px;cursor:pointer;background:#fff}
 .citem:hover{border-color:var(--sel-line)}
 .citem.sel{background:var(--sel);border-color:var(--sel-line)}
-.chead{font-size:11.5px;display:flex;gap:4px;align-items:baseline}
-.cdate{margin-left:auto;color:var(--muted);font-size:10.5px}
+.chead{font-size:11.5px;display:flex;flex-wrap:wrap;gap:0 4px;align-items:baseline;padding-right:22px}
+.cdate{flex-basis:100%;color:var(--muted);font-size:10.5px}
+.citem{position:relative}
 .ctxt{font-size:12px;margin-top:3px;white-space:pre-wrap;word-break:break-word}
 .alist{padding:6px}
 .aitem{display:flex;align-items:center;gap:7px;padding:6px;border-radius:6px}
@@ -353,12 +354,49 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
 .ashit mark{background:#ffe08a;border-radius:2px;padding:0 1px}
 .aspg{color:var(--muted);white-space:nowrap;min-width:34px}
 
+/* ---------- v1.6 : commentaires ---------- */
+.eannot{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.eannot.hl-blend{mix-blend-mode:multiply}
+.annprev{position:absolute;left:0;top:0;pointer-events:none;z-index:7}
+.ebox.ann{pointer-events:none;cursor:pointer}
+.viewer.t-selcomment .ebox.ann,.viewer.annot-tool .ebox.ann.active{pointer-events:auto}
+.viewer.t-selcomment .ebox.ann:hover{border-color:var(--accent)}
+.viewer.t-selcomment .ebox.ann:hover .ebadge,.viewer.annot-tool .ebox.ann.active .ebadge{display:flex}
+.viewer.t-selcomment .ebox.ann:hover .rs,.viewer.annot-tool .ebox.ann.active .rs{display:block}
+.viewer.t-highlight .page,.viewer.t-underline .page,.viewer.t-strike .page{cursor:text}
+.viewer.t-rect .page,.viewer.t-ellipse .page,.viewer.t-line .page,.viewer.t-arrow .page,.viewer.t-note .page,.viewer.t-freetext .page,.viewer.t-stamp .page{cursor:crosshair}
+.viewer.t-ink .page{cursor:crosshair}
+.viewer.t-highlight .textLayer ::selection{background:rgba(255,212,0,.55)}
+.stampbtn{position:relative}
+.stampbtn .dd{font-size:9px;margin-left:2px;color:var(--muted)}
+.stampmenu{padding:8px;min-width:380px}
+.smgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px}
+.ctxmenu .smitem{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:2.4px solid;border-radius:7px;padding:6px 8px;background:#fff;font-family:Arial,Helvetica,sans-serif;width:auto}
+.ctxmenu .smitem b{font-size:13px;letter-spacing:.3px}
+.ctxmenu .smitem small{font-size:9px;font-weight:700}
+.ctxmenu .smitem:hover{background:var(--hover)}
+.tpop{position:fixed;z-index:1500;width:320px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(10,30,20,.25);padding:10px;display:flex;flex-direction:column;gap:8px}
+.tpop-h{font-size:12px;font-weight:650;color:var(--brand)}
+.tpop textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:13px/1.4 var(--font);resize:vertical;outline:none}
+.tpop textarea:focus{border-color:var(--sel-line)}
+.tpop-f{display:flex;align-items:center;gap:6px}
+.tpop-f .hint{flex:1}
+.tpop-f .btn{height:28px}
+.cbar{display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid var(--line-2)}
+.cbar .btn{height:26px;padding:0 8px;font-size:12px}
+.cdel{position:absolute;top:5px;right:5px;border:0;background:none;width:20px;height:20px;border-radius:4px;display:none;place-items:center;cursor:pointer;color:var(--muted);padding:0}
+.citem:hover .cdel{display:grid}
+.cdel:hover{background:#f3dcda;color:var(--danger)}
+.citem.mine{border-left:3px solid var(--accent)}
+.cedit{display:none;font-size:10.5px;margin-top:2px}
+.citem.mine.sel .cedit{display:block}
+
 </style>
 </head>
 <body>
 <div id="app">
   <header class="titlebar">
-    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.5</small></div>
+    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.6</small></div>
     <div class="qa">
       <button data-cmd="open" title="Ouvrir (Ctrl+O)" data-icon="FolderOpen" data-icon-size="17"></button>
       <button data-cmd="save" title="Enregistrer (Ctrl+S)" data-icon="Save" data-icon-size="17"></button>
@@ -382,6 +420,7 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
     <button class="file" data-rtab="file">Fichier</button>
     <button data-rtab="home" class="active">Accueil</button>
     <button data-rtab="view">Affichage</button>
+    <button data-rtab="comments">Commentaires</button>
     <button data-rtab="organize">Organiser</button>
     <button data-rtab="format">Format</button>
   </nav>
@@ -428,6 +467,19 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
         <button class="rbig" data-cmd="addImage" data-icon="ImagePlus" data-icon-size="26">Ajouter<br>une image</button>
         <button class="rbig tool" data-tool="cover" data-icon="Eraser" data-icon-size="26">Masquer<br>une zone</button>
       </div><div class="rlabel">Éléments</div></div>
+      <div class="rgroup"><div class="rbody">
+        <div class="rcol">
+          <button class="rsmall tool" data-tool="freetext" data-icon="TypeOutline" data-icon-size="16">Machine à écrire</button>
+          <button class="rsmall tool" data-tool="highlight" data-icon="Highlighter" data-icon-size="16">Surlignage de texte</button>
+          <button class="rsmall tool" data-tool="underline" data-icon="Underline" data-icon-size="16">Souligner</button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall tool" data-tool="note" data-icon="StickyNote" data-icon-size="16">Note</button>
+          <button class="rsmall tool" data-tool="arrow" data-icon="MoveUpRight" data-icon-size="16">Flèche</button>
+          <button class="rsmall tool" data-tool="rect" data-icon="Square" data-icon-size="16">Rectangle</button>
+        </div>
+        <button class="rbig tool stampbtn" data-tool="stamp" data-cmd="stampMenu" data-icon="Stamp" data-icon-size="26">Tampon<span class="dd">▾</span></button>
+      </div><div class="rlabel">Commentaire</div></div>
       <div class="rgroup"><div class="rbody">
         <button class="rbig" data-cmd="combine" data-icon="Merge" data-icon-size="26">Combiner<br>des fichiers</button>
         <button class="rbig" data-cmd="split" data-icon="Split" data-icon-size="26">Scinder</button>
@@ -479,6 +531,58 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
         <button class="rbig" data-cmd="advSearch" data-icon="FolderSearch" data-icon-size="26">Recherche<br>avancée</button>
         <button class="rbig" data-cmd="docProps" data-icon="Info" data-icon-size="26">Propriétés du<br>document</button>
       </div><div class="rlabel">Document</div></div>
+    </div>
+
+    <!-- COMMENTAIRES -->
+    <div class="rpanel" data-rpanel="comments">
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig tool" data-tool="selcomment" data-icon="MousePointer2" data-icon-size="26">Sélectionner les<br>commentaires</button>
+      </div><div class="rlabel">Outils</div></div>
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig tool" data-tool="freetext" data-icon="TypeOutline" data-icon-size="26">Machine<br>à écrire</button>
+        <button class="rbig tool" data-tool="note" data-icon="StickyNote" data-icon-size="26">Note</button>
+      </div><div class="rlabel">Texte</div></div>
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig tool" data-tool="highlight" data-icon="Highlighter" data-icon-size="26">Surligner</button>
+        <div class="rcol">
+          <button class="rsmall tool" data-tool="underline" data-icon="Underline" data-icon-size="16">Souligner</button>
+          <button class="rsmall tool" data-tool="strike" data-icon="Strikethrough" data-icon-size="16">Barrer</button>
+        </div>
+      </div><div class="rlabel">Marquage du texte</div></div>
+      <div class="rgroup"><div class="rbody">
+        <div class="rcol">
+          <button class="rsmall tool" data-tool="arrow" data-icon="MoveUpRight" data-icon-size="16">Flèche</button>
+          <button class="rsmall tool" data-tool="line" data-icon="Slash" data-icon-size="16">Ligne</button>
+          <button class="rsmall tool" data-tool="ink" data-icon="PenLine" data-icon-size="16">Crayon</button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall tool" data-tool="rect" data-icon="Square" data-icon-size="16">Rectangle</button>
+          <button class="rsmall tool" data-tool="ellipse" data-icon="Circle" data-icon-size="16">Ovale</button>
+        </div>
+      </div><div class="rlabel">Dessin</div></div>
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig tool stampbtn" data-tool="stamp" data-cmd="stampMenu" data-icon="Stamp" data-icon-size="26">Tampon<span class="dd">▾</span></button>
+      </div><div class="rlabel">Tampon</div></div>
+      <div class="rgroup"><div class="rbody">
+        <div class="rcol">
+          <div class="rrow"><span class="lbl">Couleur</span><input id="aColor" type="color" value="#d1242f">
+            <span class="lbl" style="margin-left:4px">Opacité</span><select id="aOpac"><option value="100">100 %</option><option value="80">80 %</option><option value="60">60 %</option><option value="45">45 %</option><option value="30">30 %</option></select></div>
+          <div class="rrow"><span class="lbl">Épaisseur</span><select id="aWidth"><option value="0.5">0,5 pt</option><option value="1">1 pt</option><option value="1.5">1,5 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="6">6 pt</option></select>
+            <span class="lbl" style="margin-left:4px">Taille</span><input id="aSize" type="number" min="4" max="72" value="12" style="width:52px"></div>
+          <span class="hint" id="aHint" style="padding-left:2px"></span>
+        </div>
+      </div><div class="rlabel">Style</div></div>
+      <div class="rgroup"><div class="rbody">
+        <div class="rcol">
+          <div class="rrow"><span data-icon="UserRound" data-icon-size="15" style="color:var(--brand-2)"></span><input id="aAuthor" type="text" placeholder="Votre nom" style="width:130px;height:24px;border:1px solid var(--line);border-radius:5px;padding:0 6px" title="Auteur inscrit dans les commentaires et les tampons datés"></div>
+          <button class="rsmall" data-cmd="summarizeComments" data-icon="ListChecks" data-icon-size="16">Résumer les commentaires</button>
+          <button class="rsmall" data-cmd="flattenComments" data-icon="Layers" data-icon-size="16">Aplatir les commentaires</button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall" data-cmd="showComments" data-icon="MessageSquare" data-icon-size="16">Volet Commentaires</button>
+          <button class="rsmall" data-cmd="deleteAllComments" data-icon="Trash2" data-icon-size="16">Tout supprimer</button>
+        </div>
+      </div><div class="rlabel">Gérer</div></div>
     </div>
 
     <!-- ORGANISER -->
@@ -615,12 +719,12 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
 <input type="file" id="fileFallback" accept="application/pdf,.pdf" multiple hidden>
 
 <script>
-const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/>","X":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","Plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","FolderOpen":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\"/>","Merge":"<path d=\"m8 6 4-4 4 4\"/><path d=\"M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22\"/><path d=\"m20 22-5-5\"/>","Folder":"<path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","RefreshCw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M8 16H3v5\"/>","Check":"<path d=\"M20 6 9 17l-5-5\"/>","Image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","FileX":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"m14.5 12.5-5 5\"/><path d=\"m9.5 12.5 5 5\"/>","Move":"<path d=\"M12 2v20\"/><path d=\"m15 19-3 3-3-3\"/><path d=\"m19 9 3 3-3 3\"/><path d=\"M2 12h20\"/><path d=\"m5 9-3 3 3 3\"/><path d=\"m9 5 3-3 3 3\"/>","FilePlus2":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M3 15h6\"/><path d=\"M6 12v6\"/>","FolderPlus":"<path d=\"M12 10v6\"/><path d=\"M9 13h6\"/><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Files":"<path d=\"M20 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z\"/><path d=\"M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8\"/>","ArrowDownAZ":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"M20 8h-5\"/><path d=\"M15 10V6.5a2.5 2.5 0 0 1 5 0V10\"/><path d=\"M15 14h5l-5 6h5\"/>","Trash2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","GripVertical":"<circle cx=\"9\" cy=\"12\" r=\"1\"/><circle cx=\"9\" cy=\"5\" r=\"1\"/><circle cx=\"9\" cy=\"19\" r=\"1\"/><circle cx=\"15\" cy=\"12\" r=\"1\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><circle cx=\"15\" cy=\"19\" r=\"1\"/>","ArrowUp":"<path d=\"m5 12 7-7 7 7\"/><path d=\"M12 19V5\"/>","ArrowDown":"<path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/>","ChevronRight":"<path d=\"m9 18 6-6-6-6\"/>","Download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\"/>","Info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","Search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","RotateCcw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","RotateCw":"<path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/>","FileOutput":"<path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M4 7V4a2 2 0 0 1 2-2 2 2 0 0 0-2 2\"/><path d=\"M4.063 20.999a2 2 0 0 0 2 1L18 22a2 2 0 0 0 2-2V7l-5-5H6\"/><path d=\"m5 11-3 3\"/><path d=\"m5 17-3-3h10\"/>","File":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/>","Save":"<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7\"/><path d=\"M7 3v4a1 1 0 0 0 1 1h7\"/>","Undo2":"<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\"/>","Redo2":"<path d=\"m15 14 5-5-5-5\"/><path d=\"M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13\"/>","ChevronUp":"<path d=\"m18 15-6-6-6 6\"/>","ChevronDown":"<path d=\"m6 9 6 6 6-6\"/>","FolderSearch":"<path d=\"M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1\"/><path d=\"m21 21-1.9-1.9\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/>","MonitorDown":"<path d=\"M12 13V7\"/><path d=\"m15 10-3 3-3-3\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><path d=\"M12 17v4\"/><path d=\"M8 21h8\"/>","CircleHelp":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>","Hand":"<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"/><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>","TextCursor":"<path d=\"M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1\"/><path d=\"M7 22h1a4 4 0 0 0 4-4v-1\"/><path d=\"M7 2h1a4 4 0 0 1 4 4v1\"/>","Camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","ClipboardPaste":"<path d=\"M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z\"/><path d=\"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10\"/><path d=\"m17 10 4 4-4 4\"/>","ZoomOut":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","ZoomIn":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"11\" x2=\"11\" y1=\"8\" y2=\"14\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","Scan":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/>","Expand":"<path d=\"m21 21-6-6m6 6v-4.8m0 4.8h-4.8\"/><path d=\"M3 16.2V21m0 0h4.8M3 21l6-6\"/><path d=\"M21 7.8V3m0 0h-4.8M21 3l-6 6\"/><path d=\"M3 7.8V3m0 0h4.8M3 3l6 6\"/>","ArrowLeftRight":"<path d=\"M8 3 4 7l4 4\"/><path d=\"M4 7h16\"/><path d=\"m16 21 4-4-4-4\"/><path d=\"M20 17H4\"/>","RotateCcwSquare":"<path d=\"M20 9V7a2 2 0 0 0-2-2h-6\"/><path d=\"m15 2-3 3 3 3\"/><path d=\"M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2\"/>","RotateCwSquare":"<path d=\"M12 5H6a2 2 0 0 0-2 2v3\"/><path d=\"m9 8 3-3-3-3\"/><path d=\"M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2\"/>","Bookmark":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/>","MessageSquare":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>","Paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","SlidersHorizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","FilePenLine":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","Type":"<polyline points=\"4 7 4 4 20 4 20 7\"/><line x1=\"9\" x2=\"15\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"12\" y1=\"4\" y2=\"20\"/>","ImagePlus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","Eraser":"<path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/>","Split":"<path d=\"M16 3h5v5\"/><path d=\"M8 3H3v5\"/><path d=\"M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3\"/><path d=\"m15 9 6-6\"/>","FileSignature":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","PanelLeft":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>","Copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","ArrowDownUp":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"m21 8-4-4-4 4\"/><path d=\"M17 4v16\"/>","Square":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>","Bold":"<path d=\"M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8\"/>","Italic":"<line x1=\"19\" x2=\"10\" y1=\"4\" y2=\"4\"/><line x1=\"14\" x2=\"5\" y1=\"20\" y2=\"20\"/><line x1=\"15\" x2=\"9\" y1=\"4\" y2=\"20\"/>","AlignLeft":"<path d=\"M15 12H3\"/><path d=\"M17 18H3\"/><path d=\"M21 6H3\"/>","AlignRight":"<path d=\"M21 12H9\"/><path d=\"M21 18H7\"/><path d=\"M21 6H3\"/>","CornerLeftUp":"<polyline points=\"14 9 9 4 4 9\"/><path d=\"M20 20h-7a4 4 0 0 1-4-4V4\"/>","FileDown":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M12 18v-6\"/><path d=\"m9 15 3 3 3-3\"/>"};
+const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/>","X":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","Plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","FolderOpen":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\"/>","Merge":"<path d=\"m8 6 4-4 4 4\"/><path d=\"M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22\"/><path d=\"m20 22-5-5\"/>","Folder":"<path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","RefreshCw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M8 16H3v5\"/>","Check":"<path d=\"M20 6 9 17l-5-5\"/>","Image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","FileX":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"m14.5 12.5-5 5\"/><path d=\"m9.5 12.5 5 5\"/>","Move":"<path d=\"M12 2v20\"/><path d=\"m15 19-3 3-3-3\"/><path d=\"m19 9 3 3-3 3\"/><path d=\"M2 12h20\"/><path d=\"m5 9-3 3 3 3\"/><path d=\"m9 5 3-3 3 3\"/>","FilePlus2":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M3 15h6\"/><path d=\"M6 12v6\"/>","FolderPlus":"<path d=\"M12 10v6\"/><path d=\"M9 13h6\"/><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Files":"<path d=\"M20 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z\"/><path d=\"M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8\"/>","ArrowDownAZ":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"M20 8h-5\"/><path d=\"M15 10V6.5a2.5 2.5 0 0 1 5 0V10\"/><path d=\"M15 14h5l-5 6h5\"/>","Trash2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","GripVertical":"<circle cx=\"9\" cy=\"12\" r=\"1\"/><circle cx=\"9\" cy=\"5\" r=\"1\"/><circle cx=\"9\" cy=\"19\" r=\"1\"/><circle cx=\"15\" cy=\"12\" r=\"1\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><circle cx=\"15\" cy=\"19\" r=\"1\"/>","ArrowUp":"<path d=\"m5 12 7-7 7 7\"/><path d=\"M12 19V5\"/>","ArrowDown":"<path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/>","ChevronRight":"<path d=\"m9 18 6-6-6-6\"/>","Download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\"/>","Info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","Search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","Type":"<polyline points=\"4 7 4 4 20 4 20 7\"/><line x1=\"9\" x2=\"15\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"12\" y1=\"4\" y2=\"20\"/>","ListChecks":"<path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/>","Layers":"<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\"/><path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\"/><path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\"/>","RotateCcw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","RotateCw":"<path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/>","FileOutput":"<path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M4 7V4a2 2 0 0 1 2-2 2 2 0 0 0-2 2\"/><path d=\"M4.063 20.999a2 2 0 0 0 2 1L18 22a2 2 0 0 0 2-2V7l-5-5H6\"/><path d=\"m5 11-3 3\"/><path d=\"m5 17-3-3h10\"/>","File":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/>","Save":"<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7\"/><path d=\"M7 3v4a1 1 0 0 0 1 1h7\"/>","Undo2":"<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\"/>","Redo2":"<path d=\"m15 14 5-5-5-5\"/><path d=\"M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13\"/>","ChevronUp":"<path d=\"m18 15-6-6-6 6\"/>","ChevronDown":"<path d=\"m6 9 6 6 6-6\"/>","FolderSearch":"<path d=\"M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1\"/><path d=\"m21 21-1.9-1.9\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/>","MonitorDown":"<path d=\"M12 13V7\"/><path d=\"m15 10-3 3-3-3\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><path d=\"M12 17v4\"/><path d=\"M8 21h8\"/>","CircleHelp":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>","Hand":"<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"/><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>","TextCursor":"<path d=\"M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1\"/><path d=\"M7 22h1a4 4 0 0 0 4-4v-1\"/><path d=\"M7 2h1a4 4 0 0 1 4 4v1\"/>","Camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","ClipboardPaste":"<path d=\"M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z\"/><path d=\"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10\"/><path d=\"m17 10 4 4-4 4\"/>","ZoomOut":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","ZoomIn":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"11\" x2=\"11\" y1=\"8\" y2=\"14\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","Scan":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/>","Expand":"<path d=\"m21 21-6-6m6 6v-4.8m0 4.8h-4.8\"/><path d=\"M3 16.2V21m0 0h4.8M3 21l6-6\"/><path d=\"M21 7.8V3m0 0h-4.8M21 3l-6 6\"/><path d=\"M3 7.8V3m0 0h4.8M3 3l6 6\"/>","ArrowLeftRight":"<path d=\"M8 3 4 7l4 4\"/><path d=\"M4 7h16\"/><path d=\"m16 21 4-4-4-4\"/><path d=\"M20 17H4\"/>","RotateCcwSquare":"<path d=\"M20 9V7a2 2 0 0 0-2-2h-6\"/><path d=\"m15 2-3 3 3 3\"/><path d=\"M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2\"/>","RotateCwSquare":"<path d=\"M12 5H6a2 2 0 0 0-2 2v3\"/><path d=\"m9 8 3-3-3-3\"/><path d=\"M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2\"/>","Bookmark":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/>","MessageSquare":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>","Paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","SlidersHorizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","FilePenLine":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","ImagePlus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","Eraser":"<path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/>","TypeOutline":"<path d=\"M14 16.5a.5.5 0 0 0 .5.5h.5a2 2 0 0 1 0 4H9a2 2 0 0 1 0-4h.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5V8a2 2 0 0 1-4 0V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-4 0v-.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z\"/>","Highlighter":"<path d=\"m9 11-6 6v3h9l3-3\"/><path d=\"m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4\"/>","Underline":"<path d=\"M6 4v6a6 6 0 0 0 12 0V4\"/><line x1=\"4\" x2=\"20\" y1=\"20\" y2=\"20\"/>","StickyNote":"<path d=\"M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z\"/><path d=\"M15 3v4a2 2 0 0 0 2 2h4\"/>","MoveUpRight":"<path d=\"M13 5H19V11\"/><path d=\"M19 5L5 19\"/>","Square":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>","Stamp":"<path d=\"M5 22h14\"/><path d=\"M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z\"/><path d=\"M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13\"/>","Split":"<path d=\"M16 3h5v5\"/><path d=\"M8 3H3v5\"/><path d=\"M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3\"/><path d=\"m15 9 6-6\"/>","FileSignature":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","PanelLeft":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>","MousePointer2":"<path d=\"M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z\"/>","Strikethrough":"<path d=\"M16 4H9a3 3 0 0 0-2.83 4\"/><path d=\"M14 12a4 4 0 0 1 0 8H6\"/><line x1=\"4\" x2=\"20\" y1=\"12\" y2=\"12\"/>","Slash":"<path d=\"M22 2 2 22\"/>","PenLine":"<path d=\"M12 20h9\"/><path d=\"M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z\"/>","Circle":"<circle cx=\"12\" cy=\"12\" r=\"10\"/>","UserRound":"<circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/>","Copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","ArrowDownUp":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"m21 8-4-4-4 4\"/><path d=\"M17 4v16\"/>","Bold":"<path d=\"M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8\"/>","Italic":"<line x1=\"19\" x2=\"10\" y1=\"4\" y2=\"4\"/><line x1=\"14\" x2=\"5\" y1=\"20\" y2=\"20\"/><line x1=\"15\" x2=\"9\" y1=\"4\" y2=\"20\"/>","AlignLeft":"<path d=\"M15 12H3\"/><path d=\"M17 18H3\"/><path d=\"M21 6H3\"/>","AlignRight":"<path d=\"M21 12H9\"/><path d=\"M21 18H7\"/><path d=\"M21 6H3\"/>","CornerLeftUp":"<polyline points=\"14 9 9 4 4 9\"/><path d=\"M20 20h-7a4 4 0 0 1-4-4V4\"/>","FileDown":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M12 18v-6\"/><path d=\"m9 15 3 3 3-3\"/>"};
 /* =====================================================================
    Éditeur PDF — éditeur PDF monofichier (pdf.js + pdf-lib)
    ===================================================================== */
 'use strict';
-const APP_VERSION = '1.5';
+const APP_VERSION = '1.6';
 const { PDFDocument, StandardFonts, rgb, degrees, PDFName, PDFHexString } = PDFLib;
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -887,7 +991,7 @@ function updateUI() {
   const d = S.active;
   $('#titleDoc').textContent = d ? d.name + (d.dirty ? ' •' : '') : '';
   document.title = d ? `${d.name} — Éditeur PDF` : 'Éditeur PDF';
-  const needDoc = ['save', 'saveAs', 'split', 'insertFile', 'extract', 'deletePages', 'rotateLeft', 'rotateRight', 'duplicatePages', 'reversePages', 'deleteBlank', 'insertBlank', 'selectAllPages', 'selectNone', 'zoomIn', 'zoomOut', 'fitWidth', 'fitPage', 'docProps', 'clearPageEdits', 'closeDoc', 'actualSize', 'rotateViewLeft', 'rotateViewRight', 'paste', 'addImage'];
+  const needDoc = ['save', 'saveAs', 'split', 'insertFile', 'extract', 'deletePages', 'rotateLeft', 'rotateRight', 'duplicatePages', 'reversePages', 'deleteBlank', 'insertBlank', 'selectAllPages', 'selectNone', 'zoomIn', 'zoomOut', 'fitWidth', 'fitPage', 'docProps', 'clearPageEdits', 'closeDoc', 'actualSize', 'rotateViewLeft', 'rotateViewRight', 'paste', 'addImage', 'summarizeComments', 'flattenComments', 'deleteAllComments', 'showComments', 'stampMenu'];
   $$('[data-cmd]').forEach(b => {
     const c = b.dataset.cmd;
     if (needDoc.includes(c)) b.disabled = !d;
@@ -900,7 +1004,7 @@ function updateUI() {
   $('#pgInput').value = d ? d.current + 1 : '';
   $('#pgInput').disabled = !d;
   const toolNames = { hand: 'Outil Main', select: 'Sélection de texte', edittext: 'Modifier le texte — cliquez sur une ligne', addtext: 'Ajouter du texte — cliquez à l\'endroit voulu', cover: 'Masquer une zone — tracez un rectangle', snapshot: 'Instantané — tracez la zone à copier en image' };
-  $('#stTool').textContent = toolNames[S.tool] || '';
+  $('#stTool').textContent = toolNames[S.tool] || ANN_TOOL_NAMES[S.tool] || '';
   const nEdits = d ? d.pages.reduce((a, p) => a + p.edits.length, 0) : 0;
   $('#stInfo').textContent = d ? [d.unlocked ? 'Protection retirée' : '', nEdits ? `${nEdits} modification${nEdits > 1 ? 's' : ''} de contenu` : ''].filter(Boolean).join(' · ') : '';
   $('#stDirty').textContent = d && d.dirty ? 'Modifications non enregistrées' : '';
@@ -909,7 +1013,8 @@ function updateUI() {
   const sel = d ? d.selected.size : 0;
   $('#selInfo').textContent = d ? (sel ? `${sel} page${sel > 1 ? 's' : ''} sélectionnée${sel > 1 ? 's' : ''}` : 'Aucune page sélectionnée : les actions portent sur la page courante') : '';
   const v = viewer();
-  v.className = 'viewer t-' + S.tool;
+  v.className = 'viewer t-' + S.tool + (isAnnotTool(S.tool) || S.tool === 'selcomment' ? ' annot-tool' : '');
+  syncAnnotStyle();
   $('#sidepane').classList.toggle('hidden', !S.paneVisible);
   $$('.panebtn').forEach(b => { b.classList.toggle('on', S.paneVisible && b.dataset.pane === S.side); });
   renderDocTabs();
@@ -1497,6 +1602,7 @@ async function applyEdits(pdfDoc, pages, doc) {
     }
     // 2) masques, images et nouveaux textes
     for (const e of pages[i].edits) {
+      if (e.type === 'annot') { await writeAnnot(pdfDoc, page, e, doc, cache); continue; }
       if (e.type === 'image') {
         const img = await embedEditImage(pdfDoc, doc, e.imgId, cache);
         if (img) page.drawImage(img, { x: e.x, y: e.y, width: e.w, height: e.h });
@@ -1645,6 +1751,7 @@ function buildEditEl(doc, i, e, vp) {
     wrap.appendChild(cv);
   }
   if (e.type === 'image') return buildImageEl(doc, i, e, vp, wrap);
+  if (e.type === 'annot') return buildAnnotEl(doc, i, e, vp, wrap);
   let t = null;
   const right = e.align === 'right' && e.x2 != null;
   const p = vp.convertToViewportPoint(right ? e.x2 : (e.x ?? 0), e.y ?? 0);
@@ -1714,6 +1821,7 @@ function deleteEdit(doc, i, e) {
   doc.pages[i].edits = doc.pages[i].edits.filter(x => x.id !== e.id);
   if (S.activeEdit && S.activeEdit.id === e.id) S.activeEdit = null;
   renderEdits(doc, i); renderHits(doc, i); refreshThumbBadge(doc, i); updateUI();
+  if (e.type === 'annot') refreshSidePane();
 }
 function startMoveEdit(ev, doc, i, e) {
   finishEditor(true);
@@ -2619,6 +2727,7 @@ function cmdHelp() {
         <li><b>Glisser des pages entre documents</b> : sélectionnez des miniatures, faites-les glisser sur l'onglet d'un autre document et attendez qu'il s'ouvre, puis lâchez-les à l'endroit voulu (miniatures ou page). Lâcher directement sur l'onglet les ajoute à la fin. Copie par défaut, <span class="kbd">Maj</span> au moment de lâcher pour déplacer.</li>
         <li>Glisser des fichiers depuis l'Explorateur sur les miniatures les insère à cet endroit ; sur la page affichée, ils s'ouvrent dans un nouvel onglet.</li>
         <li><b>v1.5</b> — Ruban Accueil : instantané (zone copiée en image), coller une image ou un texte sur la page (<span class="kbd">Ctrl+V</span>), PDF depuis le presse-papiers, ajout d'image (déplacer, redimensionner), taille réelle, rotation de l'affichage, volets Signets, Commentaires, Pièces jointes et Propriétés, <b>recherche avancée</b> dans tous les PDF d'un dossier (<span class="kbd">Ctrl+Maj+F</span>).</li>
+        <li><b>v1.6</b> — Commentaires en vraies annotations PDF : machine à écrire, note, surligner / souligner / barrer (sélectionnez le texte), flèche, ligne, rectangle, ovale, crayon, tampons (dont datés : PAYÉ, REÇU, COMPTABILISÉ, VU), tampon personnalisé ou image. Couleur, épaisseur, opacité, auteur. Volet Commentaires : sélection, double-clic pour modifier, suppression (y compris commentaires déjà présents), résumé PDF, aplatissement.</li>
         <li>Depuis Windows : clic droit sur plusieurs PDF → Envoyer vers → « Combiner dans Éditeur PDF » ouvre directement la fenêtre Combiner.</li>
       </ul>
       <h4>Modification du texte : comment ça marche</h4>
@@ -3513,6 +3622,708 @@ function openAdvSearch() {
 }
 
 /* =====================================================================
+   v1.6 — Commentaires (vraies annotations PDF) et tampons
+   ---------------------------------------------------------------------
+   Chaque commentaire est une « modification » de type annot stockée en
+   coordonnées PDF (espace utilisateur). Affichage : SVG transformé par la
+   matrice du viewport. Enregistrement : annotation PDF standard avec son
+   apparence (/AP), lisible par Acrobat et les autres lecteurs.
+   ===================================================================== */
+const SVGNS = 'http://www.w3.org/2000/svg';
+const ANN_TOOLS = ['freetext', 'highlight', 'underline', 'strike', 'note', 'arrow', 'line', 'rect', 'ellipse', 'ink', 'stamp'];
+const MARKUP_TOOLS = ['highlight', 'underline', 'strike'];
+const ANN_TOOL_NAMES = {
+  selcomment: 'Sélectionner les commentaires — cliquez pour sélectionner, double-clic pour modifier le texte',
+  freetext: 'Machine à écrire — cliquez à l\'endroit du texte', highlight: 'Surligner — sélectionnez du texte (ou tracez une zone)',
+  underline: 'Souligner — sélectionnez du texte', strike: 'Barrer — sélectionnez du texte', note: 'Note — cliquez pour placer une note',
+  arrow: 'Flèche — tracez du départ vers la pointe', line: 'Ligne — tracez la ligne', rect: 'Rectangle — tracez le cadre',
+  ellipse: 'Ovale — tracez le cadre', ink: 'Crayon — dessinez à main levée', stamp: 'Tampon — cliquez pour l\'apposer',
+};
+const ANN_LABEL = { FreeText: 'Machine à écrire', Highlight: 'Surlignage', Underline: 'Soulignement', StrikeOut: 'Barré', Text: 'Note', Line: 'Ligne', Square: 'Rectangle', Circle: 'Ovale', Ink: 'Crayon', Stamp: 'Tampon' };
+const ANN_DEFAULTS = {
+  freetext: { color: '#1f2328', width: 0, opacity: 1, size: 12 },
+  highlight: { color: '#ffd400', width: 1, opacity: 0.45 },
+  underline: { color: '#1f6feb', width: 1, opacity: 1 },
+  strike: { color: '#d1242f', width: 1, opacity: 1 },
+  note: { color: '#ffd400', width: 1, opacity: 1 },
+  arrow: { color: '#d1242f', width: 2, opacity: 1 },
+  line: { color: '#d1242f', width: 2, opacity: 1 },
+  rect: { color: '#d1242f', width: 2, opacity: 1 },
+  ellipse: { color: '#d1242f', width: 2, opacity: 1 },
+  ink: { color: '#d1242f', width: 2, opacity: 1 },
+  stamp: { color: '#1a7f37', width: 2, opacity: 1 },
+};
+const STAMPS = [
+  { label: 'APPROUVÉ', color: '#1a7f37' }, { label: 'REFUSÉ', color: '#cf222e' }, { label: 'CONFIDENTIEL', color: '#cf222e' },
+  { label: 'BROUILLON', color: '#0969da' }, { label: 'COPIE CONFORME', color: '#0969da' }, { label: 'POUR INFORMATION', color: '#0969da' },
+  { label: 'PAYÉ', color: '#1a7f37', dyn: true }, { label: 'REÇU', color: '#0969da', dyn: true },
+  { label: 'COMPTABILISÉ', color: '#0969da', dyn: true }, { label: 'VU', color: '#1a7f37', dyn: true },
+];
+const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { } };
+S.annStyle = Object.assign(clone(ANN_DEFAULTS), lsGet('prele-annstyle', {}));
+S.author = lsGet('prele-author', '');
+S.stampSel = STAMPS[0];
+const isAnnotTool = t => ANN_TOOLS.includes(t);
+const subOfTool = { freetext: 'FreeText', highlight: 'Highlight', underline: 'Underline', strike: 'StrikeOut', note: 'Text', arrow: 'Line', line: 'Line', rect: 'Square', ellipse: 'Circle', ink: 'Ink', stamp: 'Stamp' };
+const frDate = d => d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+const frDateTime = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
+function pdfDate(d = new Date()) {
+  const p = n => String(n).padStart(2, '0'), o = -d.getTimezoneOffset();
+  return `D:${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}${o >= 0 ? '+' : '-'}${p(Math.floor(Math.abs(o) / 60))}'${p(Math.abs(o) % 60)}'`;
+}
+const mcan = document.createElement('canvas').getContext('2d');
+function measureArial(text, size, bold) { mcan.font = `${bold ? '700 ' : ''}${size}px Arial, Helvetica, sans-serif`; return mcan.measureText(text).width; }
+
+/* ---------- géométrie ---------- */
+function annBounds(e) {
+  const pts = [];
+  if (e.quads) e.quads.forEach(q => { for (let k = 0; k < 8; k += 2) pts.push([q[k], q[k + 1]]); });
+  if (e.line) pts.push([e.line[0], e.line[1]], [e.line[2], e.line[3]]);
+  if (e.ink) e.ink.forEach(s => { for (let k = 0; k < s.length; k += 2) pts.push([s[k], s[k + 1]]); });
+  if (e.rect) pts.push([e.rect[0], e.rect[1]], [e.rect[2], e.rect[3]]);
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const m = e.sub === 'Line' ? Math.max(4, (e.width || 1) * 5) : (e.width || 1) / 2 + 1;
+  return [Math.min(...xs) - m, Math.min(...ys) - m, Math.max(...xs) + m, Math.max(...ys) + m];
+}
+function arrowHead(x1, y1, x2, y2, w) {
+  const L = Math.max(7, w * 4.5), a = Math.atan2(y2 - y1, x2 - x1), sp = 0.45;
+  return [[x2 - L * Math.cos(a - sp), y2 - L * Math.sin(a - sp)], [x2 - L * Math.cos(a + sp), y2 - L * Math.sin(a + sp)]];
+}
+function ellipsePath(x1, y1, x2, y2) {   // contour d'ellipse en courbes de Bézier (commun SVG / PDF)
+  const k = 0.5523, cx = (x1 + x2) / 2, cy = (y1 + y2) / 2, rx = (x2 - x1) / 2, ry = (y2 - y1) / 2;
+  return [[cx + rx, cy], [cx + rx, cy + ry * k, cx + rx * k, cy + ry, cx, cy + ry], [cx - rx * k, cy + ry, cx - rx, cy + ry * k, cx - rx, cy],
+    [cx - rx, cy - ry * k, cx - rx * k, cy - ry, cx, cy - ry], [cx + rx * k, cy - ry, cx + rx, cy - ry * k, cx + rx, cy]];
+}
+function stampLayout(st) {
+  const fs = 16, sub = st.sub || '';
+  const w1 = measureArial(st.label, fs, true), w2 = sub ? measureArial(sub, 8, true) : 0;
+  const natW = Math.max(w1, w2) + 22, natH = sub ? 38 : 28;
+  return { fs, natW, natH };
+}
+
+/* ---------- rendu à l'écran (SVG en coordonnées PDF) ---------- */
+function annotSvgMarkup(e, doc) {
+  const col = e.color ? rgbToHex(e.color) : '#000', w = e.width || 1;
+  const pq = q => `${q[0]},${q[1]} ${q[2]},${q[3]} ${q[6]},${q[7]} ${q[4]},${q[5]}`;
+  switch (e.sub) {
+    case 'Highlight': return e.quads.map(q => `<polygon points="${pq(q)}" fill="${col}"/>`).join('');
+    case 'Underline': case 'StrikeOut': return e.quads.map(q => {
+      const h = Math.hypot(q[0] - q[4], q[1] - q[5]), t = e.sub === 'Underline' ? 0.07 : 0.45;
+      const ax = q[4] + (q[0] - q[4]) * t, ay = q[5] + (q[1] - q[5]) * t, bx = q[6] + (q[2] - q[6]) * t, by = q[7] + (q[3] - q[7]) * t;
+      return `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width="${Math.max(0.6, h * 0.07)}"/>`;
+    }).join('');
+    case 'Line': {
+      const [x1, y1, x2, y2] = e.line;
+      let s = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+      if (e.arrow) { const [a, b] = arrowHead(x1, y1, x2, y2, w); s += `<polyline points="${a[0]},${a[1]} ${x2},${y2} ${b[0]},${b[1]}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`; }
+      return s;
+    }
+    case 'Square': { const [x1, y1, x2, y2] = e.rect, h = w / 2; return `<rect x="${x1 + h}" y="${y1 + h}" width="${Math.max(0, x2 - x1 - w)}" height="${Math.max(0, y2 - y1 - w)}" fill="${e.fill ? rgbToHex(e.fill) : 'none'}" stroke="${col}" stroke-width="${w}"/>`; }
+    case 'Circle': {
+      const [x1, y1, x2, y2] = e.rect, h = w / 2, P = ellipsePath(x1 + h, y1 + h, x2 - h, y2 - h);
+      return `<path d="M${P[0]} ${P.slice(1).map(c => 'C' + c.join(' ')).join(' ')}Z" fill="${e.fill ? rgbToHex(e.fill) : 'none'}" stroke="${col}" stroke-width="${w}"/>`;
+    }
+    case 'Ink': return e.ink.map(s => { const pts = []; for (let k = 0; k < s.length; k += 2) pts.push(s[k] + ',' + s[k + 1]); return `<polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`; }).join('');
+    case 'Text': {
+      const [x1, y1, x2, y2] = e.rect;
+      return `<rect x="${x1 + 0.5}" y="${y1 + 0.5}" width="${x2 - x1 - 1}" height="${y2 - y1 - 1}" rx="2.5" fill="${col}" stroke="#5c4a00" stroke-width="1"/>
+        <path d="M${x1 + 4} ${y2 - 6}h${x2 - x1 - 8}M${x1 + 4} ${y2 - 10}h${x2 - x1 - 8}M${x1 + 4} ${y2 - 14}h${(x2 - x1 - 8) * 0.6}" stroke="#5c4a00" stroke-width="1.1"/>`;
+    }
+    case 'FreeText': {
+      const [x1, y1, x2, y2] = e.rect, s = e.size || 12, lh = s * 1.2;
+      let out = e.border ? `<rect x="${x1 + 0.5}" y="${y1 + 0.5}" width="${x2 - x1 - 1}" height="${y2 - y1 - 1}" fill="none" stroke="${col}" stroke-width="1"/>` : '';
+      (e.contents || '').split('\n').forEach((ln, k) => {
+        out += `<text transform="translate(${x1 + 3} ${y2 - 3 - s * 0.82 - k * lh}) scale(1 -1)" font-family="Arial, Helvetica, sans-serif" font-size="${s}" fill="${col}" xml:space="preserve">${esc(ln)}</text>`;
+      });
+      return out;
+    }
+    case 'Stamp': {
+      const [x1, y1, x2, y2] = e.rect, st = e.stamp;
+      if (st.imgId && doc && doc.images && doc.images[st.imgId]) return `<image href="${imageUrl(doc, st.imgId)}" x="0" y="0" width="${x2 - x1}" height="${y2 - y1}" preserveAspectRatio="none" transform="translate(${x1} ${y2}) scale(1 -1)"/>`;
+      const L = stampLayout(st), k = (x2 - x1) / L.natW, cx = (L.natW) / 2;
+      let s = `<g transform="translate(${x1} ${y1}) scale(${k})"><rect x="2" y="2" width="${L.natW - 4}" height="${L.natH - 4}" rx="5" fill="none" stroke="${col}" stroke-width="2.4"/>`;
+      s += `<text transform="translate(${cx} ${L.natH - 9 - L.fs * 0.75}) scale(1 -1)" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="${L.fs}" fill="${col}">${esc(st.label)}</text>`;
+      if (st.sub) s += `<text transform="translate(${cx} 8) scale(1 -1)" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="8" fill="${col}">${esc(st.sub)}</text>`;
+      return s + '</g>';
+    }
+  }
+  return '';
+}
+function buildAnnotEl(doc, i, e, vp, wrap) {
+  const svg = document.createElementNS(SVGNS, 'svg');
+  svg.setAttribute('class', 'eannot' + (e.sub === 'Highlight' ? ' hl-blend' : ''));
+  svg.setAttribute('width', vp.width); svg.setAttribute('height', vp.height);
+  svg.innerHTML = `<g transform="matrix(${vp.transform.join(' ')})" opacity="${e.opacity ?? 1}">${annotSvgMarkup(e, doc)}</g>`;
+  wrap.appendChild(svg);
+  const b = annBounds(e), r = rectToVp(vp, b[0], b[1], b[2] - b[0], b[3] - b[1]);
+  const box = document.createElement('div');
+  box.className = 'ebox ann' + (S.activeEdit && S.activeEdit.id === e.id ? ' active' : '');
+  Object.assign(box.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+  const resizable = ['Square', 'Circle', 'Stamp', 'FreeText'].includes(e.sub);
+  box.innerHTML = `<div class="ebadge" style="left:${r.width + 4}px;top:-2px"><button class="del" title="Supprimer le commentaire">${svgIcon('X', 12)}</button></div>${resizable ? '<span class="rs" title="Redimensionner"></span>' : ''}`;
+  box.title = [ANN_LABEL[e.sub], e.author, e.contents && e.sub !== 'FreeText' ? '« ' + e.contents.slice(0, 120) + ' »' : ''].filter(Boolean).join(' — ');
+  box.addEventListener('mousedown', ev => onAnnotDown(ev, doc, i, e));
+  box.addEventListener('dblclick', ev => { ev.stopPropagation(); editAnnotText(doc, i, e, ev.clientX, ev.clientY); });
+  wrap.appendChild(box);
+  return wrap;
+}
+
+/* ---------- sélection, déplacement, redimensionnement ---------- */
+function shiftAnnot(e, o, dx, dy) {
+  if (o.rect) e.rect = [o.rect[0] + dx, o.rect[1] + dy, o.rect[2] + dx, o.rect[3] + dy];
+  if (o.quads) e.quads = o.quads.map(q => q.map((v, k) => v + (k % 2 ? dy : dx)));
+  if (o.line) e.line = o.line.map((v, k) => v + (k % 2 ? dy : dx));
+  if (o.ink) e.ink = o.ink.map(s => s.map((v, k) => v + (k % 2 ? dy : dx)));
+}
+function onAnnotDown(ev, doc, i, e) {
+  if (!(S.tool === 'selcomment' || isAnnotTool(S.tool))) return;
+  ev.stopPropagation(); ev.preventDefault();
+  if (ev.target.closest('.del')) { deleteEdit(doc, i, e); refreshSidePane(); return; }
+  finishEditor(true);
+  S.activeEdit = e; renderEdits(doc, i); updateUI();
+  if (ev.target.closest('.rs')) { resizeAnnot(ev, doc, i, e); return; }
+  if (['Highlight', 'Underline', 'StrikeOut'].includes(e.sub)) return;
+  const vp = doc.vps[i], el = pageEl(i), pr = el.getBoundingClientRect();
+  const p0 = vp.convertToPdfPoint(ev.clientX - pr.left, ev.clientY - pr.top);
+  const snap = snapshot(doc), orig = clone(e);
+  let moved = false;
+  const mm = m => {
+    const p = vp.convertToPdfPoint(m.clientX - pr.left, m.clientY - pr.top);
+    if (Math.hypot(m.clientX - ev.clientX, m.clientY - ev.clientY) < 3 && !moved) return;
+    moved = true;
+    const live = doc.pages[i].edits.find(x => x.id === e.id); if (!live) return;
+    shiftAnnot(live, orig, p[0] - p0[0], p[1] - p0[1]);
+    renderEdits(doc, i);
+  };
+  const mu = () => { window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); if (moved) { pushUndo(doc, snap); updateUI(); } };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+function resizeAnnot(ev, doc, i, e) {
+  const vp = doc.vps[i], el = pageEl(i), pr = el.getBoundingClientRect();
+  const r0 = rectToVp(vp, e.rect[0], e.rect[1], e.rect[2] - e.rect[0], e.rect[3] - e.rect[1]);
+  const snap = snapshot(doc); let moved = false;
+  const keep = e.sub === 'Stamp';
+  const mm = m => {
+    let w = Math.max(10, m.clientX - pr.left - r0.left), h = Math.max(10, m.clientY - pr.top - r0.top);
+    if (keep) { const s = Math.max(w / r0.width, h / r0.height); w = r0.width * s; h = r0.height * s; }
+    const a = vp.convertToPdfPoint(r0.left, r0.top), b = vp.convertToPdfPoint(r0.left + w, r0.top + h);
+    const live = doc.pages[i].edits.find(x => x.id === e.id); if (!live) return;
+    live.rect = [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+    moved = true; renderEdits(doc, i);
+  };
+  const mu = () => { window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); if (moved) { pushUndo(doc, snap); updateUI(); } };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+
+/* ---------- petite fenêtre de saisie de texte ---------- */
+function textPopup(x, y, initial, title) {
+  return new Promise(res => {
+    document.querySelectorAll('.tpop').forEach(p => p.remove());
+    const p = document.createElement('div');
+    p.className = 'tpop';
+    p.innerHTML = `<div class="tpop-h">${esc(title)}</div><textarea rows="4" spellcheck="true">${esc(initial || '')}</textarea>
+      <div class="tpop-f"><span class="hint">Ctrl+Entrée pour valider</span><button class="btn" data-x>Annuler</button><button class="btn primary" data-ok>OK</button></div>`;
+    document.body.appendChild(p);
+    const r = p.getBoundingClientRect();
+    p.style.left = Math.max(8, Math.min(x, innerWidth - r.width - 8)) + 'px';
+    p.style.top = Math.max(8, Math.min(y, innerHeight - r.height - 8)) + 'px';
+    const ta = p.querySelector('textarea'); ta.focus(); ta.select();
+    const done = v => { p.remove(); document.removeEventListener('mousedown', outside, true); res(v); };
+    const outside = ev => { if (!p.contains(ev.target)) done(ta.value); };
+    setTimeout(() => document.addEventListener('mousedown', outside, true), 0);
+    p.querySelector('[data-ok]').onclick = () => done(ta.value);
+    p.querySelector('[data-x]').onclick = () => done(null);
+    ta.addEventListener('keydown', ev => { ev.stopPropagation(); if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) done(ta.value); if (ev.key === 'Escape') done(null); });
+  });
+}
+async function editAnnotText(doc, i, e, x, y) {
+  const v = await textPopup(x, y, e.contents || '', e.sub === 'FreeText' ? 'Texte' : 'Commentaire — ' + ANN_LABEL[e.sub]);
+  if (v == null || v === (e.contents || '')) return;
+  pushUndo(doc);
+  const live = doc.pages[i].edits.find(z => z.id === e.id); if (!live) return;
+  live.contents = v; live.date = new Date().toISOString();
+  if (live.sub === 'FreeText') fitFreeText(live);
+  renderEdits(doc, i); updateUI(); refreshSidePane();
+}
+function fitFreeText(e) {
+  const s = e.size || 12, lines = (e.contents || ' ').split('\n');
+  const w = Math.max(20, ...lines.map(l => measureArial(l, s))) + 8, h = lines.length * s * 1.2 + 6;
+  e.rect = [e.rect[0], e.rect[3] - h, e.rect[0] + w, e.rect[3]];
+}
+
+/* ---------- création ---------- */
+function newAnnot(tool, fields) {
+  const st = S.annStyle[tool] || {};
+  return { id: uid(), type: 'annot', tool, sub: subOfTool[tool], color: hexToRgb(st.color || '#d1242f'), width: st.width ?? 1, opacity: st.opacity ?? 1, author: S.author || '', date: new Date().toISOString(), contents: '', ...fields };
+}
+function commitAnnot(doc, i, e, keepTool = true) {
+  pushUndo(doc);
+  doc.pages[i].edits.push(e);
+  S.activeEdit = e;
+  renderEdits(doc, i); refreshThumbBadge(doc, i); updateUI(); refreshSidePane();
+}
+/* glisser sur la page : rectangle, ligne, flèche, crayon, zone surlignée */
+function startAnnotDrag(ev, P) {
+  const d = S.active, tool = S.tool, vp = P.vp, pr = P.pel.getBoundingClientRect();
+  const prev = document.createElementNS(SVGNS, 'svg');
+  prev.setAttribute('class', 'annprev'); prev.setAttribute('width', vp.width); prev.setAttribute('height', vp.height);
+  P.pel.appendChild(prev);
+  const st = S.annStyle[tool] || {}, col = st.color, w = (st.width || 1) * vp.scale;
+  const pts = [[P.x, P.y]];
+  let x1 = P.x, y1 = P.y;
+  const draw = () => {
+    const L = Math.min(P.x, x1), T = Math.min(P.y, y1), W = Math.abs(x1 - P.x), H = Math.abs(y1 - P.y);
+    if (tool === 'ink') prev.innerHTML = `<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" opacity="${st.opacity}"/>`;
+    else if (tool === 'line' || tool === 'arrow') prev.innerHTML = `<line x1="${P.x}" y1="${P.y}" x2="${x1}" y2="${y1}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+    else if (tool === 'ellipse') prev.innerHTML = `<ellipse cx="${L + W / 2}" cy="${T + H / 2}" rx="${W / 2}" ry="${H / 2}" fill="none" stroke="${col}" stroke-width="${w}"/>`;
+    else if (MARKUP_TOOLS.includes(tool)) prev.innerHTML = `<rect x="${L}" y="${T}" width="${W}" height="${H}" fill="${col}" opacity=".35"/>`;
+    else prev.innerHTML = `<rect x="${L}" y="${T}" width="${W}" height="${H}" fill="none" stroke="${col}" stroke-width="${w}"/>`;
+  };
+  const mm = m => {
+    x1 = Math.max(0, Math.min(pr.width, m.clientX - pr.left)); y1 = Math.max(0, Math.min(pr.height, m.clientY - pr.top));
+    if (tool === 'ink') { const l = pts[pts.length - 1]; if (Math.hypot(x1 - l[0], y1 - l[1]) > 1.5) pts.push([x1, y1]); }
+    draw();
+  };
+  const mu = () => {
+    window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); prev.remove();
+    const toPdf = (x, y) => vp.convertToPdfPoint(x, y);
+    if (tool === 'ink') {
+      if (pts.length < 2) return;
+      const flat = []; pts.forEach(p => { const q = toPdf(p[0], p[1]); flat.push(q[0], q[1]); });
+      return commitAnnot(d, P.i, newAnnot('ink', { ink: [flat] }));
+    }
+    if (Math.hypot(x1 - P.x, y1 - P.y) < 4) return;
+    if (tool === 'line' || tool === 'arrow') { const a = toPdf(P.x, P.y), b = toPdf(x1, y1); return commitAnnot(d, P.i, newAnnot(tool, { line: [a[0], a[1], b[0], b[1]], arrow: tool === 'arrow' })); }
+    const L = Math.min(P.x, x1), T = Math.min(P.y, y1), R = Math.max(P.x, x1), B = Math.max(P.y, y1);
+    if (MARKUP_TOOLS.includes(tool)) return commitAnnot(d, P.i, newAnnot(tool, { quads: [quadFromVp(vp, L, T, R, B)] }));
+    const a = toPdf(L, T), b = toPdf(R, B);
+    commitAnnot(d, P.i, newAnnot(tool, { rect: [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])] }));
+  };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+function quadFromVp(vp, L, T, R, B) {
+  const ul = vp.convertToPdfPoint(L, T), ur = vp.convertToPdfPoint(R, T), ll = vp.convertToPdfPoint(L, B), lr = vp.convertToPdfPoint(R, B);
+  return [ul[0], ul[1], ur[0], ur[1], ll[0], ll[1], lr[0], lr[1]];
+}
+/* surligner / souligner / barrer la sélection de texte */
+function markupFromSelection() {
+  const tool = S.tool, d = S.active;
+  if (!MARKUP_TOOLS.includes(tool) || !d) return false;
+  const sel = getSelection();
+  if (!sel || sel.isCollapsed || !sel.rangeCount) return false;
+  const pages = new Map();
+  for (let k = 0; k < sel.rangeCount; k++) {
+    const rects = [...sel.getRangeAt(k).getClientRects()].filter(r => r.width > 0.5 && r.height > 0.5);
+    for (const r of rects) {
+      const pel = $$('.page', viewer()).find(p => { const b = p.getBoundingClientRect(); return r.left + r.width / 2 >= b.left && r.left + r.width / 2 <= b.right && r.top + r.height / 2 >= b.top && r.top + r.height / 2 <= b.bottom; });
+      if (!pel) continue;
+      const i = +pel.dataset.index; if (!pages.has(i)) pages.set(i, []);
+      const b = pel.getBoundingClientRect();
+      pages.get(i).push({ L: r.left - b.left, T: r.top - b.top, R: r.right - b.left, B: r.bottom - b.top });
+    }
+  }
+  const text = sel.toString().replace(/\s+/g, ' ').trim();
+  sel.removeAllRanges();
+  if (!pages.size) return false;
+  pushUndo(d);
+  let last = null;
+  for (const [i, rs] of pages) {
+    const vp = d.vps[i]; if (!vp) continue;
+    const hs = rs.map(r => r.B - r.T).sort((a, b) => a - b), med = hs[Math.floor(hs.length / 2)];
+    const ok = rs.filter(r => r.B - r.T <= med * 2.2);
+    ok.sort((a, b) => a.T - b.T || a.L - b.L);
+    const lines = [];
+    for (const r of ok) {   // fusion des fragments d'une même ligne
+      const l = lines.find(x => Math.abs((x.T + x.B) / 2 - (r.T + r.B) / 2) < med * 0.5);
+      if (l) { l.L = Math.min(l.L, r.L); l.R = Math.max(l.R, r.R); l.T = Math.min(l.T, r.T); l.B = Math.max(l.B, r.B); } else lines.push({ ...r });
+    }
+    if (!lines.length) continue;
+    const e = newAnnot(tool, { quads: lines.map(l => quadFromVp(vp, l.L, l.T, l.R, l.B)), contents: pages.size === 1 ? text : '' });
+    d.pages[i].edits.push(e); last = e;
+    renderEdits(d, i); refreshThumbBadge(d, i);
+  }
+  S.activeEdit = last; updateUI(); refreshSidePane();
+  return true;
+}
+async function placeClickAnnot(ev, P) {
+  const d = S.active, tool = S.tool, [px, py] = P.pdf;
+  if (tool === 'note') {
+    const e = newAnnot('note', { rect: [px - 2, py - 18, px + 18, py + 2] });
+    commitAnnot(d, P.i, e);
+    const v = await textPopup(ev.clientX + 16, ev.clientY, '', 'Note');
+    const live = d.pages[P.i].edits.find(z => z.id === e.id);
+    if (live && v != null) { live.contents = v; renderEdits(d, P.i); refreshSidePane(); }
+    return;
+  }
+  if (tool === 'freetext') {
+    const v = await textPopup(ev.clientX, ev.clientY, '', 'Machine à écrire');
+    if (!v || !v.trim()) return;
+    const st = S.annStyle.freetext;
+    const e = newAnnot('freetext', { contents: v, size: st.size || 12, rect: [px, py - 10, px + 10, py], border: false });
+    fitFreeText(e);
+    return commitAnnot(d, P.i, e);
+  }
+  if (tool === 'stamp') {
+    const sp = S.stampSel || STAMPS[0];
+    let st;
+    if (sp.imgId) {
+      const im = d.images && d.images[sp.imgId];
+      if (!im) { toast('Choisissez à nouveau l\'image du tampon.', 'err'); return; }
+      const w = Math.min(160, im.w * 0.75), h = w * im.h / im.w;
+      st = { imgId: sp.imgId, label: sp.label || 'Image' };
+      return commitAnnot(d, P.i, newAnnot('stamp', { stamp: st, color: [0, 0, 0], rect: [px - w / 2, py - h / 2, px + w / 2, py + h / 2], contents: st.label }));
+    }
+    st = { label: sp.label, sub: sp.dyn ? `${S.author ? S.author + ' — ' : ''}${frDate(new Date())}` : (sp.customSub || '').replace('{date}', frDate(new Date())) };
+    const L = stampLayout(st), k = 1;
+    return commitAnnot(d, P.i, newAnnot('stamp', { stamp: st, color: hexToRgb(sp.color || S.annStyle.stamp.color), rect: [px - L.natW / 2 * k, py - L.natH / 2 * k, px + L.natW / 2 * k, py + L.natH / 2 * k], contents: sp.label + (st.sub ? ' — ' + st.sub : '') }));
+  }
+}
+/* appelé par onViewerDown (app5) : renvoie true si l'évènement a été traité */
+function annotMouseDown(ev) {
+  const t = S.tool;
+  if (!isAnnotTool(t)) return false;
+  if (ev.target.closest('.ebox.ann') || ev.target.closest('.tpop')) return true;
+  const P = pagePoint(ev); if (!P) return true;
+  if (MARKUP_TOOLS.includes(t) && ev.target.closest('.textLayer span')) return false;   // sélection de texte native
+  if (['note', 'freetext', 'stamp'].includes(t)) { ev.preventDefault(); placeClickAnnot(ev, P); return true; }
+  ev.preventDefault();
+  startAnnotDrag(ev, P);
+  return true;
+}
+
+/* ---------- menu des tampons ---------- */
+function openStampMenu(anchor) {
+  closeCtxMenu();
+  const m = document.createElement('div');
+  m.className = 'ctxmenu stampmenu'; m.id = 'ctxmenu';
+  const today = frDate(new Date());
+  m.innerHTML = `<div class="smgrid">${STAMPS.map((s, k) => `<button class="smitem" data-st="${k}" style="color:${s.color};border-color:${s.color}"><b>${esc(s.label)}</b>${s.dyn ? `<small>${esc((S.author ? S.author + ' — ' : '') + today)}</small>` : ''}</button>`).join('')}</div>
+    <hr><button data-st="custom">${svgIcon('Type', 15)}Tampon personnalisé…</button><button data-st="image">${svgIcon('Image', 15)}Tampon à partir d'une image…</button>`;
+  document.body.appendChild(m);
+  const r = anchor.getBoundingClientRect(), mr = m.getBoundingClientRect();
+  m.style.left = Math.min(r.left, innerWidth - mr.width - 8) + 'px'; m.style.top = (r.bottom + 2) + 'px';
+  m.addEventListener('click', async ev => {
+    const b = ev.target.closest('[data-st]'); if (!b) return;
+    ev.stopPropagation(); closeCtxMenu();
+    const k = b.dataset.st;
+    if (k === 'custom') {
+      const v = await textPopup(r.left, r.bottom + 4, '', 'Texte du tampon (2e ligne facultative : date du jour ajoutée si vous écrivez {date})');
+      if (!v || !v.trim()) return;
+      const [l1, ...rest] = v.split('\n');
+      const sub = rest.join(' ').trim();
+      S.stampSel = { label: l1.trim().toUpperCase(), color: S.annStyle.stamp.color, customSub: sub };
+    } else if (k === 'image') {
+      const d = S.active; if (!d) return;
+      try {
+        const [h] = await showOpenFilePicker({ id: 'prele-img', types: [{ description: 'Images', accept: { 'image/*': IMG_EXT.map(x => '.' + x) } }] });
+        const f = await h.getFile();
+        const im = await normalizeImage(new Uint8Array(await f.arrayBuffer()), f.name, f.type);
+        d.images = d.images || {}; const imgId = uid(); d.images[imgId] = im;
+        S.stampSel = { imgId, label: stripExt(f.name) };
+      } catch (e) { handleErr(e); return; }
+    } else S.stampSel = STAMPS[+k];
+    setTool('stamp');
+    toast('Cliquez sur la page pour apposer le tampon.');
+  });
+}
+
+/* ---------- styles (ruban) ---------- */
+function annotStyleTarget() {
+  const e = S.activeEdit;
+  if (e && e.type === 'annot') return { e, tool: e.tool };
+  if (isAnnotTool(S.tool)) return { e: null, tool: S.tool };
+  return null;
+}
+function syncAnnotStyle() {
+  const T = annotStyleTarget(), dis = !T;
+  ['aColor', 'aWidth', 'aOpac', 'aSize'].forEach(id => { const el = $('#' + id); if (el) el.disabled = dis; });
+  if (!T) { const h = $('#aHint'); if (h) h.textContent = 'Choisissez un outil ou un commentaire'; return; }
+  const st = T.e ? { color: rgbToHex(T.e.color), width: T.e.width, opacity: T.e.opacity, size: T.e.size } : S.annStyle[T.tool];
+  $('#aColor').value = st.color || '#000000';
+  $('#aWidth').value = String(st.width ?? 1);
+  $('#aOpac').value = String(Math.round((st.opacity ?? 1) * 100));
+  $('#aSize').value = String(st.size || S.annStyle.freetext.size);
+  $('#aSize').disabled = T.tool !== 'freetext';
+  $('#aWidth').disabled = ['freetext', 'note', 'highlight', 'underline', 'strike', 'stamp'].includes(T.tool);
+  $('#aHint').textContent = T.e ? `${ANN_LABEL[T.e.sub]} sélectionné` : `Réglages de l'outil « ${ANN_LABEL[subOfTool[T.tool]]} »`;
+}
+function applyAnnotStyle(patch) {
+  const T = annotStyleTarget(); if (!T) return;
+  Object.assign(S.annStyle[T.tool], patch.color ? { color: patch.color } : {}, 'width' in patch ? { width: patch.width } : {}, 'opacity' in patch ? { opacity: patch.opacity } : {}, 'size' in patch ? { size: patch.size } : {});
+  lsSet('prele-annstyle', S.annStyle);
+  if (T.e) {
+    const d = S.active, i = d.pages.findIndex(p => p.edits.includes(T.e)); if (i < 0) return;
+    pushUndo(d);
+    if (patch.color) T.e.color = hexToRgb(patch.color);
+    if ('width' in patch) T.e.width = patch.width;
+    if ('opacity' in patch) T.e.opacity = patch.opacity;
+    if ('size' in patch && T.e.sub === 'FreeText') { T.e.size = patch.size; fitFreeText(T.e); }
+    renderEdits(d, i); updateUI();
+  }
+}
+
+/* ---------- enregistrement : annotation PDF + apparence ---------- */
+const nf = v => fmtNum(v);
+async function annotFonts(pdfDoc, cache) {
+  if (!cache.annFonts) cache.annFonts = { reg: await pdfDoc.embedFont(StandardFonts.Helvetica), bold: await pdfDoc.embedFont(StandardFonts.HelveticaBold) };
+  return cache.annFonts;
+}
+function winAnsiSafe(font, s) { const set = font.__set || (font.__set = new Set(font.getCharacterSet())); return [...s].map(c => set.has(c.codePointAt(0)) ? c : c === ' ' || c === ' ' ? ' ' : '?').join(''); }
+async function buildAppearance(pdfDoc, e, doc, cache) {
+  const [r, g, b] = e.color || [0, 0, 0], w = e.width || 1;
+  const RG = `${nf(r)} ${nf(g)} ${nf(b)} RG`, rg = `${nf(r)} ${nf(g)} ${nf(b)} rg`;
+  const res = { ExtGState: { GS0: { CA: e.opacity ?? 1, ca: e.opacity ?? 1, ...(e.sub === 'Highlight' ? { BM: 'Multiply' } : {}) } } };
+  let ops = '/GS0 gs\n';
+  const q = e.quads;
+  switch (e.sub) {
+    case 'Highlight': ops += rg + '\n' + q.map(v => `${nf(v[0])} ${nf(v[1])} m ${nf(v[2])} ${nf(v[3])} l ${nf(v[6])} ${nf(v[7])} l ${nf(v[4])} ${nf(v[5])} l h f`).join('\n'); break;
+    case 'Underline': case 'StrikeOut': ops += RG + '\n' + q.map(v => {
+      const h = Math.hypot(v[0] - v[4], v[1] - v[5]), t = e.sub === 'Underline' ? 0.07 : 0.45;
+      const ax = v[4] + (v[0] - v[4]) * t, ay = v[5] + (v[1] - v[5]) * t, bx = v[6] + (v[2] - v[6]) * t, by = v[7] + (v[3] - v[7]) * t;
+      return `${nf(Math.max(0.6, h * 0.07))} w ${nf(ax)} ${nf(ay)} m ${nf(bx)} ${nf(by)} l S`;
+    }).join('\n'); break;
+    case 'Line': {
+      const [x1, y1, x2, y2] = e.line;
+      ops += `${RG} ${nf(w)} w 1 J 1 j ${nf(x1)} ${nf(y1)} m ${nf(x2)} ${nf(y2)} l S`;
+      if (e.arrow) { const [a, c] = arrowHead(x1, y1, x2, y2, w); ops += ` ${nf(a[0])} ${nf(a[1])} m ${nf(x2)} ${nf(y2)} l ${nf(c[0])} ${nf(c[1])} l S`; }
+      break;
+    }
+    case 'Square': { const [x1, y1, x2, y2] = e.rect, h = w / 2; ops += `${RG} ${nf(w)} w ${nf(x1 + h)} ${nf(y1 + h)} ${nf(x2 - x1 - w)} ${nf(y2 - y1 - w)} re S`; break; }
+    case 'Circle': { const [x1, y1, x2, y2] = e.rect, h = w / 2, P = ellipsePath(x1 + h, y1 + h, x2 - h, y2 - h); ops += `${RG} ${nf(w)} w ${nf(P[0][0])} ${nf(P[0][1])} m ` + P.slice(1).map(c => c.map(nf).join(' ') + ' c').join(' ') + ' h S'; break; }
+    case 'Ink': ops += `${RG} ${nf(w)} w 1 J 1 j\n` + e.ink.map(s => { let o = `${nf(s[0])} ${nf(s[1])} m`; for (let k = 2; k < s.length; k += 2) o += ` ${nf(s[k])} ${nf(s[k + 1])} l`; return o + ' S'; }).join('\n'); break;
+    case 'Text': {
+      const [x1, y1, x2, y2] = e.rect;
+      ops += `${rg} 0.36 0.29 0 RG 1 w ${nf(x1 + 0.5)} ${nf(y1 + 0.5)} ${nf(x2 - x1 - 1)} ${nf(y2 - y1 - 1)} re B 1.1 w`;
+      [6, 10, 14].forEach((dy, k) => { ops += ` ${nf(x1 + 4)} ${nf(y2 - dy)} m ${nf(x1 + 4 + (x2 - x1 - 8) * (k === 2 ? 0.6 : 1))} ${nf(y2 - dy)} l S`; });
+      break;
+    }
+    case 'FreeText': {
+      const { reg } = await annotFonts(pdfDoc, cache);
+      res.Font = { Helv: reg.ref };
+      const [x1, , x2, y2] = e.rect, s = e.size || 12, lh = s * 1.2;
+      if (e.border) ops += `${RG} 1 w ${nf(x1 + 0.5)} ${nf(e.rect[1] + 0.5)} ${nf(x2 - x1 - 1)} ${nf(y2 - e.rect[1] - 1)} re S\n`;
+      ops += `BT /Helv ${nf(s)} Tf ${rg}\n`;
+      (e.contents || '').split('\n').forEach((ln, k) => { ops += `1 0 0 1 ${nf(x1 + 3)} ${nf(y2 - 3 - s * 0.82 - k * lh)} Tm ${reg.encodeText(winAnsiSafe(reg, ln)).toString()} Tj\n`; });
+      ops += 'ET';
+      break;
+    }
+    case 'Stamp': {
+      const [x1, y1, x2, y2] = e.rect, st = e.stamp;
+      if (st.imgId) {
+        const img = await embedEditImage(pdfDoc, doc, st.imgId, cache);
+        if (img) { res.XObject = { Im1: img.ref }; ops += `q ${nf(x2 - x1)} 0 0 ${nf(y2 - y1)} ${nf(x1)} ${nf(y1)} cm /Im1 Do Q`; }
+        break;
+      }
+      const { bold } = await annotFonts(pdfDoc, cache);
+      res.Font = { HeBo: bold.ref };
+      const L = stampLayout(st), k = (x2 - x1) / L.natW;
+      const lab = winAnsiSafe(bold, st.label), sub = st.sub ? winAnsiSafe(bold, st.sub) : '';
+      ops += `q ${nf(k)} 0 0 ${nf(k)} ${nf(x1)} ${nf(y1)} cm ${RG} 2.4 w ${roundRectOps(2, 2, L.natW - 4, L.natH - 4, 5)} S\n`;
+      ops += `BT /HeBo ${L.fs} Tf ${rg} 1 0 0 1 ${nf(L.natW / 2 - bold.widthOfTextAtSize(lab, L.fs) / 2)} ${nf(L.natH - 9 - L.fs * 0.75)} Tm ${bold.encodeText(lab).toString()} Tj ET\n`;
+      if (sub) ops += `BT /HeBo 8 Tf ${rg} 1 0 0 1 ${nf(L.natW / 2 - bold.widthOfTextAtSize(sub, 8) / 2)} 8 Tm ${bold.encodeText(sub).toString()} Tj ET\n`;
+      ops += 'Q';
+      break;
+    }
+  }
+  const bb = annBounds(e);
+  const stream = pdfDoc.context.flateStream(ops, { Type: 'XObject', Subtype: 'Form', BBox: bb, Resources: res });
+  return { ref: pdfDoc.context.register(stream), bbox: bb };
+}
+function roundRectOps(x, y, w, h, r) {
+  const k = 0.5523 * r;
+  return `${nf(x + r)} ${nf(y)} m ${nf(x + w - r)} ${nf(y)} l ${nf(x + w - r + k)} ${nf(y)} ${nf(x + w)} ${nf(y + r - k)} ${nf(x + w)} ${nf(y + r)} c ${nf(x + w)} ${nf(y + h - r)} l ${nf(x + w)} ${nf(y + h - r + k)} ${nf(x + w - r + k)} ${nf(y + h)} ${nf(x + w - r)} ${nf(y + h)} c ${nf(x + r)} ${nf(y + h)} l ${nf(x + r - k)} ${nf(y + h)} ${nf(x)} ${nf(y + h - r + k)} ${nf(x)} ${nf(y + h - r)} c ${nf(x)} ${nf(y + r)} l ${nf(x)} ${nf(y + r - k)} ${nf(x + r - k)} ${nf(y)} ${nf(x + r)} ${nf(y)} c h`;
+}
+async function writeAnnot(pdfDoc, page, e, doc, cache) {
+  const ap = await buildAppearance(pdfDoc, e, doc, cache);
+  const ctx = pdfDoc.context;
+  const d = {
+    Type: 'Annot', Subtype: e.sub, Rect: ap.bbox, F: 4, AP: { N: ap.ref },
+    C: e.color || [0, 0, 0], CA: e.opacity ?? 1, M: PDFLib.PDFString.of(pdfDate(new Date(e.date || Date.now()))),
+    CreationDate: PDFLib.PDFString.of(pdfDate(new Date(e.date || Date.now()))), NM: PDFLib.PDFString.of(e.id),
+  };
+  if (e.contents) d.Contents = PDFHexString.fromText(e.contents);
+  if (e.author) d.T = PDFHexString.fromText(e.author);
+  if (e.quads) d.QuadPoints = e.quads.flat();
+  if (e.sub === 'Line') { d.L = e.line; d.LE = ['None', e.arrow ? 'OpenArrow' : 'None']; d.BS = { W: e.width || 1 }; }
+  if (e.sub === 'Ink') { d.InkList = e.ink; d.BS = { W: e.width || 1 }; }
+  if (e.sub === 'Square' || e.sub === 'Circle') { d.BS = { W: e.width || 1 }; if (e.fill) d.IC = e.fill; }
+  if (e.sub === 'FreeText') { d.DA = PDFLib.PDFString.of(`/Helv ${e.size || 12} Tf ${(e.color || [0, 0, 0]).map(nf).join(' ')} rg`); d.BS = { W: e.border ? 1 : 0 }; }
+  if (e.sub === 'Text') { d.Name = 'Comment'; d.Open = false; }
+  if (e.sub === 'Stamp') d.Name = 'Prele';
+  const ref = ctx.register(ctx.obj(d));
+  page.node.addAnnot(ref);
+}
+
+/* ---------- commentaires existants dans le fichier ---------- */
+const refId = r => (r && r.objectNumber != null) ? (r.generationNumber ? `${r.objectNumber}R${r.generationNumber}` : `${r.objectNumber}R`) : null;
+const NON_COMMENT = ['Link', 'Widget', 'Popup'];
+function filterAnnots(pdf, pageIndex, keepFn) {
+  const page = pdf.getPage(pageIndex), arr = page.node.Annots();
+  if (!arr) return 0;
+  const keep = []; let removed = 0;
+  for (let k = 0; k < arr.size(); k++) {
+    const r = arr.get(k), dict = pdf.context.lookup(r);
+    if (!(dict instanceof PDFLib.PDFDict)) { keep.push(r); continue; }
+    if (keepFn(r, dict)) keep.push(r); else removed++;
+  }
+  page.node.set(PDFName.of('Annots'), pdf.context.obj(keep));
+  return removed;
+}
+async function deleteExistingAnnot(doc, pageIndex, id) {
+  await runSerial(() => mutate(doc, pdf => {
+    filterAnnots(pdf, pageIndex, (r, dict) => {
+      if (refId(r) === id) return false;
+      const par = dict.get(PDFName.of('Parent'));
+      return !(par && refId(par) === id);
+    });
+  }));
+  refreshSidePane();
+}
+function flattenPageAnnots(pdf, pageIndex) {
+  const page = pdf.getPage(pageIndex), arr = page.node.Annots();
+  if (!arr) return 0;
+  let n = 0;
+  filterAnnots(pdf, pageIndex, (r, dict) => {
+    const sub = pdfNameStr(dict.lookup(PDFName.of('Subtype')));
+    if (NON_COMMENT.includes(sub)) return sub !== 'Popup';
+    const flags = (dict.lookup(PDFName.of('F')) || { asNumber: () => 0 }).asNumber?.() || 0;
+    const ap = dict.lookup(PDFName.of('AP'));
+    if (ap instanceof PDFLib.PDFDict && !(flags & 2) && !(flags & 32)) {
+      let nRef = ap.get(PDFName.of('N')), nObj = pdf.context.lookup(nRef);
+      if (nObj instanceof PDFLib.PDFDict && !(nObj instanceof PDFLib.PDFStream)) {
+        const as = dict.lookup(PDFName.of('AS'));
+        nRef = as ? nObj.get(as) : null; nObj = nRef ? pdf.context.lookup(nRef) : null;
+      }
+      const rectA = dict.lookup(PDFName.of('Rect'));
+      if (nObj && nObj.dict && rectA) {
+        const num = a => a.asArray().map(x => x.asNumber());
+        const bbA = nObj.dict.lookup(PDFName.of('BBox')), mA = nObj.dict.lookup(PDFName.of('Matrix'));
+        const bb = bbA ? num(bbA) : [0, 0, 1, 1], M = mA ? num(mA) : [1, 0, 0, 1, 0, 0], R = num(rectA);
+        const c = [[bb[0], bb[1]], [bb[2], bb[1]], [bb[0], bb[3]], [bb[2], bb[3]]].map(([x, y]) => [x * M[0] + y * M[2] + M[4], x * M[1] + y * M[3] + M[5]]);
+        const tx = c.map(p => p[0]), ty = c.map(p => p[1]);
+        const bx1 = Math.min(...tx), by1 = Math.min(...ty), bx2 = Math.max(...tx), by2 = Math.max(...ty);
+        const rx1 = Math.min(R[0], R[2]), ry1 = Math.min(R[1], R[3]), rx2 = Math.max(R[0], R[2]), ry2 = Math.max(R[1], R[3]);
+        const sx = bx2 > bx1 ? (rx2 - rx1) / (bx2 - bx1) : 1, sy = by2 > by1 ? (ry2 - ry1) / (by2 - by1) : 1;
+        const key = page.node.newXObject('FlatAnnot', nRef);
+        page.pushOperators(PDFLib.pushGraphicsState(), PDFLib.concatTransformationMatrix(sx, 0, 0, sy, rx1 - bx1 * sx, ry1 - by1 * sy), PDFLib.drawObject(key), PDFLib.popGraphicsState());
+      }
+    }
+    n++;
+    return false;
+  });
+  return n;
+}
+async function cmdFlattenComments() {
+  const doc = S.active; if (!doc) return;
+  if (!confirm('Aplatir les commentaires ?\nIls seront intégrés définitivement au contenu des pages et ne seront plus modifiables (vous pourrez encore annuler tant que le document est ouvert).')) return;
+  let total = 0;
+  await mutate(doc, async (pdf, pages) => {
+    const cache = {};
+    for (let i = 0; i < pages.length; i++) {
+      const page = pdf.getPage(i);
+      for (const e of pages[i].edits) if (e.type === 'annot') await writeAnnot(pdf, page, e, doc, cache);
+      pages[i].edits = pages[i].edits.filter(e => e.type !== 'annot');
+      total += flattenPageAnnots(pdf, i);
+    }
+    return pages;
+  });
+  toast(total ? `${total} commentaire${total > 1 ? 's' : ''} aplati${total > 1 ? 's' : ''}.` : 'Aucun commentaire à aplatir.');
+  refreshSidePane();
+}
+async function cmdDeleteAllComments() {
+  const doc = S.active; if (!doc) return;
+  if (!confirm('Supprimer tous les commentaires et tampons du document ?')) return;
+  let n = 0;
+  await mutate(doc, (pdf, pages) => {
+    pages.forEach(p => { n += p.edits.filter(e => e.type === 'annot').length; p.edits = p.edits.filter(e => e.type !== 'annot'); });
+    for (let i = 0; i < pages.length; i++) n += filterAnnots(pdf, i, (r, dict) => { const sub = pdfNameStr(dict.lookup(PDFName.of('Subtype'))); return sub === 'Link' || sub === 'Widget'; });
+    return pages;
+  });
+  toast(`${n} commentaire${n > 1 ? 's' : ''} supprimé${n > 1 ? 's' : ''}.`);
+  refreshSidePane();
+}
+
+/* ---------- liste des commentaires (volet + résumé) ---------- */
+async function collectComments(doc) {
+  const list = [];
+  for (let i = 0; i < doc.pageObjs.length; i++) {
+    let anns = [];
+    try { anns = await doc.pageObjs[i].getAnnotations(); } catch { }
+    for (const a of anns) if (ANNOT_FR[a.subtype]) list.push({ page: i, kind: 'file', id: a.id, sub: a.subtype, label: ANNOT_FR[a.subtype], author: (a.titleObj && a.titleObj.str) || a.title || '', date: a.modificationDate ? fmtPdfDate(a.modificationDate) : '', text: (a.contentsObj && a.contentsObj.str) || a.contents || '', rect: a.rect });
+    for (const e of doc.pages[i].edits) if (e.type === 'annot') { const b = annBounds(e); list.push({ page: i, kind: 'mine', e, sub: e.sub, label: ANN_LABEL[e.sub], author: e.author, date: frDateTime(e.date), text: e.contents || '', rect: b }); }
+  }
+  return list;
+}
+renderCommentsPane = async function () {
+  const box = $('#commentsView'), doc = S.active;
+  if (!doc) { box.innerHTML = paneEmpty('Aucun document ouvert.'); return; }
+  const list = await collectComments(doc);
+  if (S.active !== doc || S.side !== 'comments') return;
+  const tools = `<div class="cbar"><button class="btn" data-cmd="summarizeComments" title="Créer un PDF récapitulatif">${svgIcon('ListChecks', 14)} Résumer</button><button class="btn" data-cmd="flattenComments" title="Intégrer au contenu des pages">${svgIcon('Layers', 14)} Aplatir</button></div>`;
+  if (!list.length) { box.innerHTML = tools + paneEmpty('Aucun commentaire dans ce document.<br><br><span class="hint">Utilisez les outils du groupe « Commentaire » (Accueil) ou de l\'onglet Commentaires.</span>'); return; }
+  let last = -1;
+  box.innerHTML = tools + `<div class="clist">${list.map((c, k) => {
+    const head = c.page !== last ? `<div class="cpage">Page ${c.page + 1}</div>` : ''; last = c.page;
+    const sel = c.kind === 'mine' && S.activeEdit && S.activeEdit.id === c.e.id;
+    return `${head}<div class="citem ${sel ? 'sel' : ''} ${c.kind}" data-k="${k}"><div class="chead"><b>${esc(c.label)}</b>${c.author ? ' · ' + esc(c.author) : ''}<span class="cdate">${esc(c.date)}</span>
+      <button class="cdel" data-del="${k}" title="Supprimer">${svgIcon('Trash2', 13)}</button></div>${c.text ? `<div class="ctxt">${esc(c.text)}</div>` : ''}
+      ${c.kind === 'mine' ? '<div class="cedit hint">Double-clic pour modifier le texte</div>' : ''}</div>`;
+  }).join('')}</div>`;
+  const go = c => {
+    const vp = doc.vps[c.page] || vpOf(doc, c.page, doc.scale);
+    const r = c.rect ? rectToVp(vp, c.rect[0], c.rect[1], c.rect[2] - c.rect[0], c.rect[3] - c.rect[1]) : { top: 0 };
+    scrollToPage(c.page, false, Math.max(0, r.top - 80));
+  };
+  box.onclick = async ev => {
+    const del = ev.target.closest('[data-del]');
+    if (del) {
+      ev.stopPropagation(); const c = list[+del.dataset.del];
+      if (c.kind === 'mine') { deleteEdit(doc, c.page, c.e); refreshSidePane(); }
+      else await deleteExistingAnnot(doc, c.page, c.id);
+      return;
+    }
+    const it = ev.target.closest('[data-k]'); if (!it) return;
+    const c = list[+it.dataset.k];
+    $$('.citem.sel', box).forEach(x => x.classList.remove('sel')); it.classList.add('sel');
+    if (c.kind === 'mine') { S.activeEdit = c.e; renderEdits(doc, c.page); updateUI(); }
+    go(c);
+  };
+  box.ondblclick = ev => {
+    const it = ev.target.closest('[data-k]'); if (!it) return;
+    const c = list[+it.dataset.k];
+    if (c.kind === 'mine') editAnnotText(doc, c.page, c.e, ev.clientX + 10, ev.clientY);
+    else toast('Les commentaires déjà présents dans le fichier peuvent être supprimés mais pas encore modifiés.');
+  };
+};
+async function cmdSummarizeComments() {
+  const doc = S.active; if (!doc) return;
+  const list = await collectComments(doc);
+  if (!list.length) { toast('Aucun commentaire à résumer.'); return; }
+  const pdf = await PDFDocument.create();
+  const reg = await pdf.embedFont(StandardFonts.Helvetica), bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  const W = 595.28, H = 841.89, M = 50;
+  let page = pdf.addPage([W, H]), y = H - M;
+  const line = (t, f, s, color = rgb(0.1, 0.12, 0.11), indent = 0) => {
+    const words = winAnsiSafe(f, t).split(/(\s+)/); let cur = '';
+    const out = () => { if (y < M + s) { page = pdf.addPage([W, H]); y = H - M; } page.drawText(cur, { x: M + indent, y, size: s, font: f, color }); y -= s * 1.35; cur = ''; };
+    for (const w of words) { if (f.widthOfTextAtSize(cur + w, s) > W - 2 * M - indent && cur.trim()) { out(); if (!w.trim()) continue; } cur += w; }
+    out();
+  };
+  line(`Résumé des commentaires — ${doc.name}`, bold, 15, rgb(0.14, 0.31, 0.25));
+  line(`${list.length} commentaire${list.length > 1 ? 's' : ''} · édité le ${frDateTime(new Date().toISOString())}`, reg, 9.5, rgb(0.4, 0.45, 0.42));
+  y -= 8;
+  let last = -1;
+  for (const c of list) {
+    if (c.page !== last) { y -= 6; line(`Page ${c.page + 1}`, bold, 12, rgb(0.14, 0.31, 0.25)); last = c.page; }
+    line(`${c.label}${c.author ? ' — ' + c.author : ''}${c.date ? ' — ' + c.date : ''}`, bold, 10, rgb(0.2, 0.2, 0.2), 10);
+    if (c.text) line(c.text, reg, 10, rgb(0.1, 0.1, 0.1), 10);
+    y -= 3;
+  }
+  await openBytes(`Résumé des commentaires — ${stripExt(doc.name)}.pdf`, await pdf.save(), null, { dirty: true });
+}
+
+/* =====================================================================
    Commandes
    ===================================================================== */
 const CMDS = {
@@ -3537,6 +4348,8 @@ const CMDS = {
   clearPageEdits: () => { const d = S.active; if (!d) return; finishEditor(true); const i = d.current; if (!d.pages[i].edits.length) { toast('Aucune modification sur cette page.'); return; } pushUndo(d); d.pages[i].edits = []; S.activeEdit = null; renderEdits(d, i); renderHits(d, i); refreshThumbBadge(d, i); updateUI(); },
   closeBackstage: () => toggleBackstage(false),
   actualSize: () => setZoom('custom', 1), rotateViewLeft: () => rotateView(-90), rotateViewRight: () => rotateView(90),
+  showComments: () => togglePaneFor(S.paneVisible && S.side === 'comments' ? 'pages' : 'comments'),
+  summarizeComments: cmdSummarizeComments, flattenComments: cmdFlattenComments, deleteAllComments: cmdDeleteAllComments,
   paste: cmdPaste, pasteNewDoc: cmdPasteNewDoc, addImage: cmdAddImage, advSearch: openAdvSearch,
   install: async () => {
     if (!S.installPrompt) { toast('Installation : utilisez l\'icône d\'installation dans la barre d\'adresse de Chrome.'); return; }
@@ -3563,7 +4376,8 @@ function setTool(t) {
   if (S.tool === t) return;
   finishEditor(true);
   S.tool = t;
-  if (t !== 'edittext' && t !== 'addtext' && t !== 'cover') S.activeEdit = null;
+  if (t !== 'edittext' && t !== 'addtext' && t !== 'cover' && !isAnnotTool(t) && t !== 'selcomment') S.activeEdit = null;
+  if (S.activeEdit && S.activeEdit.type === 'annot' && !(isAnnotTool(t) || t === 'selcomment')) S.activeEdit = null;
   updateUI();
   const d = S.active;
   if (d) d.sizes.forEach((_, i) => { if (d.vps[i]) { renderHits(d, i); renderEdits(d, i); } });
@@ -3605,6 +4419,7 @@ async function renderRecentList(box) {
 function bindEvents() {
   document.addEventListener('click', ev => {
     const c = ev.target.closest('[data-cmd]');
+    if (c && !c.disabled && c.dataset.cmd === 'stampMenu') { ev.preventDefault(); ev.stopPropagation(); if ($('#ctxmenu.stampmenu')) closeCtxMenu(); else openStampMenu(c); return; }
     if (c && !c.disabled) { ev.preventDefault(); runCmd(c.dataset.cmd); return; }
     const t = ev.target.closest('[data-tool]');
     if (t && !t.disabled) { setTool(t.dataset.tool); return; }
@@ -3733,6 +4548,14 @@ function bindEvents() {
     if (handles.length) await openHandles(handles);
     if (loose.length) await openFiles(loose);
   });
+  // commentaires : sélection de texte → surlignage/soulignement/barré ; styles ; auteur
+  document.addEventListener('mouseup', () => { if (MARKUP_TOOLS.includes(S.tool)) setTimeout(markupFromSelection, 0); });
+  $('#aColor').addEventListener('change', e => applyAnnotStyle({ color: e.target.value }));
+  $('#aWidth').addEventListener('change', e => applyAnnotStyle({ width: parseFloat(e.target.value) }));
+  $('#aOpac').addEventListener('change', e => applyAnnotStyle({ opacity: parseInt(e.target.value, 10) / 100 }));
+  $('#aSize').addEventListener('change', e => { const v = parseFloat(e.target.value); if (v > 3) applyAnnotStyle({ size: v }); });
+  $('#aAuthor').value = S.author;
+  $('#aAuthor').addEventListener('change', e => { S.author = e.target.value.trim(); lsSet('prele-author', S.author); toast(S.author ? `Auteur des commentaires : ${S.author}` : 'Auteur des commentaires effacé.'); });
   // Ctrl+V dans la page : coller une image ou un texte sur la page courante
   document.addEventListener('paste', async ev => {
     if (ev.target.closest && ev.target.closest('input,textarea,[contenteditable="plaintext-only"],[contenteditable="true"],dialog')) return;
@@ -3797,6 +4620,8 @@ function onViewerDown(ev) {
     ev.preventDefault();
     return;
   }
+  if (annotMouseDown(ev)) return;
+  if (S.tool === 'selcomment' && !ev.target.closest('.ebox')) { if (S.activeEdit) { S.activeEdit = null; d.sizes.forEach((_, i) => d.vps[i] && renderEdits(d, i)); updateUI(); } return; }
   if (S.tool === 'snapshot') {
     const P = pagePoint(ev); if (!P) return;
     ev.preventDefault(); startSnapshot(P); return;
@@ -3874,7 +4699,7 @@ function init() {
   window.addEventListener('beforeinstallprompt', ev => { ev.preventDefault(); S.installPrompt = ev; showInstall(true); });
   window.addEventListener('appinstalled', () => { S.installPrompt = null; showInstall(false); });
 }
-window.PRELE = { S, addImageEdit, handleLaunch, copyPagesBetween, openBytes, buildOutputBytes, combineEngine, mutate, reorderPages, startReplaceEdit, finishEditor, getText, runCmd, setTool, applyFmt };
+window.PRELE = { S, addImageEdit, markupFromSelection, openStampMenu, handleLaunch, copyPagesBetween, openBytes, buildOutputBytes, combineEngine, mutate, reorderPages, startReplaceEdit, finishEditor, getText, runCmd, setTool, applyFmt };
 init();
 
 </script>
