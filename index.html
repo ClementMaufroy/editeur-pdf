@@ -150,7 +150,7 @@ svg{flex:none}
 .textLayer br::selection{background:transparent}
 .textLayer .endOfContent{display:block;position:absolute;inset:100% 0 0;z-index:-1;cursor:default;user-select:none}
 .textLayer .endOfContent.active{top:0}
-.viewer:not(.t-select):not(.t-highlight):not(.t-underline):not(.t-strike) .textLayer{pointer-events:none}
+.viewer:not(.t-select):not(.t-highlight):not(.t-underline):not(.t-strike):not(.t-squiggly):not(.t-replace) .textLayer{pointer-events:none}
 .hl{z-index:3;pointer-events:none}
 .hl div{position:absolute;background:rgba(255,196,0,.38);border-radius:2px}
 .hl div.cur{background:rgba(255,120,0,.55);outline:2px solid rgba(220,90,0,.8)}
@@ -367,6 +367,8 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
 .viewer.t-rect .page,.viewer.t-ellipse .page,.viewer.t-line .page,.viewer.t-arrow .page,.viewer.t-note .page,.viewer.t-freetext .page,.viewer.t-stamp .page{cursor:crosshair}
 .viewer.t-ink .page{cursor:crosshair}
 .viewer.t-highlight .textLayer ::selection{background:rgba(255,212,0,.55)}
+.viewer.t-replace .textLayer ::selection{background:rgba(209,36,47,.35)}
+.viewer.t-squiggly .textLayer ::selection{background:rgba(26,127,55,.3)}
 .stampbtn{position:relative}
 .stampbtn .dd{font-size:9px;margin-left:2px;color:var(--muted)}
 .stampmenu{padding:8px;min-width:380px}
@@ -431,13 +433,54 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
 .bmrow.dz-before{box-shadow:0 2px 0 var(--accent) inset}
 .bmrow.dz-after{box-shadow:0 -2px 0 var(--accent) inset}
 .bmrow.dz-child{background:var(--accent-soft);outline:1px dashed var(--accent)}
+/* ===== v1.8 : onglet Commentaires ===== */
+.rsmall.ico{width:28px;justify-content:center;padding:0}
+.rsmall .dd{font-size:9px;margin-left:2px;color:var(--muted)}
+.viewer.t-textbox .page,.viewer.t-callout .page,.viewer.t-attach .page,.viewer.t-sound .page,.viewer.t-insert .page,.viewer.t-areahl .page,.viewer.t-polygon .page,.viewer.t-polyline .page,.viewer.t-cloud .page,.viewer.t-distance .page,.viewer.t-perimeter .page,.viewer.t-area .page{cursor:crosshair}
+.viewer.t-insert .textLayer span,.viewer.t-tally .textLayer span{cursor:pointer}
+.viewer.t-eraser .page{cursor:cell}
+.viewer.t-tally .page{cursor:pointer}
+.viewer.hide-comments .eannot,.viewer.hide-comments .ebox.ann,.viewer.hide-comments .layer.notes{display:none}
+.layer.tallyl{pointer-events:none}
+.tmark{position:absolute;border:2px solid #1a7f37;border-radius:3px;background:rgba(26,127,55,.12)}
+.tmark span{position:absolute;top:-9px;right:-9px;min-width:16px;height:16px;border-radius:8px;background:#1a7f37;color:#fff;font:600 10px/16px system-ui,sans-serif;text-align:center;padding:0 3px}
+.tally{position:fixed;right:18px;top:170px;z-index:900;width:250px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);display:flex;flex-direction:column;font-size:12.5px}
+.tally header{display:flex;align-items:center;gap:6px;padding:7px 8px 7px 10px;border-bottom:1px solid var(--line-2);font-weight:600;color:var(--brand)}
+.tally header span{flex:1}
+.tally header button,.tally .trow button{border:0;background:none;cursor:pointer;border-radius:4px;padding:2px;display:flex;color:var(--muted)}
+.tally header button:hover,.tally .trow button:hover{background:var(--hover);color:var(--text)}
+.tally .tops{display:flex;gap:4px;padding:6px 8px}
+.tally .tops button{flex:1;height:26px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;font-size:15px;font-weight:600}
+.tally .tops button.on{background:var(--sel);border-color:var(--sel-line);color:var(--brand)}
+.tally .tlist{max-height:240px;overflow:auto;padding:0 8px}
+.tally .trow{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px dashed var(--line-2)}
+.tally .top{width:14px;font-weight:700;color:var(--brand-2);text-align:center}
+.tally .tval{flex:1;text-align:right;font-variant-numeric:tabular-nums}
+.tally .tpg{color:var(--muted);font-size:11px;width:34px;text-align:right}
+.tally .ttotal{display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px;margin-top:4px;border-top:2px solid var(--line);font-size:13px}
+.tally .ttotal b{font-size:16px;font-variant-numeric:tabular-nums;color:var(--brand)}
+.tally footer{display:flex;gap:4px;padding:0 8px 8px}
+.tally footer button{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;height:28px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;font-size:12px}
+.tally footer button:hover{background:var(--hover)}
+.recbox{display:flex;align-items:center;gap:12px}
+.recbox .btn.recording{background:#cf222e;color:#fff;border-color:#cf222e}
+.rectime{font-variant-numeric:tabular-nums;font-size:18px;color:var(--brand)}
+.ctxmenu .ck{margin-left:auto;color:var(--brand)}
+.mediapop video,.mediapop audio{display:block;margin:6px 0}
+.stylecol .rrow>span[data-icon]{color:var(--brand-2);display:flex}
+.stylecol select{height:22px}
+@media (max-width:1620px){
+  .rsmall.cmp{width:28px;justify-content:center;padding:0}
+  .rsmall.cmp .t{display:none}
+}
+.rsmall .t{line-height:1.1;display:inline-flex;align-items:center}
 
 </style>
 </head>
 <body>
 <div id="app">
   <header class="titlebar">
-    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.7</small></div>
+    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.8</small></div>
     <div class="qa">
       <button data-cmd="open" title="Ouvrir (Ctrl+O)" data-icon="FolderOpen" data-icon-size="17"></button>
       <button data-cmd="save" title="Enregistrer (Ctrl+S)" data-icon="Save" data-icon-size="17"></button>
@@ -587,53 +630,100 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
     <!-- COMMENTAIRES -->
     <div class="rpanel" data-rpanel="comments">
       <div class="rgroup"><div class="rbody">
+        <div class="rcol">
+          <button class="rsmall cmp tool" data-tool="hand" data-icon="Hand" data-icon-size="16" title="Main"><span class="t">Main</span></button>
+          <button class="rsmall cmp tool" data-tool="select" data-icon="TextCursor" data-icon-size="16" title="Sélectionner du texte"><span class="t">Sélectionner du texte</span></button>
+          <button class="rsmall cmp" data-cmd="otherTools" data-icon="Wrench" data-icon-size="16" title="Autres outils"><span class="t">Autres outils<span class="dd">▾</span></span></button>
+        </div>
         <button class="rbig tool" data-tool="selcomment" data-icon="MousePointer2" data-icon-size="26">Sélectionner les<br>commentaires</button>
       </div><div class="rlabel">Outils</div></div>
       <div class="rgroup"><div class="rbody">
-        <button class="rbig tool" data-tool="freetext" data-icon="TypeOutline" data-icon-size="26">Machine<br>à écrire</button>
-        <button class="rbig tool" data-tool="note" data-icon="StickyNote" data-icon-size="26">Note</button>
+        <div class="rcol">
+          <button class="rsmall tool" data-tool="freetext" data-icon="TypeOutline" data-icon-size="16">Machine à écrire</button>
+          <button class="rsmall tool" data-tool="textbox" data-icon="SquarePen" data-icon-size="16">Boîte de texte</button>
+          <button class="rsmall tool" data-tool="callout" data-icon="MessageSquareQuote" data-icon-size="16">Légende</button>
+        </div>
       </div><div class="rlabel">Texte</div></div>
       <div class="rgroup"><div class="rbody">
-        <button class="rbig tool" data-tool="highlight" data-icon="Highlighter" data-icon-size="26">Surligner</button>
         <div class="rcol">
-          <button class="rsmall tool" data-tool="underline" data-icon="Underline" data-icon-size="16">Souligner</button>
-          <button class="rsmall tool" data-tool="strike" data-icon="Strikethrough" data-icon-size="16">Barrer</button>
+          <button class="rsmall tool" data-tool="note" data-icon="StickyNote" data-icon-size="16">Note</button>
+          <button class="rsmall tool" data-tool="attach" data-icon="Paperclip" data-icon-size="16">Joindre un fichier</button>
+          <button class="rsmall tool" data-tool="sound" data-icon="Volume2" data-icon-size="16">Son</button>
         </div>
-      </div><div class="rlabel">Marquage du texte</div></div>
+      </div><div class="rlabel">Note</div></div>
       <div class="rgroup"><div class="rbody">
         <div class="rcol">
-          <button class="rsmall tool" data-tool="arrow" data-icon="MoveUpRight" data-icon-size="16">Flèche</button>
-          <button class="rsmall tool" data-tool="line" data-icon="Slash" data-icon-size="16">Ligne</button>
-          <button class="rsmall tool" data-tool="ink" data-icon="PenLine" data-icon-size="16">Crayon</button>
+          <button class="rsmall ico tool" data-tool="highlight" data-icon="Highlighter" data-icon-size="17" title="Surligner le texte"></button>
+          <button class="rsmall ico tool" data-tool="areahl" data-icon="RectangleHorizontal" data-icon-size="17" title="Surligner une zone"></button>
+          <button class="rsmall ico tool" data-tool="squiggly" data-icon="Waves" data-icon-size="17" title="Souligné ondulé"></button>
         </div>
         <div class="rcol">
-          <button class="rsmall tool" data-tool="rect" data-icon="Square" data-icon-size="16">Rectangle</button>
-          <button class="rsmall tool" data-tool="ellipse" data-icon="Circle" data-icon-size="16">Ovale</button>
+          <button class="rsmall ico tool" data-tool="underline" data-icon="Underline" data-icon-size="17" title="Souligner le texte"></button>
+          <button class="rsmall ico tool" data-tool="strike" data-icon="Strikethrough" data-icon-size="17" title="Barrer le texte"></button>
+          <button class="rsmall ico tool" data-tool="insert" data-icon="TextCursorInput" data-icon-size="17" title="Insérer du texte"></button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall ico tool" data-tool="replace" data-icon="Replace" data-icon-size="17" title="Remplacer le texte"></button>
+        </div>
+        <button class="rbig tool" data-tool="tally" data-icon="Calculator" data-icon-size="26">Calculatrice<br>comptable</button>
+      </div><div class="rlabel">Surligneur</div></div>
+      <div class="rgroup"><div class="rbody">
+        <div class="rcol">
+          <button class="rsmall ico tool" data-tool="line" data-icon="Slash" data-icon-size="17" title="Ligne"></button>
+          <button class="rsmall ico tool" data-tool="arrow" data-icon="MoveUpRight" data-icon-size="17" title="Flèche"></button>
+          <button class="rsmall ico tool" data-tool="rect" data-icon="Square" data-icon-size="17" title="Rectangle"></button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall ico tool" data-tool="ellipse" data-icon="Circle" data-icon-size="17" title="Ovale"></button>
+          <button class="rsmall ico tool" data-tool="polygon" data-icon="Pentagon" data-icon-size="17" title="Polygone"></button>
+          <button class="rsmall ico tool" data-tool="polyline" data-icon="Spline" data-icon-size="17" title="Polyligne"></button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall ico tool" data-tool="cloud" data-icon="Cloud" data-icon-size="17" title="Nuage"></button>
+        </div>
+        <button class="rbig tool stampbtn" data-tool="stamp" data-cmd="stampMenu" data-icon="Stamp" data-icon-size="26">Tampon<span class="dd">▾</span></button>
+        <div class="rcol">
+          <button class="rsmall ico tool" data-tool="ink" data-icon="PenLine" data-icon-size="17" title="Crayon"></button>
+          <button class="rsmall ico tool" data-tool="eraser" data-icon="Eraser" data-icon-size="17" title="Gomme (efface les traits de crayon)"></button>
         </div>
       </div><div class="rlabel">Dessin</div></div>
       <div class="rgroup"><div class="rbody">
-        <button class="rbig tool stampbtn" data-tool="stamp" data-cmd="stampMenu" data-icon="Stamp" data-icon-size="26">Tampon<span class="dd">▾</span></button>
-      </div><div class="rlabel">Tampon</div></div>
+        <div class="rcol">
+          <button class="rsmall tool" data-tool="distance" data-icon="Ruler" data-icon-size="16" title="Clic droit : échelle">Distance</button>
+          <button class="rsmall tool" data-tool="perimeter" data-icon="Waypoints" data-icon-size="16" title="Clic droit : échelle">Périmètre</button>
+          <button class="rsmall tool" data-tool="area" data-icon="LandPlot" data-icon-size="16" title="Clic droit : échelle">Région</button>
+        </div>
+      </div><div class="rlabel">Mesure</div></div>
       <div class="rgroup"><div class="rbody">
         <div class="rcol">
-          <div class="rrow"><span class="lbl">Couleur</span><input id="aColor" type="color" value="#d1242f">
-            <span class="lbl" style="margin-left:4px">Opacité</span><select id="aOpac"><option value="100">100 %</option><option value="80">80 %</option><option value="60">60 %</option><option value="45">45 %</option><option value="30">30 %</option></select></div>
-          <div class="rrow"><span class="lbl">Épaisseur</span><select id="aWidth"><option value="0.5">0,5 pt</option><option value="1">1 pt</option><option value="1.5">1,5 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="6">6 pt</option></select>
-            <span class="lbl" style="margin-left:4px">Taille</span><input id="aSize" type="number" min="4" max="72" value="12" style="width:52px"></div>
-          <span class="hint" id="aHint" style="padding-left:2px"></span>
+          <button class="rsmall cmp" data-cmd="addVideo" data-icon="Clapperboard" data-icon-size="16" title="Ajouter une vidéo"><span class="t">Ajouter une vidéo</span></button>
+          <button class="rsmall cmp" data-cmd="addSound" data-icon="Music" data-icon-size="16" title="Ajouter un son"><span class="t">Ajouter un son</span></button>
+          <button class="rsmall cmp" data-cmd="add3d" data-icon="Box" data-icon-size="16" title="Ajouter un objet 3D"><span class="t">Ajouter un objet 3D</span></button>
+        </div>
+      </div><div class="rlabel">Média</div></div>
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig" data-cmd="summarizeComments" data-icon="ListChecks" data-icon-size="26">Résumer les<br>commentaires</button>
+        <div class="rcol">
+          <button class="rsmall" data-cmd="importComments" data-icon="FileInput" data-icon-size="16">Importer</button>
+          <button class="rsmall" data-cmd="exportComments" data-icon="FileOutput" data-icon-size="16">Exporter</button>
+          <button class="rsmall" data-cmd="showMenu" data-icon="Eye" data-icon-size="16">Afficher<span class="dd">▾</span></button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall ico" data-cmd="showComments" data-icon="MessageSquare" data-icon-size="17" title="Volet Commentaires"></button>
+          <button class="rsmall ico" data-cmd="flattenComments" data-icon="Layers" data-icon-size="17" title="Aplatir les commentaires"></button>
+          <button class="rsmall ico" data-cmd="deleteAllComments" data-icon="Trash2" data-icon-size="17" title="Supprimer tous les commentaires"></button>
+        </div>
+      </div><div class="rlabel">Gérer les commentaires</div></div>
+      <div class="rgroup"><div class="rbody">
+        <div class="rcol stylecol">
+          <div class="rrow"><span data-icon="Palette" data-icon-size="15" title="Couleur"></span><input id="aColor" type="color" value="#d1242f" title="Couleur (clic droit sur un outil : couleurs rapides)">
+            <span data-icon="Blend" data-icon-size="15" title="Opacité" style="margin-left:4px"></span><select id="aOpac" title="Opacité"><option value="100">100 %</option><option value="80">80 %</option><option value="60">60 %</option><option value="45">45 %</option><option value="30">30 %</option></select></div>
+          <div class="rrow"><span data-icon="Brush" data-icon-size="15" title="Épaisseur du trait"></span><select id="aWidth" title="Épaisseur du trait"><option value="0.5">0,5 pt</option><option value="1">1 pt</option><option value="1.5">1,5 pt</option><option value="2">2 pt</option><option value="3">3 pt</option><option value="4">4 pt</option><option value="6">6 pt</option></select>
+            <span data-icon="ALargeSmall" data-icon-size="15" title="Taille du texte" style="margin-left:4px"></span><input id="aSize" type="number" min="4" max="72" value="12" style="width:46px" title="Taille du texte (pt)"></div>
+          <div class="rrow"><span data-icon="UserRound" data-icon-size="15" title="Auteur"></span><input id="aAuthor" type="text" placeholder="Votre nom" style="width:118px;height:22px;border:1px solid var(--line);border-radius:5px;padding:0 6px" title="Auteur inscrit dans les commentaires et les tampons datés"></div>
+          <span class="hint" id="aHint" style="display:none"></span>
         </div>
       </div><div class="rlabel">Style</div></div>
-      <div class="rgroup"><div class="rbody">
-        <div class="rcol">
-          <div class="rrow"><span data-icon="UserRound" data-icon-size="15" style="color:var(--brand-2)"></span><input id="aAuthor" type="text" placeholder="Votre nom" style="width:130px;height:24px;border:1px solid var(--line);border-radius:5px;padding:0 6px" title="Auteur inscrit dans les commentaires et les tampons datés"></div>
-          <button class="rsmall" data-cmd="summarizeComments" data-icon="ListChecks" data-icon-size="16">Résumer les commentaires</button>
-          <button class="rsmall" data-cmd="flattenComments" data-icon="Layers" data-icon-size="16">Aplatir les commentaires</button>
-        </div>
-        <div class="rcol">
-          <button class="rsmall" data-cmd="showComments" data-icon="MessageSquare" data-icon-size="16">Volet Commentaires</button>
-          <button class="rsmall" data-cmd="deleteAllComments" data-icon="Trash2" data-icon-size="16">Tout supprimer</button>
-        </div>
-      </div><div class="rlabel">Gérer</div></div>
     </div>
 
     <!-- ORGANISER -->
@@ -801,12 +891,12 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
 <input type="file" id="fileFallback" accept="application/pdf,.pdf" multiple hidden>
 
 <script>
-const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/>","X":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","Plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","FolderOpen":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\"/>","Merge":"<path d=\"m8 6 4-4 4 4\"/><path d=\"M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22\"/><path d=\"m20 22-5-5\"/>","Folder":"<path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","RefreshCw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M8 16H3v5\"/>","Check":"<path d=\"M20 6 9 17l-5-5\"/>","Image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","FileX":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"m14.5 12.5-5 5\"/><path d=\"m9.5 12.5 5 5\"/>","Move":"<path d=\"M12 2v20\"/><path d=\"m15 19-3 3-3-3\"/><path d=\"m19 9 3 3-3 3\"/><path d=\"M2 12h20\"/><path d=\"m5 9-3 3 3 3\"/><path d=\"m9 5 3-3 3 3\"/>","FilePlus2":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M3 15h6\"/><path d=\"M6 12v6\"/>","FolderPlus":"<path d=\"M12 10v6\"/><path d=\"M9 13h6\"/><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Files":"<path d=\"M20 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z\"/><path d=\"M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8\"/>","ArrowDownAZ":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"M20 8h-5\"/><path d=\"M15 10V6.5a2.5 2.5 0 0 1 5 0V10\"/><path d=\"M15 14h5l-5 6h5\"/>","Trash2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","GripVertical":"<circle cx=\"9\" cy=\"12\" r=\"1\"/><circle cx=\"9\" cy=\"5\" r=\"1\"/><circle cx=\"9\" cy=\"19\" r=\"1\"/><circle cx=\"15\" cy=\"12\" r=\"1\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><circle cx=\"15\" cy=\"19\" r=\"1\"/>","ArrowUp":"<path d=\"m5 12 7-7 7 7\"/><path d=\"M12 19V5\"/>","ArrowDown":"<path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/>","ChevronRight":"<path d=\"m9 18 6-6-6-6\"/>","Download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\"/>","Info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","Search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","Type":"<polyline points=\"4 7 4 4 20 4 20 7\"/><line x1=\"9\" x2=\"15\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"12\" y1=\"4\" y2=\"20\"/>","ListChecks":"<path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/>","Layers":"<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\"/><path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\"/><path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\"/>","Palette":"<circle cx=\"13.5\" cy=\"6.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\" fill=\"currentColor\"/><path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z\"/>","BookmarkPlus":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/><line x1=\"12\" x2=\"12\" y1=\"7\" y2=\"13\"/><line x1=\"15\" x2=\"9\" y1=\"10\" y2=\"10\"/>","ListTree":"<path d=\"M21 12h-8\"/><path d=\"M21 6H8\"/><path d=\"M21 18h-8\"/><path d=\"M3 6v4c0 1.1.9 2 2 2h3\"/><path d=\"M3 10v6c0 1.1.9 2 2 2h3\"/>","Pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/><path d=\"m15 5 4 4\"/>","IndentDecrease":"<path d=\"M21 12H11\"/><path d=\"M21 18H11\"/><path d=\"M21 6H11\"/><path d=\"m7 8-4 4 4 4\"/>","IndentIncrease":"<path d=\"M21 12H11\"/><path d=\"M21 18H11\"/><path d=\"M21 6H11\"/><path d=\"m3 8 4 4-4 4\"/>","RotateCcw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","RotateCw":"<path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/>","FileOutput":"<path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M4 7V4a2 2 0 0 1 2-2 2 2 0 0 0-2 2\"/><path d=\"M4.063 20.999a2 2 0 0 0 2 1L18 22a2 2 0 0 0 2-2V7l-5-5H6\"/><path d=\"m5 11-3 3\"/><path d=\"m5 17-3-3h10\"/>","File":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/>","Save":"<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7\"/><path d=\"M7 3v4a1 1 0 0 0 1 1h7\"/>","Undo2":"<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\"/>","Redo2":"<path d=\"m15 14 5-5-5-5\"/><path d=\"M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13\"/>","ChevronUp":"<path d=\"m18 15-6-6-6 6\"/>","ChevronDown":"<path d=\"m6 9 6 6 6-6\"/>","FolderSearch":"<path d=\"M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1\"/><path d=\"m21 21-1.9-1.9\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/>","MonitorDown":"<path d=\"M12 13V7\"/><path d=\"m15 10-3 3-3-3\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><path d=\"M12 17v4\"/><path d=\"M8 21h8\"/>","CircleHelp":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>","Hand":"<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"/><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>","TextCursor":"<path d=\"M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1\"/><path d=\"M7 22h1a4 4 0 0 0 4-4v-1\"/><path d=\"M7 2h1a4 4 0 0 1 4 4v1\"/>","Camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","ClipboardPaste":"<path d=\"M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z\"/><path d=\"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10\"/><path d=\"m17 10 4 4-4 4\"/>","ZoomOut":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","ZoomIn":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"11\" x2=\"11\" y1=\"8\" y2=\"14\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","Scan":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/>","Expand":"<path d=\"m21 21-6-6m6 6v-4.8m0 4.8h-4.8\"/><path d=\"M3 16.2V21m0 0h4.8M3 21l6-6\"/><path d=\"M21 7.8V3m0 0h-4.8M21 3l-6 6\"/><path d=\"M3 7.8V3m0 0h4.8M3 3l6 6\"/>","ArrowLeftRight":"<path d=\"M8 3 4 7l4 4\"/><path d=\"M4 7h16\"/><path d=\"m16 21 4-4-4-4\"/><path d=\"M20 17H4\"/>","RotateCcwSquare":"<path d=\"M20 9V7a2 2 0 0 0-2-2h-6\"/><path d=\"m15 2-3 3 3 3\"/><path d=\"M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2\"/>","RotateCwSquare":"<path d=\"M12 5H6a2 2 0 0 0-2 2v3\"/><path d=\"m9 8 3-3-3-3\"/><path d=\"M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2\"/>","Bookmark":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/>","MessageSquare":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>","Paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","SlidersHorizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","FilePenLine":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","ImagePlus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","Eraser":"<path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/>","TypeOutline":"<path d=\"M14 16.5a.5.5 0 0 0 .5.5h.5a2 2 0 0 1 0 4H9a2 2 0 0 1 0-4h.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5V8a2 2 0 0 1-4 0V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-4 0v-.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z\"/>","Highlighter":"<path d=\"m9 11-6 6v3h9l3-3\"/><path d=\"m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4\"/>","Underline":"<path d=\"M6 4v6a6 6 0 0 0 12 0V4\"/><line x1=\"4\" x2=\"20\" y1=\"20\" y2=\"20\"/>","StickyNote":"<path d=\"M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z\"/><path d=\"M15 3v4a2 2 0 0 0 2 2h4\"/>","MoveUpRight":"<path d=\"M13 5H19V11\"/><path d=\"M19 5L5 19\"/>","Square":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>","Stamp":"<path d=\"M5 22h14\"/><path d=\"M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z\"/><path d=\"M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13\"/>","Link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>","Globe":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>","Link2Off":"<path d=\"M9 17H7A5 5 0 0 1 7 7\"/><path d=\"M15 7h2a5 5 0 0 1 4 8\"/><line x1=\"8\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"2\" x2=\"22\" y1=\"2\" y2=\"22\"/>","QrCode":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/><path d=\"M21 16h-3a2 2 0 0 0-2 2v3\"/><path d=\"M21 21v.01\"/><path d=\"M12 7v3a2 2 0 0 1-2 2H7\"/><path d=\"M3 12h.01\"/><path d=\"M12 3h.01\"/><path d=\"M12 16v.01\"/><path d=\"M16 12h1\"/><path d=\"M21 12v.01\"/><path d=\"M12 21v-1\"/>","Link2":"<path d=\"M9 17H7A5 5 0 0 1 7 7h2\"/><path d=\"M15 7h2a5 5 0 1 1 0 10h-2\"/><line x1=\"8\" x2=\"16\" y1=\"12\" y2=\"12\"/>","Split":"<path d=\"M16 3h5v5\"/><path d=\"M8 3H3v5\"/><path d=\"M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3\"/><path d=\"m15 9 6-6\"/>","FileSignature":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","PanelLeft":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>","MousePointer2":"<path d=\"M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z\"/>","Strikethrough":"<path d=\"M16 4H9a3 3 0 0 0-2.83 4\"/><path d=\"M14 12a4 4 0 0 1 0 8H6\"/><line x1=\"4\" x2=\"20\" y1=\"12\" y2=\"12\"/>","Slash":"<path d=\"M22 2 2 22\"/>","PenLine":"<path d=\"M12 20h9\"/><path d=\"M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z\"/>","Circle":"<circle cx=\"12\" cy=\"12\" r=\"10\"/>","UserRound":"<circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/>","Copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","ArrowDownUp":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"m21 8-4-4-4 4\"/><path d=\"M17 4v16\"/>","BookmarkMinus":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/><line x1=\"15\" x2=\"9\" y1=\"10\" y2=\"10\"/>","ChevronsUpDown":"<path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-5 5 5\"/>","ChevronsDownUp":"<path d=\"m7 20 5-5 5 5\"/><path d=\"m7 4 5 5 5-5\"/>","Heading":"<path d=\"M6 12h12\"/><path d=\"M6 20V4\"/><path d=\"M18 20V4\"/>","FileStack":"<path d=\"M21 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M21 6v6.5c0 .8-.7 1.5-1.5 1.5h-7c-.8 0-1.5-.7-1.5-1.5v-9c0-.8.7-1.5 1.5-1.5H17Z\"/><path d=\"M7 8v8.8c0 .3.2.6.4.8.2.2.5.4.8.4H15\"/><path d=\"M3 12v8.8c0 .3.2.6.4.8.2.2.5.4.8.4H11\"/>","Bold":"<path d=\"M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8\"/>","Italic":"<line x1=\"19\" x2=\"10\" y1=\"4\" y2=\"4\"/><line x1=\"14\" x2=\"5\" y1=\"20\" y2=\"20\"/><line x1=\"15\" x2=\"9\" y1=\"4\" y2=\"20\"/>","AlignLeft":"<path d=\"M15 12H3\"/><path d=\"M17 18H3\"/><path d=\"M21 6H3\"/>","AlignRight":"<path d=\"M21 12H9\"/><path d=\"M21 18H7\"/><path d=\"M21 6H3\"/>","CornerLeftUp":"<polyline points=\"14 9 9 4 4 9\"/><path d=\"M20 20h-7a4 4 0 0 1-4-4V4\"/>","FileDown":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M12 18v-6\"/><path d=\"m9 15 3 3 3-3\"/>"};
+const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/>","X":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","Plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","FolderOpen":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\"/>","Merge":"<path d=\"m8 6 4-4 4 4\"/><path d=\"M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22\"/><path d=\"m20 22-5-5\"/>","Folder":"<path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","RefreshCw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M8 16H3v5\"/>","Check":"<path d=\"M20 6 9 17l-5-5\"/>","Image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","FileX":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"m14.5 12.5-5 5\"/><path d=\"m9.5 12.5 5 5\"/>","Move":"<path d=\"M12 2v20\"/><path d=\"m15 19-3 3-3-3\"/><path d=\"m19 9 3 3-3 3\"/><path d=\"M2 12h20\"/><path d=\"m5 9-3 3 3 3\"/><path d=\"m9 5 3-3 3 3\"/>","FilePlus2":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M3 15h6\"/><path d=\"M6 12v6\"/>","FolderPlus":"<path d=\"M12 10v6\"/><path d=\"M9 13h6\"/><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Files":"<path d=\"M20 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z\"/><path d=\"M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8\"/>","ArrowDownAZ":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"M20 8h-5\"/><path d=\"M15 10V6.5a2.5 2.5 0 0 1 5 0V10\"/><path d=\"M15 14h5l-5 6h5\"/>","Trash2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","GripVertical":"<circle cx=\"9\" cy=\"12\" r=\"1\"/><circle cx=\"9\" cy=\"5\" r=\"1\"/><circle cx=\"9\" cy=\"19\" r=\"1\"/><circle cx=\"15\" cy=\"12\" r=\"1\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><circle cx=\"15\" cy=\"19\" r=\"1\"/>","ArrowUp":"<path d=\"m5 12 7-7 7 7\"/><path d=\"M12 19V5\"/>","ArrowDown":"<path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/>","ChevronRight":"<path d=\"m9 18 6-6-6-6\"/>","Download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\"/>","Info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","Search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","Type":"<polyline points=\"4 7 4 4 20 4 20 7\"/><line x1=\"9\" x2=\"15\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"12\" y1=\"4\" y2=\"20\"/>","ListChecks":"<path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/>","Layers":"<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\"/><path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\"/><path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\"/>","Palette":"<circle cx=\"13.5\" cy=\"6.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\" fill=\"currentColor\"/><path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z\"/>","BookmarkPlus":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/><line x1=\"12\" x2=\"12\" y1=\"7\" y2=\"13\"/><line x1=\"15\" x2=\"9\" y1=\"10\" y2=\"10\"/>","ListTree":"<path d=\"M21 12h-8\"/><path d=\"M21 6H8\"/><path d=\"M21 18h-8\"/><path d=\"M3 6v4c0 1.1.9 2 2 2h3\"/><path d=\"M3 10v6c0 1.1.9 2 2 2h3\"/>","Pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/><path d=\"m15 5 4 4\"/>","IndentDecrease":"<path d=\"M21 12H11\"/><path d=\"M21 18H11\"/><path d=\"M21 6H11\"/><path d=\"m7 8-4 4 4 4\"/>","IndentIncrease":"<path d=\"M21 12H11\"/><path d=\"M21 18H11\"/><path d=\"M21 6H11\"/><path d=\"m3 8 4 4-4 4\"/>","Mic":"<path d=\"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z\"/><path d=\"M19 10v2a7 7 0 0 1-14 0v-2\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"22\"/>","Square":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>","Calculator":"<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\"/><line x1=\"8\" x2=\"16\" y1=\"6\" y2=\"6\"/><line x1=\"16\" x2=\"16\" y1=\"14\" y2=\"18\"/><path d=\"M16 10h.01\"/><path d=\"M12 10h.01\"/><path d=\"M8 10h.01\"/><path d=\"M12 14h.01\"/><path d=\"M8 14h.01\"/><path d=\"M12 18h.01\"/><path d=\"M8 18h.01\"/>","Copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","TypeOutline":"<path d=\"M14 16.5a.5.5 0 0 0 .5.5h.5a2 2 0 0 1 0 4H9a2 2 0 0 1 0-4h.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5V8a2 2 0 0 1-4 0V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-4 0v-.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z\"/>","Eraser":"<path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/>","Eye":"<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","EyeOff":"<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\"/><path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\"/><path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\"/><path d=\"m2 2 20 20\"/>","MessageSquareText":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/><path d=\"M13 8H7\"/><path d=\"M17 12H7\"/>","MessageSquare":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>","PanelLeft":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>","Scan":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/>","Link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>","Ruler":"<path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/>","RotateCcw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","RotateCw":"<path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/>","FileOutput":"<path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M4 7V4a2 2 0 0 1 2-2 2 2 0 0 0-2 2\"/><path d=\"M4.063 20.999a2 2 0 0 0 2 1L18 22a2 2 0 0 0 2-2V7l-5-5H6\"/><path d=\"m5 11-3 3\"/><path d=\"m5 17-3-3h10\"/>","File":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/>","Save":"<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7\"/><path d=\"M7 3v4a1 1 0 0 0 1 1h7\"/>","Undo2":"<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\"/>","Redo2":"<path d=\"m15 14 5-5-5-5\"/><path d=\"M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13\"/>","ChevronUp":"<path d=\"m18 15-6-6-6 6\"/>","ChevronDown":"<path d=\"m6 9 6 6 6-6\"/>","FolderSearch":"<path d=\"M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1\"/><path d=\"m21 21-1.9-1.9\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/>","MonitorDown":"<path d=\"M12 13V7\"/><path d=\"m15 10-3 3-3-3\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><path d=\"M12 17v4\"/><path d=\"M8 21h8\"/>","CircleHelp":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>","Hand":"<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"/><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>","TextCursor":"<path d=\"M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1\"/><path d=\"M7 22h1a4 4 0 0 0 4-4v-1\"/><path d=\"M7 2h1a4 4 0 0 1 4 4v1\"/>","Camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","ClipboardPaste":"<path d=\"M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z\"/><path d=\"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10\"/><path d=\"m17 10 4 4-4 4\"/>","ZoomOut":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","ZoomIn":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"11\" x2=\"11\" y1=\"8\" y2=\"14\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","Expand":"<path d=\"m21 21-6-6m6 6v-4.8m0 4.8h-4.8\"/><path d=\"M3 16.2V21m0 0h4.8M3 21l6-6\"/><path d=\"M21 7.8V3m0 0h-4.8M21 3l-6 6\"/><path d=\"M3 7.8V3m0 0h4.8M3 3l6 6\"/>","ArrowLeftRight":"<path d=\"M8 3 4 7l4 4\"/><path d=\"M4 7h16\"/><path d=\"m16 21 4-4-4-4\"/><path d=\"M20 17H4\"/>","RotateCcwSquare":"<path d=\"M20 9V7a2 2 0 0 0-2-2h-6\"/><path d=\"m15 2-3 3 3 3\"/><path d=\"M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2\"/>","RotateCwSquare":"<path d=\"M12 5H6a2 2 0 0 0-2 2v3\"/><path d=\"m9 8 3-3-3-3\"/><path d=\"M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2\"/>","Bookmark":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/>","Paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","SlidersHorizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","FilePenLine":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","ImagePlus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","Highlighter":"<path d=\"m9 11-6 6v3h9l3-3\"/><path d=\"m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4\"/>","Underline":"<path d=\"M6 4v6a6 6 0 0 0 12 0V4\"/><line x1=\"4\" x2=\"20\" y1=\"20\" y2=\"20\"/>","StickyNote":"<path d=\"M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z\"/><path d=\"M15 3v4a2 2 0 0 0 2 2h4\"/>","MoveUpRight":"<path d=\"M13 5H19V11\"/><path d=\"M19 5L5 19\"/>","Stamp":"<path d=\"M5 22h14\"/><path d=\"M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z\"/><path d=\"M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13\"/>","Globe":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>","Link2Off":"<path d=\"M9 17H7A5 5 0 0 1 7 7\"/><path d=\"M15 7h2a5 5 0 0 1 4 8\"/><line x1=\"8\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"2\" x2=\"22\" y1=\"2\" y2=\"22\"/>","QrCode":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/><path d=\"M21 16h-3a2 2 0 0 0-2 2v3\"/><path d=\"M21 21v.01\"/><path d=\"M12 7v3a2 2 0 0 1-2 2H7\"/><path d=\"M3 12h.01\"/><path d=\"M12 3h.01\"/><path d=\"M12 16v.01\"/><path d=\"M16 12h1\"/><path d=\"M21 12v.01\"/><path d=\"M12 21v-1\"/>","Link2":"<path d=\"M9 17H7A5 5 0 0 1 7 7h2\"/><path d=\"M15 7h2a5 5 0 1 1 0 10h-2\"/><line x1=\"8\" x2=\"16\" y1=\"12\" y2=\"12\"/>","Split":"<path d=\"M16 3h5v5\"/><path d=\"M8 3H3v5\"/><path d=\"M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3\"/><path d=\"m15 9 6-6\"/>","FileSignature":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","Wrench":"<path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z\"/>","MousePointer2":"<path d=\"M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z\"/>","SquarePen":"<path d=\"M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/><path d=\"M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z\"/>","MessageSquareQuote":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/><path d=\"M8 12a2 2 0 0 0 2-2V8H8\"/><path d=\"M14 12a2 2 0 0 0 2-2V8h-2\"/>","Volume2":"<path d=\"M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z\"/><path d=\"M16 9a5 5 0 0 1 0 6\"/><path d=\"M19.364 18.364a9 9 0 0 0 0-12.728\"/>","RectangleHorizontal":"<rect width=\"20\" height=\"12\" x=\"2\" y=\"6\" rx=\"2\"/>","Waves":"<path d=\"M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/>","Strikethrough":"<path d=\"M16 4H9a3 3 0 0 0-2.83 4\"/><path d=\"M14 12a4 4 0 0 1 0 8H6\"/><line x1=\"4\" x2=\"20\" y1=\"12\" y2=\"12\"/>","TextCursorInput":"<path d=\"M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1\"/><path d=\"M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5\"/><path d=\"M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1\"/><path d=\"M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7\"/><path d=\"M9 7v10\"/>","Replace":"<path d=\"M14 4a2 2 0 0 1 2-2\"/><path d=\"M16 10a2 2 0 0 1-2-2\"/><path d=\"M20 2a2 2 0 0 1 2 2\"/><path d=\"M22 8a2 2 0 0 1-2 2\"/><path d=\"m3 7 3 3 3-3\"/><path d=\"M6 10V5a3 3 0 0 1 3-3h1\"/><rect x=\"2\" y=\"14\" width=\"8\" height=\"8\" rx=\"2\"/>","Slash":"<path d=\"M22 2 2 22\"/>","Circle":"<circle cx=\"12\" cy=\"12\" r=\"10\"/>","Pentagon":"<path d=\"M10.83 2.38a2 2 0 0 1 2.34 0l8 5.74a2 2 0 0 1 .73 2.25l-3.04 9.26a2 2 0 0 1-1.9 1.37H7.04a2 2 0 0 1-1.9-1.37L2.1 10.37a2 2 0 0 1 .73-2.25z\"/>","Spline":"<circle cx=\"19\" cy=\"5\" r=\"2\"/><circle cx=\"5\" cy=\"19\" r=\"2\"/><path d=\"M5 17A12 12 0 0 1 17 5\"/>","Cloud":"<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/>","PenLine":"<path d=\"M12 20h9\"/><path d=\"M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z\"/>","Waypoints":"<circle cx=\"12\" cy=\"4.5\" r=\"2.5\"/><path d=\"m10.2 6.3-3.9 3.9\"/><circle cx=\"4.5\" cy=\"12\" r=\"2.5\"/><path d=\"M7 12h10\"/><circle cx=\"19.5\" cy=\"12\" r=\"2.5\"/><path d=\"m13.8 17.7 3.9-3.9\"/><circle cx=\"12\" cy=\"19.5\" r=\"2.5\"/>","LandPlot":"<path d=\"m12 8 6-3-6-3v10\"/><path d=\"m8 11.99-5.5 3.14a1 1 0 0 0 0 1.74l8.5 4.86a2 2 0 0 0 2 0l8.5-4.86a1 1 0 0 0 0-1.74L16 12\"/><path d=\"m6.49 12.85 11.02 6.3\"/><path d=\"M17.51 12.85 6.5 19.15\"/>","Clapperboard":"<path d=\"M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z\"/><path d=\"m6.2 5.3 3.1 3.9\"/><path d=\"m12.4 3.4 3.1 4\"/><path d=\"M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z\"/>","Music":"<path d=\"M9 18V5l12-2v13\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><circle cx=\"18\" cy=\"16\" r=\"3\"/>","Box":"<path d=\"M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z\"/><path d=\"m3.3 7 8.7 5 8.7-5\"/><path d=\"M12 22V12\"/>","FileInput":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M2 15h10\"/><path d=\"m9 18 3-3-3-3\"/>","Blend":"<circle cx=\"9\" cy=\"9\" r=\"7\"/><circle cx=\"15\" cy=\"15\" r=\"7\"/>","Brush":"<path d=\"m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08\"/><path d=\"M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z\"/>","ALargeSmall":"<path d=\"M21 14h-5\"/><path d=\"M16 16v-3.5a2.5 2.5 0 0 1 5 0V16\"/><path d=\"M4.5 13h6\"/><path d=\"m3 16 4.5-9 4.5 9\"/>","UserRound":"<circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/>","ArrowDownUp":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"m21 8-4-4-4 4\"/><path d=\"M17 4v16\"/>","BookmarkMinus":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/><line x1=\"15\" x2=\"9\" y1=\"10\" y2=\"10\"/>","ChevronsUpDown":"<path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-5 5 5\"/>","ChevronsDownUp":"<path d=\"m7 20 5-5 5 5\"/><path d=\"m7 4 5 5 5-5\"/>","Heading":"<path d=\"M6 12h12\"/><path d=\"M6 20V4\"/><path d=\"M18 20V4\"/>","FileStack":"<path d=\"M21 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M21 6v6.5c0 .8-.7 1.5-1.5 1.5h-7c-.8 0-1.5-.7-1.5-1.5v-9c0-.8.7-1.5 1.5-1.5H17Z\"/><path d=\"M7 8v8.8c0 .3.2.6.4.8.2.2.5.4.8.4H15\"/><path d=\"M3 12v8.8c0 .3.2.6.4.8.2.2.5.4.8.4H11\"/>","Bold":"<path d=\"M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8\"/>","Italic":"<line x1=\"19\" x2=\"10\" y1=\"4\" y2=\"4\"/><line x1=\"14\" x2=\"5\" y1=\"20\" y2=\"20\"/><line x1=\"15\" x2=\"9\" y1=\"4\" y2=\"20\"/>","AlignLeft":"<path d=\"M15 12H3\"/><path d=\"M17 18H3\"/><path d=\"M21 6H3\"/>","AlignRight":"<path d=\"M21 12H9\"/><path d=\"M21 18H7\"/><path d=\"M21 6H3\"/>","CornerLeftUp":"<polyline points=\"14 9 9 4 4 9\"/><path d=\"M20 20h-7a4 4 0 0 1-4-4V4\"/>","FileDown":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M12 18v-6\"/><path d=\"m9 15 3 3 3-3\"/>"};
 /* =====================================================================
    Éditeur PDF — éditeur PDF monofichier (pdf.js + pdf-lib)
    ===================================================================== */
 'use strict';
-const APP_VERSION = '1.7';
+const APP_VERSION = '1.8';
 const { PDFDocument, StandardFonts, rgb, degrees, PDFName, PDFHexString } = PDFLib;
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -1073,7 +1163,7 @@ function updateUI() {
   const d = S.active;
   $('#titleDoc').textContent = d ? d.name + (d.dirty ? ' •' : '') : '';
   document.title = d ? `${d.name} — Éditeur PDF` : 'Éditeur PDF';
-  const needDoc = ['save', 'saveAs', 'split', 'insertFile', 'extract', 'deletePages', 'rotateLeft', 'rotateRight', 'duplicatePages', 'reversePages', 'deleteBlank', 'insertBlank', 'selectAllPages', 'selectNone', 'zoomIn', 'zoomOut', 'fitWidth', 'fitPage', 'docProps', 'clearPageEdits', 'closeDoc', 'actualSize', 'rotateViewLeft', 'rotateViewRight', 'paste', 'addImage', 'summarizeComments', 'flattenComments', 'deleteAllComments', 'showComments', 'stampMenu', 'linkFromUrls', 'removeWebLinks', 'linksFromBarcodes', 'batchLink', 'bmAdd', 'bmAddChild', 'bmRename', 'bmDelete', 'bmUp', 'bmDown', 'bmIn', 'bmOut', 'bmExpand', 'bmCollapse', 'bmEachPage', 'bmFromHeadings', 'showBookmarks'];
+  const needDoc = ['save', 'saveAs', 'split', 'insertFile', 'extract', 'deletePages', 'rotateLeft', 'rotateRight', 'duplicatePages', 'reversePages', 'deleteBlank', 'insertBlank', 'selectAllPages', 'selectNone', 'zoomIn', 'zoomOut', 'fitWidth', 'fitPage', 'docProps', 'clearPageEdits', 'closeDoc', 'actualSize', 'rotateViewLeft', 'rotateViewRight', 'paste', 'addImage', 'summarizeComments', 'flattenComments', 'deleteAllComments', 'showComments', 'stampMenu', 'linkFromUrls', 'removeWebLinks', 'linksFromBarcodes', 'batchLink', 'bmAdd', 'bmAddChild', 'bmRename', 'bmDelete', 'bmUp', 'bmDown', 'bmIn', 'bmOut', 'bmExpand', 'bmCollapse', 'bmEachPage', 'bmFromHeadings', 'showBookmarks', ...(typeof EXTRA_NEEDDOC !== 'undefined' ? EXTRA_NEEDDOC : [])];
   $$('[data-cmd]').forEach(b => {
     const c = b.dataset.cmd;
     if (needDoc.includes(c)) b.disabled = !d;
@@ -1196,7 +1286,7 @@ async function renderPage(doc, i) {
   canvas.width = Math.floor(vp.width * dpr);
   canvas.height = Math.floor(vp.height * dpr);
   try {
-    await page.render({ canvasContext: canvas.getContext('2d', { willReadFrequently: true }), viewport: vp, transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null }).promise;
+    await page.render({ canvasContext: canvas.getContext('2d', { willReadFrequently: true }), viewport: vp, transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null, annotationMode: S.hideComments ? pdfjsLib.AnnotationMode.DISABLE : pdfjsLib.AnnotationMode.ENABLE }).promise;
   } catch (e) { if (e && e.name !== 'RenderingCancelledException') console.warn(e); return; }
   if (doc.renderGen !== gen || doc !== S.active) return;
   el.querySelector('canvas.pc')?.remove();
@@ -2817,6 +2907,7 @@ function cmdHelp() {
         <li>Glisser des fichiers depuis l'Explorateur sur les miniatures les insère à cet endroit ; sur la page affichée, ils s'ouvrent dans un nouvel onglet.</li>
         <li><b>v1.5</b> — Ruban Accueil : instantané (zone copiée en image), coller une image ou un texte sur la page (<span class="kbd">Ctrl+V</span>), PDF depuis le presse-papiers, ajout d'image (déplacer, redimensionner), taille réelle, rotation de l'affichage, volets Signets, Commentaires, Pièces jointes et Propriétés, <b>recherche avancée</b> dans tous les PDF d'un dossier (<span class="kbd">Ctrl+Maj+F</span>).</li>
         <li><b>v1.6</b> — Commentaires en vraies annotations PDF : machine à écrire, note, surligner / souligner / barrer (sélectionnez le texte), flèche, ligne, rectangle, ovale, crayon, tampons (dont datés : PAYÉ, REÇU, COMPTABILISÉ, VU), tampon personnalisé ou image. Couleur, épaisseur, opacité, auteur. Volet Commentaires : sélection, double-clic pour modifier, suppression (y compris commentaires déjà présents), résumé PDF, aplatissement.</li>
+        <li><b>v1.8</b> — Onglet Commentaires complet : boîte de texte, légende avec flèche, fichier joint, son enregistré au micro, souligné ondulé, insérer / remplacer du texte, zone surlignée, polygone, polyligne, nuage, gomme, mesures (distance, périmètre, surface, échelle au clic droit), calculatrice comptable (cliquez sur des montants pour les additionner), vidéo / son / objet 3D joints, import / export des commentaires (XFDF), afficher / masquer les commentaires.</li>
         <li><b>v1.7</b> — Liens : cliquables avec l'outil Main ; outil « Ajouter/modifier les liens » (rectangle ou clic sur une ligne, vers une adresse web, un e-mail ou une page), liens à partir des URL du texte et des QR codes, suppression des liens web, lien par lots. Signets : ajout (<span class="kbd">Ctrl+B</span>), renommage (double-clic / <span class="kbd">F2</span>), suppression, glisser-déposer, niveaux, génération à partir des titres ou une par page. Notes avec fenêtre reliée, machine à écrire directe, couleurs au clic droit.</li>
         <li>Depuis Windows : clic droit sur plusieurs PDF → Envoyer vers → « Combiner dans Éditeur PDF » ouvre directement la fenêtre Combiner.</li>
       </ul>
@@ -3969,9 +4060,9 @@ function startAnnotDrag(ev, P) {
   const draw = () => {
     const L = Math.min(P.x, x1), T = Math.min(P.y, y1), W = Math.abs(x1 - P.x), H = Math.abs(y1 - P.y);
     if (tool === 'ink') prev.innerHTML = `<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" opacity="${st.opacity}"/>`;
-    else if (tool === 'line' || tool === 'arrow') prev.innerHTML = `<line x1="${P.x}" y1="${P.y}" x2="${x1}" y2="${y1}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+    else if (tool === 'line' || tool === 'arrow' || tool === 'distance') prev.innerHTML = `<line x1="${P.x}" y1="${P.y}" x2="${x1}" y2="${y1}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
     else if (tool === 'ellipse') prev.innerHTML = `<ellipse cx="${L + W / 2}" cy="${T + H / 2}" rx="${W / 2}" ry="${H / 2}" fill="none" stroke="${col}" stroke-width="${w}"/>`;
-    else if (MARKUP_TOOLS.includes(tool)) prev.innerHTML = `<rect x="${L}" y="${T}" width="${W}" height="${H}" fill="${col}" opacity=".35"/>`;
+    else if (MARKUP_TOOLS.includes(tool) || tool === 'areahl') prev.innerHTML = `<rect x="${L}" y="${T}" width="${W}" height="${H}" fill="${col}" opacity=".35"/>`;
     else prev.innerHTML = `<rect x="${L}" y="${T}" width="${W}" height="${H}" fill="none" stroke="${col}" stroke-width="${w}"/>`;
   };
   const mm = m => {
@@ -3988,9 +4079,9 @@ function startAnnotDrag(ev, P) {
       return commitAnnot(d, P.i, newAnnot('ink', { ink: [flat] }));
     }
     if (Math.hypot(x1 - P.x, y1 - P.y) < 4) return;
-    if (tool === 'line' || tool === 'arrow') { const a = toPdf(P.x, P.y), b = toPdf(x1, y1); return commitAnnot(d, P.i, newAnnot(tool, { line: [a[0], a[1], b[0], b[1]], arrow: tool === 'arrow' })); }
+    if (tool === 'line' || tool === 'arrow' || tool === 'distance') { const a = toPdf(P.x, P.y), b = toPdf(x1, y1); return commitAnnot(d, P.i, newAnnot(tool, { line: [a[0], a[1], b[0], b[1]], arrow: tool === 'arrow' })); }
     const L = Math.min(P.x, x1), T = Math.min(P.y, y1), R = Math.max(P.x, x1), B = Math.max(P.y, y1);
-    if (MARKUP_TOOLS.includes(tool)) return commitAnnot(d, P.i, newAnnot(tool, { quads: [quadFromVp(vp, L, T, R, B)] }));
+    if (MARKUP_TOOLS.includes(tool) || tool === 'areahl') return commitAnnot(d, P.i, newAnnot(tool, { quads: [quadFromVp(vp, L, T, R, B)] }));
     const a = toPdf(L, T), b = toPdf(R, B);
     commitAnnot(d, P.i, newAnnot(tool, { rect: [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])] }));
   };
@@ -4254,6 +4345,7 @@ async function writeAnnot(pdfDoc, page, e, doc, cache) {
     dict.set(PDFName.of('Popup'), pop);
     page.node.addAnnot(pop);
   }
+  return { dict, ref };
 }
 
 /* ---------- commentaires existants dans le fichier ---------- */
@@ -4547,8 +4639,8 @@ document.addEventListener('contextmenu', ev => {
     S.annStyle[tool].color = c; lsSet('prele-annstyle', S.annStyle);
     if (tool === 'stamp' && S.stampSel && !S.stampSel.imgId) S.stampSel = { ...S.stampSel, color: c };
     if (S.tool !== tool && tool !== 'stamp') setTool(tool); else updateUI();
-    toast(`Couleur de l'outil « ${ANN_LABEL[subOfTool[tool]]} » modifiée.`);
-  });
+    toast(`Couleur de l'outil « ${(typeof TOOL_LABEL !== 'undefined' && TOOL_LABEL[tool]) || ANN_LABEL[subOfTool[tool]]} » modifiée.`);
+  }, typeof toolMenuExtra === 'function' ? toolMenuExtra(tool) : []);
 });
 function annotContextMenu(ev, doc, i, e) {
   ev.preventDefault(); ev.stopPropagation();
@@ -5252,6 +5344,901 @@ function linkMouseDown(ev) {
 }
 
 /* =====================================================================
+   v1.8 — Onglet Commentaires complet
+   Boîte de texte, légende, fichier joint, son, ondulé, insertion /
+   remplacement de texte, zone surlignée, polygone, polyligne, nuage,
+   gomme, mesures (distance, périmètre, surface), calculatrice comptable,
+   import / export XFDF, afficher / masquer les commentaires, médias.
+   ===================================================================== */
+const NEW_TOOLS = ['textbox', 'callout', 'attach', 'sound', 'squiggly', 'insert', 'replace', 'areahl', 'polygon', 'polyline', 'cloud', 'eraser', 'distance', 'perimeter', 'area'];
+ANN_TOOLS.push(...NEW_TOOLS);
+MARKUP_TOOLS.push('squiggly', 'replace');
+const POLY_TOOLS = ['polygon', 'polyline', 'cloud', 'perimeter', 'area'];
+const MEASURE_TOOLS = ['distance', 'perimeter', 'area'];
+Object.assign(subOfTool, { textbox: 'FreeText', callout: 'FreeText', attach: 'FileAttachment', sound: 'FileAttachment', squiggly: 'Squiggly', insert: 'Caret', replace: 'StrikeOut', areahl: 'Highlight', polygon: 'Polygon', polyline: 'PolyLine', cloud: 'Polygon', eraser: 'Ink', distance: 'Line', perimeter: 'PolyLine', area: 'Polygon' });
+Object.assign(ANN_LABEL, { Squiggly: 'Ondulé', Caret: 'Insertion de texte', Polygon: 'Polygone', PolyLine: 'Polyligne', FileAttachment: 'Fichier joint' });
+const TOOL_LABEL = {
+  freetext: 'Machine à écrire', textbox: 'Boîte de texte', callout: 'Légende', note: 'Note', attach: 'Joindre un fichier', sound: 'Son',
+  highlight: 'Surligner', underline: 'Souligner', strike: 'Barrer', squiggly: 'Souligné ondulé', insert: 'Insérer du texte', replace: 'Remplacer le texte', areahl: 'Zone surlignée',
+  line: 'Ligne', arrow: 'Flèche', rect: 'Rectangle', ellipse: 'Ovale', polygon: 'Polygone', polyline: 'Polyligne', cloud: 'Nuage', ink: 'Crayon', eraser: 'Gomme', stamp: 'Tampon',
+  distance: 'Distance', perimeter: 'Périmètre', area: 'Région (surface)',
+};
+Object.assign(ANN_DEFAULTS, {
+  textbox: { color: '#1f2328', width: 1, opacity: 1, size: 12 },
+  callout: { color: '#d1242f', width: 1, opacity: 1, size: 12 },
+  attach: { color: '#0969da', width: 1, opacity: 1 },
+  sound: { color: '#8250df', width: 1, opacity: 1 },
+  squiggly: { color: '#1a7f37', width: 1, opacity: 1 },
+  insert: { color: '#0969da', width: 1, opacity: 1 },
+  replace: { color: '#d1242f', width: 1, opacity: 1 },
+  areahl: { color: '#ffd400', width: 1, opacity: 0.45 },
+  polygon: { color: '#d1242f', width: 2, opacity: 1 },
+  polyline: { color: '#d1242f', width: 2, opacity: 1 },
+  cloud: { color: '#d1242f', width: 1.5, opacity: 1 },
+  eraser: { color: '#888888', width: 1, opacity: 1 },
+  distance: { color: '#0969da', width: 1, opacity: 1 },
+  perimeter: { color: '#0969da', width: 1, opacity: 1 },
+  area: { color: '#0969da', width: 1, opacity: 1 },
+});
+for (const k in ANN_DEFAULTS) if (!S.annStyle[k]) S.annStyle[k] = clone(ANN_DEFAULTS[k]);
+Object.assign(ANN_TOOL_NAMES, {
+  textbox: 'Boîte de texte — cliquez puis tapez votre texte', callout: 'Légende — tracez de la pointe vers l\'endroit du texte, puis tapez',
+  attach: 'Joindre un fichier — cliquez à l\'endroit de l\'icône', sound: 'Son — cliquez à l\'endroit de l\'icône puis enregistrez au micro',
+  squiggly: 'Souligné ondulé — sélectionnez du texte', insert: 'Insérer du texte — cliquez à l\'endroit de l\'insertion', replace: 'Remplacer le texte — sélectionnez le texte à remplacer',
+  areahl: 'Zone surlignée — tracez la zone', polygon: 'Polygone — cliquez chaque sommet, double-clic (ou Entrée) pour terminer', polyline: 'Polyligne — cliquez chaque point, double-clic (ou Entrée) pour terminer',
+  cloud: 'Nuage — cliquez chaque sommet, double-clic (ou Entrée) pour terminer', eraser: 'Gomme — passez sur les traits de crayon à effacer',
+  distance: 'Distance — tracez la mesure (clic droit sur l\'outil : échelle)', perimeter: 'Périmètre — cliquez chaque point, double-clic pour terminer', area: 'Région — cliquez chaque sommet, double-clic pour terminer',
+  tally: 'Calculatrice comptable — cliquez sur les montants à additionner',
+});
+const annLabel = e => e.measure ? TOOL_LABEL[e.tool] : e.cloud ? 'Nuage' : e.replaceText != null ? 'Remplacement de texte' : e.sound ? 'Son' : e.callout ? 'Légende' : (e.tool === 'textbox' ? 'Boîte de texte' : ANN_LABEL[e.sub] || e.sub);
+
+/* ---------- échelle de mesure ---------- */
+S.mscale = lsGet('prele-mscale', { page: 1, real: 1, unit: 'cm' });
+const PT_CM = 2.54 / 72;
+const fmtFr = (v, d = 2) => v.toLocaleString('fr-FR', { maximumFractionDigits: d, minimumFractionDigits: 0 }).replace(/[\u202f\u00a0]/g, ' ');
+function measValue(e) {
+  const k = PT_CM / (e.mscale.page || 1) * (e.mscale.real || 1), u = e.mscale.unit || 'cm';
+  if (e.sub === 'Line') return fmtFr(Math.hypot(e.line[2] - e.line[0], e.line[3] - e.line[1]) * k) + ' ' + u;
+  const v = e.vertices, n = v.length / 2;
+  if (e.sub === 'PolyLine') { let s = 0; for (let j = 1; j < n; j++) s += Math.hypot(v[2 * j] - v[2 * j - 2], v[2 * j + 1] - v[2 * j - 1]); return fmtFr(s * k) + ' ' + u; }
+  let a = 0; for (let j = 0; j < n; j++) { const x1 = v[2 * j], y1 = v[2 * j + 1], x2 = v[(2 * j + 2) % v.length], y2 = v[(2 * j + 3) % v.length]; a += x1 * y2 - x2 * y1; }
+  return fmtFr(Math.abs(a) / 2 * k * k) + ' ' + u + '²';
+}
+function measLabel(e) {
+  if (!e.measure) return null;
+  const text = measValue(e), fs = 9, w = measureArial(text, fs) + 6, h = 13;
+  let x, y;
+  if (e.sub === 'Line') { const [x1, y1, x2, y2] = e.line; x = (x1 + x2) / 2 - w / 2; y = (y1 + y2) / 2 + 3; }
+  else if (e.sub === 'PolyLine') { const v = e.vertices; x = v[v.length - 2] + 4; y = v[v.length - 1] + 3; }
+  else { const v = e.vertices, n = v.length / 2; let cx = 0, cy = 0; for (let j = 0; j < n; j++) { cx += v[2 * j]; cy += v[2 * j + 1]; } x = cx / n - w / 2; y = cy / n - h / 2; }
+  return { text, x, y, w, h, fs };
+}
+function cmdMeasureScale() {
+  const m = S.mscale;
+  dialog({
+    title: 'Échelle de mesure', icon: 'Ruler', width: 430,
+    body: `<p class="hint" style="margin-top:0">Les mesures (distance, périmètre, surface) sont calculées avec cette échelle. Par défaut : taille réelle de la page.</p>
+      <div class="field inline"><input type="number" id="msPage" min="0.001" step="any" value="${m.page}" style="width:80px"><span>cm sur la page</span><b style="margin:0 8px">=</b>
+      <input type="number" id="msReal" min="0.001" step="any" value="${m.real}" style="width:80px"><select id="msUnit">${['mm', 'cm', 'm', 'km', 'in', 'ft'].map(u => `<option ${u === m.unit ? 'selected' : ''}>${u}</option>`).join('')}</select></div>
+      <p class="hint">Exemple : plan au 1/100 → 1 cm sur la page = 1 m.</p>`,
+    buttons: [{ label: 'Taille réelle', onClick: api => { api.el.querySelector('#msPage').value = 1; api.el.querySelector('#msReal').value = 1; api.el.querySelector('#msUnit').value = 'cm'; } }, { spacer: true }, { label: 'Annuler', value: null }, { label: 'OK', primary: true, onClick: api => {
+      const p = parseFloat(api.el.querySelector('#msPage').value), r = parseFloat(api.el.querySelector('#msReal').value);
+      if (!(p > 0) || !(r > 0)) return;
+      S.mscale = { page: p, real: r, unit: api.el.querySelector('#msUnit').value }; lsSet('prele-mscale', S.mscale);
+      api.close(true); toast(`Échelle : ${fmtFr(p, 3)} cm = ${fmtFr(r, 3)} ${S.mscale.unit}`);
+    } }],
+  });
+}
+
+/* ---------- géométrie : nuage, ondulé, insertion ---------- */
+function cloudPath(v) {   // contour en arcs (courbes de Bézier) le long d'un polygone fermé
+  const n = v.length / 2; let area = 0;
+  for (let j = 0; j < n; j++) area += v[2 * j] * v[(2 * j + 3) % v.length] - v[(2 * j + 2) % v.length] * v[2 * j + 1];
+  const sgn = area >= 0 ? 1 : -1, k = 0.5523, R = 6;
+  const out = [[v[0], v[1]]];
+  for (let j = 0; j < n; j++) {
+    const ax = v[2 * j], ay = v[2 * j + 1], bx = v[(2 * j + 2) % v.length], by = v[(2 * j + 3) % v.length];
+    const L = Math.hypot(bx - ax, by - ay); if (L < 0.5) continue;
+    const m = Math.max(1, Math.round(L / (2 * R))), d = L / m, r = d / 2;
+    const ux = (bx - ax) / L, uy = (by - ay) / L, nx = uy * sgn, ny = -ux * sgn;
+    for (let s = 0; s < m; s++) {
+      const p0x = ax + ux * d * s, p0y = ay + uy * d * s, cx = p0x + ux * r, cy = p0y + uy * r;
+      const tx = cx + nx * r, ty = cy + ny * r, p1x = p0x + ux * d, p1y = p0y + uy * d;
+      out.push([p0x + nx * k * r, p0y + ny * k * r, tx - ux * k * r, ty - uy * k * r, tx, ty]);
+      out.push([tx + ux * k * r, ty + uy * k * r, p1x + nx * k * r, p1y + ny * k * r, p1x, p1y]);
+    }
+  }
+  return out;
+}
+function squigglyPts(q) {
+  const h = Math.hypot(q[0] - q[4], q[1] - q[5]), t = 0.02;
+  const ax = q[4] + (q[0] - q[4]) * t, ay = q[5] + (q[1] - q[5]) * t, bx = q[6] + (q[2] - q[6]) * t, by = q[7] + (q[3] - q[7]) * t;
+  const L = Math.hypot(bx - ax, by - ay) || 1, ux = (bx - ax) / L, uy = (by - ay) / L, nx = (q[0] - q[4]) / (h || 1), ny = (q[1] - q[5]) / (h || 1);
+  const step = Math.max(1.5, h * 0.12), amp = Math.max(0.8, h * 0.06), pts = [];
+  for (let s = 0, k = 0; s <= L + 0.01; s += step, k++) { const o = (k % 2 ? amp : -amp) + amp; pts.push([ax + ux * Math.min(s, L) + nx * o, ay + uy * Math.min(s, L) + ny * o]); }
+  return { pts, w: Math.max(0.5, h * 0.05) };
+}
+function caretRect(x, yBase, h) { return [x - h * 0.28, yBase - h * 0.12, x + h * 0.28, yBase + h * 0.42]; }
+function caretRectForQuad(q) { const h = Math.hypot(q[0] - q[4], q[1] - q[5]); return caretRect(Math.max(q[2], q[6]), Math.min(q[5], q[7]), h); }
+function caretPts(r) { const [x1, y1, x2, y2] = r, cx = (x1 + x2) / 2; return [[x1, y1], [cx, y2], [x2, y1], [cx, y1 + (y2 - y1) * 0.3]]; }
+/* icônes trombone / haut-parleur dans une boîte 16×20, axe y vers le haut */
+const CLIP_PATH = [['M', 5, 14], ['L', 5, 5], ['C', 5, 1, 11, 1, 11, 5], ['L', 11, 16], ['C', 11, 19.5, 7, 19.5, 7, 16], ['L', 7, 6.5], ['C', 7, 5, 9, 5, 9, 6.5], ['L', 9, 14]];
+const SPEAKER_PATH = [['M', 2, 7.5], ['L', 5, 7.5], ['L', 9, 4], ['L', 9, 16], ['L', 5, 12.5], ['L', 2, 12.5], ['Z'], ['M', 11.3, 8], ['C', 12.6, 9.2, 12.6, 10.8, 11.3, 12], ['M', 13, 6], ['C', 15.6, 8.4, 15.6, 11.6, 13, 14]];
+function iconPathTo(cmds, r, fmt) {
+  const sx = (r[2] - r[0]) / 16, sy = (r[3] - r[1]) / 20, X = x => r[0] + x * sx, Y = y => r[1] + y * sy;
+  return cmds.map(c => {
+    if (c[0] === 'Z') return fmt === 'svg' ? 'Z' : 'h';
+    const p = []; for (let k = 1; k < c.length; k += 2) p.push(X(c[k]), Y(c[k + 1]));
+    if (fmt === 'svg') return c[0] + p.join(' ');
+    return p.map(nf).join(' ') + ' ' + c[0].toLowerCase();
+  }).join(' ');
+}
+function calloutEnd(e) {   // point d'accroche de la légende sur le cadre
+  const [x1, y1, x2, y2] = e.rect, [tx] = e.callout, my = (y1 + y2) / 2;
+  return tx < (x1 + x2) / 2 ? [x1, my] : [x2, my];
+}
+
+/* ---------- rendu écran ---------- */
+const _annotSvgMarkup0 = annotSvgMarkup;
+annotSvgMarkup = function (e, doc) {
+  const col = e.color ? rgbToHex(e.color) : '#000', w = e.width || 1;
+  const label = l => l ? `<rect x="${l.x}" y="${l.y}" width="${l.w}" height="${l.h}" fill="#fff" stroke="${col}" stroke-width=".8"/><text transform="translate(${l.x + 3} ${l.y + 3.6}) scale(1 -1)" font-family="Arial, Helvetica, sans-serif" font-size="${l.fs}" fill="${col}">${esc(l.text)}</text>` : '';
+  switch (e.sub) {
+    case 'Squiggly': return e.quads.map(q => { const s = squigglyPts(q); return `<polyline points="${s.pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="${s.w}" stroke-linejoin="round"/>`; }).join('');
+    case 'Caret': return `<polygon points="${caretPts(e.rect).map(p => p.join(',')).join(' ')}" fill="${col}"/>`;
+    case 'Polygon': case 'PolyLine': {
+      const v = e.vertices, pts = []; for (let k = 0; k < v.length; k += 2) pts.push(v[k] + ',' + v[k + 1]);
+      let s;
+      if (e.cloud) { const P = cloudPath(v); s = `<path d="M${P[0]} ${P.slice(1).map(c => 'C' + c.join(' ')).join(' ')}Z" fill="${e.fill ? rgbToHex(e.fill) : 'none'}" stroke="${col}" stroke-width="${w}" stroke-linejoin="round"/>`; }
+      else s = `<${e.sub === 'Polygon' ? 'polygon' : 'polyline'} points="${pts.join(' ')}" fill="${e.fill ? rgbToHex(e.fill) : (e.measure && e.sub === 'Polygon' ? col : 'none')}" ${e.measure && e.sub === 'Polygon' ? 'fill-opacity=".12"' : ''} stroke="${col}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`;
+      return s + label(measLabel(e));
+    }
+    case 'Line': {
+      let s = _annotSvgMarkup0(e, doc);
+      if (e.measure) {
+        const [x1, y1, x2, y2] = e.line, L = Math.hypot(x2 - x1, y2 - y1) || 1, nx = -(y2 - y1) / L * 5, ny = (x2 - x1) / L * 5;
+        s += `<path d="M${x1 - nx} ${y1 - ny}L${x1 + nx} ${y1 + ny}M${x2 - nx} ${y2 - ny}L${x2 + nx} ${y2 + ny}" stroke="${col}" stroke-width="${w}"/>` + label(measLabel(e));
+      }
+      return s;
+    }
+    case 'FreeText': {
+      let pre = '';
+      if (e.fillBox) { const [x1, y1, x2, y2] = e.rect; pre += `<rect x="${x1}" y="${y1}" width="${x2 - x1}" height="${y2 - y1}" fill="#fff"/>`; }
+      if (e.callout) {
+        const [tx, ty] = e.callout, [ex, ey] = calloutEnd(e), [a, b] = arrowHead(ex, ey, tx, ty, 1);
+        pre += `<polyline points="${ex},${ey} ${tx},${ty}" fill="none" stroke="${col}" stroke-width="1"/><polyline points="${a[0]},${a[1]} ${tx},${ty} ${b[0]},${b[1]}" fill="none" stroke="${col}" stroke-width="1" stroke-linejoin="round"/>`;
+      }
+      return pre + _annotSvgMarkup0(e, doc);
+    }
+    case 'FileAttachment': {
+      const r = e.rect;
+      return `<rect x="${r[0]}" y="${r[1]}" width="${r[2] - r[0]}" height="${r[3] - r[1]}" rx="2.5" fill="#fff" fill-opacity=".9" stroke="${col}" stroke-width=".8"/><path d="${iconPathTo(e.sound ? SPEAKER_PATH : CLIP_PATH, r, 'svg')}" fill="${e.sound ? col : 'none'}" stroke="${col}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }
+    case 'StrikeOut': {
+      let s = _annotSvgMarkup0(e, doc);
+      if (e.replaceText != null && e.rect) s += `<polygon points="${caretPts(e.rect).map(p => p.join(',')).join(' ')}" fill="${col}"/>`;
+      return s;
+    }
+  }
+  return _annotSvgMarkup0(e, doc);
+};
+const _annBounds0 = annBounds;
+annBounds = function (e) {
+  let b;
+  if (e.vertices) {
+    const v = e.vertices, xs = [], ys = []; for (let k = 0; k < v.length; k += 2) { xs.push(v[k]); ys.push(v[k + 1]); }
+    const m = (e.width || 1) / 2 + 1 + (e.cloud ? 7 : 0);
+    b = [Math.min(...xs) - m, Math.min(...ys) - m, Math.max(...xs) + m, Math.max(...ys) + m];
+    if (e.rect) b = [Math.min(b[0], e.rect[0]), Math.min(b[1], e.rect[1]), Math.max(b[2], e.rect[2]), Math.max(b[3], e.rect[3])];
+  } else b = _annBounds0(e);
+  if (e.callout) { const [tx, ty] = e.callout; b = [Math.min(b[0], tx - 8), Math.min(b[1], ty - 8), Math.max(b[2], tx + 8), Math.max(b[3], ty + 8)]; }
+  if (e.measure && e.sub === 'Line') b = [b[0] - 6, b[1] - 6, b[2] + 6, b[3] + 6];
+  const l = measLabel(e);
+  if (l) b = [Math.min(b[0], l.x - 1), Math.min(b[1], l.y - 1), Math.max(b[2], l.x + l.w + 1), Math.max(b[3], l.y + l.h + 1)];
+  return b;
+};
+const _shiftAnnot0 = shiftAnnot;
+shiftAnnot = function (e, o, dx, dy) {
+  _shiftAnnot0(e, o, dx, dy);
+  if (o.vertices) e.vertices = o.vertices.map((v, k) => v + (k % 2 ? dy : dx));
+  if (o.callout) e.callout = [o.callout[0] + dx, o.callout[1] + dy];
+};
+
+/* ---------- création ---------- */
+const _newAnnot0 = newAnnot;
+newAnnot = function (tool, fields) {
+  const e = _newAnnot0(tool, fields);
+  if (MEASURE_TOOLS.includes(tool)) { e.measure = true; e.mscale = { ...S.mscale }; }
+  if (tool === 'cloud') e.cloud = true;
+  if (tool === 'sound') e.sound = true;
+  return e;
+};
+async function placeTextBox(P, withCallout, tip) {
+  const d = S.active, tool = withCallout ? 'callout' : 'textbox', st = S.annStyle[tool], [px, py] = P.pdf;
+  const e = newAnnot(tool, { contents: '', size: st.size || 12, rect: [px, py - 10, px + 10, py], border: true, fillBox: true });
+  if (withCallout) e.callout = tip;
+  fitFreeText(e);
+  startFreeTextEdit(d, P.i, e, true);
+}
+function startCalloutDrag(ev, P) {
+  const vp = P.vp, pr = P.pel.getBoundingClientRect();
+  const prev = document.createElementNS(SVGNS, 'svg');
+  prev.setAttribute('class', 'annprev'); prev.setAttribute('width', vp.width); prev.setAttribute('height', vp.height);
+  P.pel.appendChild(prev);
+  const col = S.annStyle.callout.color;
+  let x1 = P.x, y1 = P.y;
+  const mm = m => {
+    x1 = Math.max(0, Math.min(pr.width, m.clientX - pr.left)); y1 = Math.max(0, Math.min(pr.height, m.clientY - pr.top));
+    prev.innerHTML = `<line x1="${P.x}" y1="${P.y}" x2="${x1}" y2="${y1}" stroke="${col}" stroke-width="1.5"/><rect x="${x1}" y="${y1 - 4}" width="70" height="22" fill="#fff" stroke="${col}" stroke-dasharray="3 2"/>`;
+  };
+  const mu = () => {
+    window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); prev.remove();
+    let bx = x1, by = y1;
+    if (Math.hypot(x1 - P.x, y1 - P.y) < 8) { bx = P.x + 50 * (P.x < vp.width - 160 ? 1 : -3); by = P.y - 40; }
+    const tip = vp.convertToPdfPoint(P.x, P.y), b = vp.convertToPdfPoint(bx, by - 4);
+    placeTextBox({ ...P, x: bx, y: by, pdf: b }, true, tip);
+  };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+
+/* fichiers joints et sons */
+async function attachFileAt(P, file, asSound) {
+  const d = S.active; d.files = d.files || {};
+  const bytes = new Uint8Array(await file.arrayBuffer()), fileId = uid();
+  d.files[fileId] = { name: file.name, mime: file.type || 'application/octet-stream', bytes, date: Date.now() };
+  const [px, py] = P.pdf, tool = asSound ? 'sound' : 'attach';
+  const e = newAnnot(tool, { rect: [px - 8, py - 10, px + 8, py + 10], fileId, contents: file.name });
+  commitAnnot(d, P.i, e);
+  toast(`${asSound ? 'Son' : 'Fichier'} joint : ${file.name} (${fmtSize(bytes.length)})`);
+}
+const MEDIA_ACCEPT = {
+  file: null,
+  video: { description: 'Vidéos', accept: { 'video/*': ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.m4v'] } },
+  audio: { description: 'Sons', accept: { 'audio/*': ['.mp3', '.wav', '.m4a', '.ogg', '.aac', '.flac'] } },
+  '3d': { description: 'Objets 3D', accept: { 'model/*': ['.u3d', '.prc', '.glb', '.gltf', '.obj', '.stl'] } },
+};
+async function pickFile(kind) {
+  const t = MEDIA_ACCEPT[kind];
+  const [h] = await showOpenFilePicker({ id: 'prele-attach', ...(t ? { types: [t] } : {}) });
+  return h.getFile();
+}
+async function placeAttach(P, tool) {
+  if (S.pendingAttach) { const p = S.pendingAttach; S.pendingAttach = null; return attachFileAt(P, p.file, p.sound); }
+  if (tool === 'sound') { const f = await recordSoundDialog(); if (f) attachFileAt(P, f, true); return; }
+  try { const f = await pickFile('file'); await attachFileAt(P, f, false); } catch (e) { if (e.name !== 'AbortError') handleErr(e); }
+}
+async function cmdAddMedia(kind) {
+  if (!S.active) return;
+  try {
+    const f = await pickFile(kind);
+    S.pendingAttach = { file: f, sound: kind === 'audio' };
+    setTool(kind === 'audio' ? 'sound' : 'attach');
+    toast(`Cliquez sur la page à l'endroit où placer « ${f.name} ».`);
+  } catch (e) { if (e.name !== 'AbortError') handleErr(e); }
+}
+function encodeWav(buf) {
+  const sr = buf.sampleRate, n = buf.length, ch = buf.numberOfChannels, data = new Float32Array(n);
+  for (let c = 0; c < ch; c++) { const d = buf.getChannelData(c); for (let k = 0; k < n; k++) data[k] += d[k] / ch; }
+  const out = new DataView(new ArrayBuffer(44 + n * 2)), ws = (o, s) => { for (let k = 0; k < s.length; k++) out.setUint8(o + k, s.charCodeAt(k)); };
+  ws(0, 'RIFF'); out.setUint32(4, 36 + n * 2, true); ws(8, 'WAVE'); ws(12, 'fmt '); out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, 1, true);
+  out.setUint32(24, sr, true); out.setUint32(28, sr * 2, true); out.setUint16(32, 2, true); out.setUint16(34, 16, true); ws(36, 'data'); out.setUint32(40, n * 2, true);
+  for (let k = 0; k < n; k++) { const v = Math.max(-1, Math.min(1, data[k])); out.setInt16(44 + k * 2, v < 0 ? v * 0x8000 : v * 0x7fff, true); }
+  return new Uint8Array(out.buffer);
+}
+function recordSoundDialog() {
+  return new Promise(res => {
+    let rec = null, stream = null, chunks = [], file = null, t0 = 0, timer = null;
+    const stopAll = () => { clearInterval(timer); try { rec && rec.state !== 'inactive' && rec.stop(); } catch { } if (stream) stream.getTracks().forEach(t => t.stop()); };
+    const dlg = dialog({
+      title: 'Enregistrer un son', icon: 'Mic', width: 400,
+      body: `<div class="recbox"><button class="btn" id="recBtn">${svgIcon('Mic', 16)} Enregistrer</button><span id="recTime" class="rectime">0:00</span></div>
+        <audio id="recAudio" controls style="width:100%;margin-top:10px;display:none"></audio>
+        <p class="hint" id="recHint">Cliquez sur « Enregistrer », parlez, puis cliquez sur « Arrêter ». Le son est joint au PDF (fichier WAV).</p>`,
+      buttons: [{ spacer: true }, { label: 'Annuler', value: null }, { label: 'Joindre', primary: true, id: 'recOk', onClick: api => { if (file) api.close(file); } }],
+      onClose: v => { stopAll(); res(v || null); },
+    });
+    const btn = dlg.el.querySelector('#recBtn'), tm = dlg.el.querySelector('#recTime'), au = dlg.el.querySelector('#recAudio'), ok = dlg.el.querySelector('#recOk');
+    ok.disabled = true;
+    btn.onclick = async () => {
+      if (rec && rec.state === 'recording') { rec.stop(); return; }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (e) { dlg.el.querySelector('#recHint').textContent = 'Micro inaccessible : autorisez le micro pour cette application (icône à gauche de la barre d\'adresse).'; return; }
+      chunks = []; rec = new MediaRecorder(stream);
+      rec.ondataavailable = ev => ev.data.size && chunks.push(ev.data);
+      rec.onstop = async () => {
+        clearInterval(timer); stream.getTracks().forEach(t => t.stop());
+        btn.innerHTML = `${svgIcon('Mic', 16)} Recommencer`;
+        try {
+          const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
+          const ac = new (window.AudioContext || window.webkitAudioContext)();
+          const buf = await ac.decodeAudioData(await blob.arrayBuffer()); ac.close();
+          const wav = encodeWav(buf), d = new Date(), p = n => String(n).padStart(2, '0');
+          file = new File([wav], `Son du ${p(d.getDate())}-${p(d.getMonth() + 1)}-${d.getFullYear()} ${p(d.getHours())}h${p(d.getMinutes())}.wav`, { type: 'audio/wav' });
+          au.src = URL.createObjectURL(file); au.style.display = ''; ok.disabled = false;
+        } catch (e) { dlg.el.querySelector('#recHint').textContent = 'Enregistrement illisible : ' + e.message; }
+      };
+      rec.start(); t0 = Date.now();
+      btn.innerHTML = `${svgIcon('Square', 14)} Arrêter`; btn.classList.add('recording');
+      timer = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); tm.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }, 250);
+    };
+  });
+}
+async function openAttachment(doc, e, x, y) {
+  const f = doc.files && doc.files[e.fileId];
+  if (!f) { toast('Fichier introuvable.', 'err'); return; }
+  if (/^audio\//.test(f.mime) || /^video\//.test(f.mime)) {
+    document.querySelectorAll('.mediapop').forEach(p => p.remove());
+    const p = document.createElement('div'); p.className = 'tpop mediapop';
+    const url = URL.createObjectURL(new Blob([f.bytes], { type: f.mime })), isV = /^video\//.test(f.mime);
+    p.innerHTML = `<div class="tpop-h">${esc(f.name)}</div>${isV ? `<video src="${url}" controls autoplay style="width:360px;max-height:260px"></video>` : `<audio src="${url}" controls autoplay style="width:300px"></audio>`}
+      <div class="tpop-f"><button class="btn" data-save>${svgIcon('Download', 14)} Enregistrer</button><button class="btn primary" data-x>Fermer</button></div>`;
+    document.body.appendChild(p);
+    const r = p.getBoundingClientRect();
+    p.style.left = Math.max(8, Math.min(x, innerWidth - r.width - 8)) + 'px'; p.style.top = Math.max(8, Math.min(y, innerHeight - r.height - 8)) + 'px';
+    p.querySelector('[data-x]').onclick = () => { p.remove(); URL.revokeObjectURL(url); };
+    p.querySelector('[data-save]').onclick = () => saveAttachmentFile(f);
+    return;
+  }
+  if (isPdfName(f.name)) { await openBytes(f.name, f.bytes.slice(), null); return; }
+  saveAttachmentFile(f);
+}
+async function saveAttachmentFile(f) {
+  try {
+    if ('showSaveFilePicker' in window) { const h = await showSaveFilePicker({ suggestedName: f.name }); await writeHandle(h, f.bytes); toast('Fichier enregistré : ' + h.name); }
+    else { const url = URL.createObjectURL(new Blob([f.bytes], { type: f.mime })); Object.assign(document.createElement('a'), { href: url, download: f.name }).click(); }
+  } catch (e) { if (e.name !== 'AbortError') handleErr(e); }
+}
+
+/* insertion de texte (caret) */
+async function placeCaret(ev, P) {
+  const d = S.active, [px, py] = P.pdf;
+  let yb = py - 4, h = 12;
+  try { const L = await lineAt(d, P.i, P.pdf); if (L) { const b = lineBox(L); yb = b.y; h = b.h; } } catch { }
+  const v = await textPopup(ev.clientX + 12, ev.clientY + 8, '', 'Texte à insérer');
+  if (v == null || !v.trim()) return;
+  commitAnnot(d, P.i, newAnnot('insert', { rect: caretRect(px, yb, h), contents: v }));
+}
+/* remplacer le texte : barré + insertion */
+const _markupFromSelection0 = markupFromSelection;
+markupFromSelection = function () {
+  const tool = S.tool, sel = getSelection();
+  const r = sel && sel.rangeCount && !sel.isCollapsed ? sel.getRangeAt(0).getBoundingClientRect() : null;
+  const ok = _markupFromSelection0();
+  if (ok && tool === 'replace' && S.activeEdit && S.activeEdit.sub === 'StrikeOut') askReplace(S.active, S.activeEdit, r);
+  return ok;
+};
+
+function askReplace(d, e, r) {
+  const i = d.pages.findIndex(p => p.edits.includes(e)); if (i < 0) return;
+  e.origText = e.contents || ''; e.replaceText = ''; e.rect = caretRectForQuad(e.quads[e.quads.length - 1]);
+  renderEdits(d, i);
+  if (!r) { const el = pageEl(i), vp = d.vps[i]; if (el && vp) { const b = el.getBoundingClientRect(), p = vp.convertToViewportPoint(e.rect[0], e.rect[1]); r = { left: b.left + p[0], bottom: b.top + p[1] }; } }
+  textPopup(r ? r.left : innerWidth / 2, r ? r.bottom + 8 : innerHeight / 3, '', e.origText ? `Remplacer « ${e.origText.slice(0, 60)} » par :` : 'Texte de remplacement :').then(v => {
+    if (v == null) { d.pages[i].edits = d.pages[i].edits.filter(x => x !== e); S.activeEdit = null; d.undo.pop(); renderEdits(d, i); updateUI(); refreshSidePane(); return; }
+    e.replaceText = v; e.contents = v; renderEdits(d, i); refreshSidePane();
+  });
+}
+{
+  const base = commitAnnot;
+  commitAnnot = function (doc, i, e, keep) { base(doc, i, e, keep); if (e.tool === 'replace' && e.replaceText == null && e.quads) askReplace(doc, e, null); };
+}
+/* polygone, polyligne, nuage, périmètre, surface : clic par clic */
+function startPolyDraw(ev, P) {
+  const st = S.annStyle[S.tool];
+  const prev = document.createElementNS(SVGNS, 'svg');
+  prev.setAttribute('class', 'annprev'); prev.setAttribute('width', P.vp.width); prev.setAttribute('height', P.vp.height);
+  P.pel.appendChild(prev);
+  S.poly = { tool: S.tool, i: P.i, pel: P.pel, vp: P.vp, pts: [[P.x, P.y]], cur: [P.x, P.y], prev, col: st.color, w: (st.width || 1) * P.vp.scale };
+  const mm = m => { const p = S.poly; if (!p) return; const r = p.pel.getBoundingClientRect(); p.cur = [m.clientX - r.left, m.clientY - r.top]; drawPolyPreview(); };
+  const kd = k => {
+    if (!S.poly) return;
+    if (k.key === 'Enter') { k.preventDefault(); k.stopPropagation(); finishPoly(true); }
+    else if (k.key === 'Escape') { k.preventDefault(); k.stopPropagation(); finishPoly(false); }
+    else if (k.key === 'Backspace' && S.poly.pts.length > 1) { k.preventDefault(); S.poly.pts.pop(); drawPolyPreview(); }
+  };
+  S.poly.cleanup = () => { window.removeEventListener('mousemove', mm); window.removeEventListener('keydown', kd, true); };
+  window.addEventListener('mousemove', mm); window.addEventListener('keydown', kd, true);
+  drawPolyPreview();
+}
+function drawPolyPreview() {
+  const p = S.poly, pts = [...p.pts, p.cur], closed = !['polyline', 'perimeter'].includes(p.tool);
+  const first = p.pts[0], near = p.pts.length >= 3 && Math.hypot(p.cur[0] - first[0], p.cur[1] - first[1]) < 8;
+  p.prev.innerHTML = `<${closed ? 'polygon' : 'polyline'} points="${pts.map(q => q.join(',')).join(' ')}" fill="${closed ? p.col : 'none'}" fill-opacity=".08" stroke="${p.col}" stroke-width="${p.w}" stroke-dasharray="${p.tool === 'cloud' ? '4 3' : ''}" stroke-linejoin="round"/>` +
+    p.pts.map((q, k) => `<circle cx="${q[0]}" cy="${q[1]}" r="${k === 0 && near ? 6 : 3}" fill="#fff" stroke="${p.col}" stroke-width="1.5"/>`).join('');
+}
+function polyMouseDown(ev) {
+  const p = S.poly, P = pagePoint(ev);
+  ev.preventDefault();
+  if (!P || P.i !== p.i) { finishPoly(true); return; }
+  const last = p.pts[p.pts.length - 1], first = p.pts[0];
+  const closed = !['polyline', 'perimeter'].includes(p.tool);
+  if (ev.detail >= 2) { finishPoly(true); return; }
+  if (closed && p.pts.length >= 3 && Math.hypot(P.x - first[0], P.y - first[1]) < 8) { finishPoly(true); return; }
+  if (Math.hypot(P.x - last[0], P.y - last[1]) > 2) p.pts.push([P.x, P.y]);
+  drawPolyPreview();
+}
+function finishPoly(commit) {
+  const p = S.poly; if (!p) return;
+  S.poly = null; p.cleanup(); p.prev.remove();
+  if (!commit) return;
+  const pts = p.pts.filter((q, k) => k === 0 || Math.hypot(q[0] - p.pts[k - 1][0], q[1] - p.pts[k - 1][1]) > 2);
+  const closed = !['polyline', 'perimeter'].includes(p.tool);
+  if (pts.length < (closed ? 3 : 2)) { toast(closed ? 'Il faut au moins 3 sommets.' : 'Il faut au moins 2 points.'); return; }
+  const v = []; pts.forEach(q => { const a = p.vp.convertToPdfPoint(q[0], q[1]); v.push(a[0], a[1]); });
+  commitAnnot(S.active, p.i, newAnnot(p.tool, { vertices: v }));
+}
+
+/* gomme : efface les traits de crayon */
+function startEraser(ev, P) {
+  const d = S.active, i = P.i, vp = P.vp, pr = P.pel.getBoundingClientRect(), R = 7 / vp.scale;
+  const snap = snapshot(d); let changed = false;
+  const erase = (cx, cy) => {
+    const [x, y] = vp.convertToPdfPoint(cx, cy);
+    for (const e of d.pages[i].edits.filter(z => z.type === 'annot' && z.sub === 'Ink')) {
+      const strokes = [];
+      for (const s of e.ink) {
+        let cur = [];
+        for (let k = 0; k < s.length; k += 2) {
+          if (Math.hypot(s[k] - x, s[k + 1] - y) <= R + (e.width || 1) / 2) { changed = true; if (cur.length >= 4) strokes.push(cur); cur = []; }
+          else cur.push(s[k], s[k + 1]);
+        }
+        if (cur.length >= 4) strokes.push(cur);
+      }
+      e.ink = strokes;
+    }
+    d.pages[i].edits = d.pages[i].edits.filter(z => !(z.type === 'annot' && z.sub === 'Ink' && !z.ink.length));
+    renderEdits(d, i);
+  };
+  erase(P.x, P.y);
+  const mm = m => erase(m.clientX - pr.left, m.clientY - pr.top);
+  const mu = () => { window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); if (changed) { pushUndo(d, snap); updateUI(); refreshThumbBadge(d, i); refreshSidePane(); } };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+
+/* aiguillage des clics sur la page */
+const _annotMouseDown0 = annotMouseDown;
+annotMouseDown = function (ev) {
+  const t = S.tool;
+  if (S.poly) { polyMouseDown(ev); return true; }
+  if (t === 'tally') return tallyMouseDown(ev);
+  if (!NEW_TOOLS.includes(t)) return _annotMouseDown0(ev);
+  if (ev.target.closest('.ebox.ann') || ev.target.closest('.tpop')) return true;
+  const P = pagePoint(ev); if (!P) return true;
+  if (MARKUP_TOOLS.includes(t) && ev.target.closest('.textLayer span')) return false;
+  if (S.ftJustClosed || S.ftEdit) { ev.preventDefault(); return true; }
+  ev.preventDefault();
+  if (t === 'textbox') placeTextBox(P, false);
+  else if (t === 'callout') startCalloutDrag(ev, P);
+  else if (t === 'attach' || t === 'sound') placeAttach(P, t);
+  else if (t === 'insert') placeCaret(ev, P);
+  else if (POLY_TOOLS.includes(t)) startPolyDraw(ev, P);
+  else if (t === 'eraser') startEraser(ev, P);
+  else startAnnotDrag(ev, P);   // distance, zone surlignée, ondulé / remplacer tracés
+  return true;
+};
+const _editAnnotText0 = editAnnotText;
+editAnnotText = async function (doc, i, e, x, y) {
+  if (e.sub === 'FileAttachment') return openAttachment(doc, e, x, y);
+  if (e.replaceText != null) {
+    const v = await textPopup(x, y, e.replaceText, `Remplacer « ${(e.origText || '').slice(0, 60)} » par :`);
+    if (v == null || v === e.replaceText) return;
+    pushUndo(doc); e.replaceText = v; e.contents = v; e.date = new Date().toISOString(); renderEdits(doc, i); updateUI(); refreshSidePane(); return;
+  }
+  return _editAnnotText0(doc, i, e, x, y);
+};
+const _setTool0 = setTool;
+setTool = function (t) { if (S.poly && t !== S.poly.tool) finishPoly(true); if (S.tool === 'tally' && t !== 'tally') S.tallyPlace = false; _setTool0(t); if (t === 'tally') showTallyPanel(); };
+
+/* ---------- style : réglages selon l'outil ---------- */
+const _syncAnnotStyle0 = syncAnnotStyle;
+syncAnnotStyle = function () {
+  _syncAnnotStyle0();
+  const T = annotStyleTarget(); if (!T) return;
+  const tool = T.e ? T.e.tool : T.tool;
+  if (['textbox', 'callout'].includes(tool)) $('#aSize').disabled = false;
+  if (['textbox', 'callout', 'attach', 'sound', 'squiggly', 'insert', 'replace', 'areahl', 'eraser'].includes(tool)) $('#aWidth').disabled = true;
+  $('#aHint').textContent = T.e ? `${annLabel(T.e)} sélectionné` : `Réglages de l'outil « ${TOOL_LABEL[tool] || ANN_LABEL[subOfTool[tool]]} »`;
+};
+function toolMenuExtra(tool) {
+  return MEASURE_TOOLS.includes(tool) ? [['Ruler', 'Échelle de mesure…', cmdMeasureScale]] : [];
+}
+
+/* ---------- enregistrement ---------- */
+const _buildAppearance0 = buildAppearance;
+buildAppearance = async function (pdfDoc, e, doc, cache) {
+  const special = ['Squiggly', 'Caret', 'Polygon', 'PolyLine', 'FileAttachment'].includes(e.sub) || (e.sub === 'FreeText' && (e.fillBox || e.callout)) || (e.sub === 'Line' && e.measure);
+  if (!special) return _buildAppearance0(pdfDoc, e, doc, cache);
+  const [r, g, b] = e.color || [0, 0, 0], w = e.width || 1;
+  const RG = `${nf(r)} ${nf(g)} ${nf(b)} RG`, rg = `${nf(r)} ${nf(g)} ${nf(b)} rg`;
+  const res = { ExtGState: { GS0: { CA: e.opacity ?? 1, ca: e.opacity ?? 1 }, GS1: { CA: 1, ca: 0.12 } } };
+  let ops = '/GS0 gs\n';
+  const lbl = async () => {
+    const l = measLabel(e); if (!l) return '';
+    const { reg } = await annotFonts(pdfDoc, cache); res.Font = { ...(res.Font || {}), Helv: reg.ref };
+    return `\n1 1 1 rg ${RG} 0.8 w ${nf(l.x)} ${nf(l.y)} ${nf(l.w)} ${nf(l.h)} re B BT /Helv ${l.fs} Tf ${rg} 1 0 0 1 ${nf(l.x + 3)} ${nf(l.y + 3.6)} Tm ${reg.encodeText(winAnsiSafe(reg, l.text)).toString()} Tj ET`;
+  };
+  switch (e.sub) {
+    case 'Squiggly': ops += RG + ' 1 j\n' + e.quads.map(q => { const s = squigglyPts(q); return `${nf(s.w)} w ` + s.pts.map((p, k) => `${nf(p[0])} ${nf(p[1])} ${k ? 'l' : 'm'}`).join(' ') + ' S'; }).join('\n'); break;
+    case 'Caret': { const p = caretPts(e.rect); ops += `${rg} ` + p.map((q, k) => `${nf(q[0])} ${nf(q[1])} ${k ? 'l' : 'm'}`).join(' ') + ' h f'; break; }
+    case 'Polygon': case 'PolyLine': {
+      const v = e.vertices;
+      let path;
+      if (e.cloud) { const P = cloudPath(v); path = `${nf(P[0][0])} ${nf(P[0][1])} m ` + P.slice(1).map(c => c.map(nf).join(' ') + ' c').join(' ') + ' h'; }
+      else { path = ''; for (let k = 0; k < v.length; k += 2) path += `${nf(v[k])} ${nf(v[k + 1])} ${k ? 'l' : 'm'} `; if (e.sub === 'Polygon') path += 'h'; }
+      if (e.measure && e.sub === 'Polygon') ops += `q /GS1 gs ${rg} ${path} f Q\n`;
+      if (e.fill) ops += `${e.fill.map(nf).join(' ')} rg ${path} f\n`;
+      ops += `${RG} ${nf(w)} w 1 J 1 j ${path} S`;
+      ops += await lbl();
+      break;
+    }
+    case 'Line': {
+      const [x1, y1, x2, y2] = e.line, L = Math.hypot(x2 - x1, y2 - y1) || 1, nx = -(y2 - y1) / L * 5, ny = (x2 - x1) / L * 5;
+      ops += `${RG} ${nf(w)} w ${nf(x1)} ${nf(y1)} m ${nf(x2)} ${nf(y2)} l S ${nf(x1 - nx)} ${nf(y1 - ny)} m ${nf(x1 + nx)} ${nf(y1 + ny)} l S ${nf(x2 - nx)} ${nf(y2 - ny)} m ${nf(x2 + nx)} ${nf(y2 + ny)} l S`;
+      ops += await lbl();
+      break;
+    }
+    case 'FreeText': {
+      const { reg } = await annotFonts(pdfDoc, cache);
+      res.Font = { Helv: reg.ref };
+      const [x1, y1, x2, y2] = e.rect, s = e.size || 12, lh = s * 1.2;
+      if (e.fillBox) ops += `1 1 1 rg ${nf(x1)} ${nf(y1)} ${nf(x2 - x1)} ${nf(y2 - y1)} re f\n`;
+      if (e.callout) { const [tx, ty] = e.callout, [ex, ey] = calloutEnd(e), [a, c] = arrowHead(ex, ey, tx, ty, 1); ops += `${RG} 1 w 1 j ${nf(ex)} ${nf(ey)} m ${nf(tx)} ${nf(ty)} l S ${nf(a[0])} ${nf(a[1])} m ${nf(tx)} ${nf(ty)} l ${nf(c[0])} ${nf(c[1])} l S\n`; }
+      if (e.border) ops += `${RG} 1 w ${nf(x1 + 0.5)} ${nf(y1 + 0.5)} ${nf(x2 - x1 - 1)} ${nf(y2 - y1 - 1)} re S\n`;
+      ops += `BT /Helv ${nf(s)} Tf ${rg}\n`;
+      (e.contents || '').split('\n').forEach((ln, k) => { ops += `1 0 0 1 ${nf(x1 + 3)} ${nf(y2 - 3 - s * 0.82 - k * lh)} Tm ${reg.encodeText(winAnsiSafe(reg, ln)).toString()} Tj\n`; });
+      ops += 'ET';
+      break;
+    }
+    case 'FileAttachment': {
+      const R = e.rect;
+      ops += `1 1 1 rg ${RG} 0.8 w ${roundRectOps(R[0], R[1], R[2] - R[0], R[3] - R[1], 2.5)} B\n${RG} ${rg} 1.3 w 1 J 1 j ${iconPathTo(e.sound ? SPEAKER_PATH : CLIP_PATH, R, 'pdf')} ${e.sound ? 'B' : 'S'}`;
+      break;
+    }
+  }
+  const bb = annBounds(e);
+  const stream = pdfDoc.context.flateStream(ops, { Type: 'XObject', Subtype: 'Form', BBox: bb, Resources: res });
+  return { ref: pdfDoc.context.register(stream), bbox: bb };
+};
+const _writeAnnot0 = writeAnnot;
+writeAnnot = async function (pdfDoc, page, e, doc, cache) {
+  const w = await _writeAnnot0(pdfDoc, page, e, doc, cache);
+  if (!w) return w;
+  const { dict, ref } = w, ctx = pdfDoc.context, set = (k, v) => dict.set(PDFName.of(k), v instanceof Object && !Array.isArray(v) && v.constructor !== Object ? v : ctx.obj(v));
+  if (e.vertices) { set('Vertices', e.vertices); set('BS', { W: e.width || 1 }); if (e.fill) set('IC', e.fill); }
+  if (e.cloud) set('BE', { S: 'C', I: 1 });
+  if (e.measure) {
+    const it = e.sub === 'Line' ? 'LineDimension' : e.sub === 'PolyLine' ? 'PolyLineDimension' : 'PolygonDimension';
+    set('IT', PDFName.of(it)); set('Contents', PDFHexString.fromText(measValue(e)));
+    if (e.sub === 'Line') { set('LE', ['Butt', 'Butt']); set('Cap', true); }
+  }
+  if (e.sub === 'FreeText' && e.callout) { set('IT', PDFName.of('FreeTextCallout')); set('CL', [...e.callout, ...calloutEnd(e)]); set('LE', PDFName.of('OpenArrow')); }
+  if (e.sub === 'FreeText' && e.fillBox) set('IC', [1, 1, 1]);
+  if (e.sub === 'FileAttachment') {
+    const f = doc.files && doc.files[e.fileId];
+    if (f) {
+      const ef = ctx.register(ctx.flateStream(f.bytes, { Type: 'EmbeddedFile', Subtype: PDFName.of(f.mime), Params: { Size: f.bytes.length } }));
+      const fs = ctx.obj({ Type: 'Filespec', F: PDFLib.PDFString.of(asciiName(f.name)), UF: PDFHexString.fromText(f.name), EF: { F: ef, UF: ef }, Desc: PDFHexString.fromText(f.name) });
+      set('FS', ctx.register(fs)); set('Name', PDFName.of(e.sound ? 'PushPin' : 'Paperclip'));
+    }
+  }
+  if (e.replaceText != null) {   // barré + insertion, groupés comme dans Acrobat / PDF-XChange
+    set('IT', PDFName.of('StrikeOutTextEdit'));
+    const ce = { ...e, sub: 'Caret', quads: null, contents: e.replaceText, id: e.id + '-c', replaceText: null };
+    const ap = await buildAppearance(pdfDoc, ce, doc, cache);
+    const cd = ctx.obj({ Type: 'Annot', Subtype: 'Caret', Rect: ap.bbox, F: 4, AP: { N: ap.ref }, C: e.color || [0, 0, 0], Contents: PDFHexString.fromText(e.replaceText), NM: PDFLib.PDFString.of(ce.id), M: PDFLib.PDFString.of(pdfDate(new Date(e.date || Date.now()))), ...(e.author ? { T: PDFHexString.fromText(e.author) } : {}), Sy: 'None' });
+    const cref = ctx.register(cd);
+    page.node.addAnnot(cref);
+    set('IRT', cref); set('RT', PDFName.of('Group'));
+    if (e.origText) set('Contents', PDFHexString.fromText(e.origText));
+  }
+  return w;
+};
+const asciiName = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\x20-\x7e]/g, '_');
+
+/* ---------- liste des commentaires : libellés précis ---------- */
+const _collectComments0 = collectComments;
+collectComments = async function (doc) {
+  const list = await _collectComments0(doc);
+  for (const c of list) if (c.kind === 'mine') { c.label = annLabel(c.e); if (c.e.measure) c.text = measValue(c.e); if (c.e.replaceText != null) c.text = `« ${c.e.origText || ''} » → « ${c.e.replaceText} »`; }
+  return list;
+};
+
+/* =====================================================================
+   Calculatrice comptable
+   ===================================================================== */
+S.tally = { items: [], op: '+' };
+const NUM_RE = /\(?[-−+]?\d{1,3}(?:[   ]\d{3})+(?:[.,]\d+)?\)?|\(?[-−+]?\d+(?:[.,]\d{3})*(?:[.,]\d+)?\)?/g;
+function parseAmount(s) {
+  const neg = /^\(.*\)$/.test(s) || /^[-−]/.test(s);
+  s = s.replace(/[()\s  +−-]/g, '');
+  const nc = (s.match(/,/g) || []).length, nd = (s.match(/\./g) || []).length;
+  if (nc && nd) s = s.lastIndexOf(',') > s.lastIndexOf('.') ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+  else if (nc === 1) s = s.replace(',', '.');
+  else if (nc > 1) s = s.replace(/,/g, '');
+  else if (nd > 1 || (nd === 1 && /^\d{1,3}\.\d{3}$/.test(s))) s = s.replace(/\./g, '');
+  const v = parseFloat(s);
+  return isNaN(v) ? null : (neg ? -v : v);
+}
+async function numberAt(doc, i, pt) {
+  const tc = await getText(doc, i);
+  let best = null;
+  for (const it of tc.raw.items) {
+    if (!it.str || !/\d/.test(it.str)) continue;
+    const t = it.transform; if (Math.abs(t[1]) > 1e-3 || Math.abs(t[2]) > 1e-3) continue;
+    const size = Math.hypot(t[2], t[3]);
+    if (pt[1] < t[5] - size * 0.3 || pt[1] > t[5] + size * 1.0 || pt[0] < t[4] - 3 || pt[0] > t[4] + it.width + 3) continue;
+    NUM_RE.lastIndex = 0; let m;
+    while ((m = NUM_RE.exec(it.str))) {
+      const raw = m[0].trim(); if (!/\d/.test(raw)) continue;
+      const lead = m[0].length - m[0].trimStart().length;
+      const r = itemSubRect(it, m.index + lead, raw.length); if (!r) continue;
+      const dist = pt[0] < r[0] ? r[0] - pt[0] : pt[0] > r[2] ? pt[0] - r[2] : 0;
+      if (dist < 4 && (!best || dist < best.dist)) { const v = parseAmount(raw); if (v != null) best = { dist, value: v, text: raw, rect: r }; }
+    }
+  }
+  return best;
+}
+function tallyTotal() {
+  let acc = null;
+  for (const it of S.tally.items) {
+    if (acc === null) { acc = it.op === '-' ? -it.value : it.value; continue; }
+    if (it.op === '+') acc += it.value; else if (it.op === '-') acc -= it.value; else if (it.op === '*') acc *= it.value; else if (it.op === '/') acc = it.value ? acc / it.value : acc;
+  }
+  return acc || 0;
+}
+const fmtAmount = v => v.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/[\u202f\u00a0]/g, ' ');
+const OPS = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+function showTallyPanel() {
+  let p = $('#tallyPanel');
+  if (!p) {
+    p = document.createElement('div'); p.id = 'tallyPanel'; p.className = 'tally';
+    document.body.appendChild(p);
+    p.addEventListener('mousedown', ev => ev.stopPropagation());
+    p.addEventListener('click', ev => {
+      const b = ev.target.closest('button'); if (!b) return;
+      if (b.dataset.op) { S.tally.op = b.dataset.op; renderTallyPanel(); }
+      else if (b.dataset.rm != null) { S.tally.items.splice(+b.dataset.rm, 1); renderTallyPanel(); renderTallyMarksAll(); }
+      else if (b.dataset.act === 'copy') { navigator.clipboard.writeText(fmtAmount(tallyTotal())).then(() => toast('Total copié : ' + fmtAmount(tallyTotal())), () => toast('Copie impossible.', 'err')); }
+      else if (b.dataset.act === 'place') { if (!S.tally.items.length) return; S.tallyPlace = true; setTool('tally'); toast('Cliquez sur la page à l\'endroit où écrire le total.'); }
+      else if (b.dataset.act === 'clear') { S.tally.items = []; renderTallyPanel(); renderTallyMarksAll(); }
+      else if (b.dataset.act === 'close') closeTally();
+    });
+  }
+  renderTallyPanel();
+}
+function closeTally() { S.tally.items = []; S.tallyPlace = false; $('#tallyPanel')?.remove(); renderTallyMarksAll(); if (S.tool === 'tally') setTool('hand'); }
+function renderTallyPanel() {
+  const p = $('#tallyPanel'); if (!p) return;
+  const its = S.tally.items;
+  p.innerHTML = `<header>${svgIcon('Calculator', 16)}<span>Calculatrice comptable</span><button data-act="close" title="Fermer">${svgIcon('X', 14)}</button></header>
+    <div class="tops">${Object.keys(OPS).map(o => `<button data-op="${o}" class="${S.tally.op === o ? 'on' : ''}" title="Opération appliquée au prochain montant cliqué">${OPS[o]}</button>`).join('')}</div>
+    <div class="tlist">${its.length ? its.map((it, k) => `<div class="trow"><span class="top">${k ? OPS[it.op] : it.op === '-' ? '−' : ''}</span><span class="tval">${fmtAmount(it.value)}</span><span class="tpg">p. ${it.i + 1}</span><button data-rm="${k}" title="Retirer">${svgIcon('X', 12)}</button></div>`).join('') : '<div class="hint" style="padding:8px">Cliquez sur les montants du document pour les additionner.</div>'}</div>
+    <div class="ttotal"><span>Total</span><b>${fmtAmount(tallyTotal())}</b></div>
+    <footer><button data-act="copy" title="Copier le total">${svgIcon('Copy', 14)}Copier</button><button data-act="place" title="Écrire le total sur la page">${svgIcon('TypeOutline', 14)}Poser</button><button data-act="clear" title="Tout effacer">${svgIcon('Eraser', 14)}Effacer</button></footer>`;
+  const l = p.querySelector('.tlist'); l.scrollTop = l.scrollHeight;
+}
+async function tallyMouseDown(ev) {
+  const P = pagePoint(ev); if (!P) return true;
+  ev.preventDefault();
+  const d = S.active;
+  if (S.tallyPlace) {
+    S.tallyPlace = false;
+    const st = S.annStyle.freetext, [px, py] = P.pdf;
+    const e = newAnnot('freetext', { contents: 'Total : ' + fmtAmount(tallyTotal()), size: st.size || 12, rect: [px, py - 10, px + 10, py], border: false });
+    fitFreeText(e); commitAnnot(d, P.i, e); return true;
+  }
+  const n = await numberAt(d, P.i, P.pdf);
+  if (!n) { toast('Aucun montant à cet endroit.'); return true; }
+  const k = S.tally.items.findIndex(it => it.doc === d && it.i === P.i && Math.abs(it.rect[0] - n.rect[0]) < 0.5 && Math.abs(it.rect[1] - n.rect[1]) < 0.5);
+  if (k >= 0) S.tally.items.splice(k, 1);   // second clic : on retire le montant
+  else S.tally.items.push({ doc: d, i: P.i, value: n.value, text: n.text, rect: n.rect, op: S.tally.op });
+  showTallyPanel(); renderTallyMarks(d, P.i);
+  return true;
+}
+function renderTallyMarks(doc, i) {
+  const el = pageEl(i), vp = doc.vps[i]; if (!el || !vp) return;
+  let L = el.querySelector('.layer.tallyl');
+  if (!L) { L = document.createElement('div'); L.className = 'layer tallyl'; el.appendChild(L); }
+  L.innerHTML = '';
+  S.tally.items.forEach((it, k) => {
+    if (it.doc !== doc || it.i !== i) return;
+    const r = rectToVp(vp, it.rect[0], it.rect[1], it.rect[2] - it.rect[0], it.rect[3] - it.rect[1]);
+    const m = document.createElement('div'); m.className = 'tmark';
+    Object.assign(m.style, { left: r.left - 2 + 'px', top: r.top - 1 + 'px', width: r.width + 4 + 'px', height: r.height + 2 + 'px' });
+    m.innerHTML = `<span>${k + 1}</span>`;
+    L.appendChild(m);
+  });
+}
+function renderTallyMarksAll() { const d = S.active; if (d) d.sizes.forEach((_, i) => d.vps[i] && renderTallyMarks(d, i)); }
+
+/* =====================================================================
+   Afficher / masquer, menus, médias
+   ===================================================================== */
+S.hideComments = false;
+function setCommentsHidden(h) {
+  S.hideComments = h; updateUI(); rerenderAll(true);
+  toast(h ? 'Commentaires masqués (ils restent dans le document).' : 'Commentaires affichés.');
+}
+function setAllNotes(open) {
+  const d = S.active; if (!d) return;
+  d.openNotes = d.openNotes || new Set();
+  d.sizes.forEach(async (_, i) => {
+    for (const e of d.pages[i].edits) if (e.type === 'annot' && e.sub === 'Text') e.open = open;
+    if (open) { const anns = await fileAnnots(d, i); anns.forEach(a => a.subtype === 'Text' && d.openNotes.add(a.id)); } else d.openNotes.clear();
+    if (d.vps[i]) renderEdits(d, i);
+  });
+}
+function popMenu(anchor, items) {
+  closeCtxMenu();
+  const m = document.createElement('div'); m.className = 'ctxmenu'; m.id = 'ctxmenu';
+  m.innerHTML = items.map((x, k) => x === '-' ? '<hr>' : `<button data-k="${k}" ${x[3] === false ? 'disabled' : ''}>${svgIcon(x[0], 15)}${esc(x[1])}${x[4] ? '<span class="ck">✓</span>' : ''}</button>`).join('');
+  document.body.appendChild(m);
+  const r = anchor ? anchor.getBoundingClientRect() : { left: innerWidth / 2, bottom: 120 }, mr = m.getBoundingClientRect();
+  m.style.left = Math.max(4, Math.min(r.left, innerWidth - mr.width - 8)) + 'px'; m.style.top = (r.bottom + 2) + 'px';
+  m.addEventListener('click', ev => { const b = ev.target.closest('[data-k]'); if (!b) return; ev.stopPropagation(); closeCtxMenu(); items[+b.dataset.k][2](); });
+}
+document.addEventListener('click', ev => { const c = ev.target.closest && ev.target.closest('[data-cmd]'); if (c) S.lastCmdEl = c; }, true);
+const anchorOf = cmd => (S.lastCmdEl && S.lastCmdEl.dataset.cmd === cmd && S.lastCmdEl.isConnected) ? S.lastCmdEl : $$(`[data-cmd="${cmd}"]`).find(b => b.offsetParent) || null;
+// icônes des menus : svgIcon('Eye') svgIcon('EyeOff') svgIcon('MessageSquareText') svgIcon('MessageSquare') svgIcon('PanelLeft') svgIcon('Scan') svgIcon('Link') svgIcon('Calculator') svgIcon('Eraser') svgIcon('Ruler') svgIcon('Mic') svgIcon('Square') svgIcon('Download') svgIcon('Copy') svgIcon('TypeOutline')
+function cmdShowMenu() {
+  popMenu(anchorOf('showMenu'), [
+    ['Eye', 'Afficher les commentaires', () => setCommentsHidden(false), true, !S.hideComments],
+    ['EyeOff', 'Masquer les commentaires', () => setCommentsHidden(true), true, S.hideComments],
+    '-',
+    ['MessageSquareText', 'Ouvrir toutes les notes', () => setAllNotes(true)],
+    ['MessageSquare', 'Fermer toutes les notes', () => setAllNotes(false)],
+    '-',
+    ['PanelLeft', 'Volet Commentaires', () => runCmd('showComments')],
+  ]);
+}
+function cmdOtherTools() {
+  popMenu(anchorOf('otherTools'), [
+    ['Scan', 'Instantané', () => setTool('snapshot')],
+    ['Link', 'Lien', () => setTool('link')],
+    ['Calculator', 'Calculatrice comptable', () => setTool('tally')],
+    ['Eraser', 'Gomme', () => setTool('eraser')],
+    ['Ruler', 'Échelle de mesure…', cmdMeasureScale],
+  ]);
+}
+
+/* =====================================================================
+   Import / export XFDF
+   ===================================================================== */
+const XFDF_TAG = { Text: 'text', FreeText: 'freetext', Highlight: 'highlight', Underline: 'underline', StrikeOut: 'strikeout', Squiggly: 'squiggly', Line: 'line', Square: 'square', Circle: 'circle', Polygon: 'polygon', PolyLine: 'polyline', Ink: 'ink', Stamp: 'stamp', Caret: 'caret', FileAttachment: 'fileattachment' };
+const xmlEsc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const b64enc = u8 => { let s = ''; for (let k = 0; k < u8.length; k += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(k, k + 0x8000)); return btoa(s); };
+const b64dec = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function cmdExportXfdf() {
+  const doc = S.active; if (!doc) return;
+  finishEditor(true); finishFreeText(true);
+  busy(true);
+  try {
+    const bytes = await buildOutputBytes(doc);
+    const pdf = await PDFDocument.load(bytes, { ignoreEncryption: true, updateMetadata: false });
+    const mine = new Map(); doc.pages.forEach(p => p.edits.forEach(e => e.type === 'annot' && mine.set(e.id, e)));
+    const out = [];
+    const str = o => o ? (o.decodeText ? o.decodeText() : o.asString ? o.asString() : String(o)) : '';
+    const nums = o => o && o.asArray ? o.asArray().map(x => x.asNumber ? x.asNumber() : 0) : null;
+    const hex = c => c && c.length >= 3 ? '#' + c.slice(0, 3).map(v => Math.round(v * 255).toString(16).padStart(2, '0')).join('').toUpperCase() : null;
+    pdf.getPages().forEach((page, i) => {
+      const arr = page.node.Annots(); if (!arr) return;
+      for (let k = 0; k < arr.size(); k++) {
+        const dict = pdf.context.lookup(arr.get(k)); if (!(dict instanceof PDFLib.PDFDict)) continue;
+        const sub = pdfNameStr(dict.lookup(PDFName.of('Subtype'))), tag = XFDF_TAG[sub]; if (!tag) continue;
+        const g = n => dict.lookup(PDFName.of(n)), nm = str(g('NM'));
+        if (nm && nm.endsWith('-c') && mine.has(nm.slice(0, -2))) continue;   // insertion d'un remplacement : exportée avec son barré
+        const a = { page: i, rect: (nums(g('Rect')) || []).map(fmtNum).join(','), name: nm || uid(), flags: 'print' };
+        const c = hex(nums(g('C'))); if (c) a.color = c;
+        const ti = str(g('T')); if (ti) a.title = ti;
+        const m = str(g('M')); if (m) a.date = m;
+        const ca = g('CA'); if (ca && ca.asNumber) a.opacity = fmtNum(ca.asNumber());
+        const bs = g('BS'); if (bs instanceof PDFLib.PDFDict && bs.lookup(PDFName.of('W'))) a.width = fmtNum(bs.lookup(PDFName.of('W')).asNumber());
+        const qp = nums(g('QuadPoints')); if (qp) a.coords = qp.map(fmtNum).join(',');
+        const L = nums(g('L')); if (L) { a.start = fmtNum(L[0]) + ',' + fmtNum(L[1]); a.end = fmtNum(L[2]) + ',' + fmtNum(L[3]); const le = g('LE'); if (le && le.asArray) { const v = le.asArray().map(pdfNameStr); a.head = v[0]; a.tail = v[1]; } }
+        const nmI = g('Name'); if (nmI) a.icon = pdfNameStr(nmI);
+        const da = g('DA'); if (da) a.defaultappearance = str(da);
+        const it = g('IT'); if (it) a.intent = pdfNameStr(it);
+        const e = mine.get(nm);
+        if (e) { const j = clone(e); delete j._editing; if (e.fileId && doc.files && doc.files[e.fileId]) { const f = doc.files[e.fileId]; j._file = { name: f.name, mime: f.mime, b64: b64enc(f.bytes) }; } if (e.stamp && e.stamp.imgId && doc.images && doc.images[e.stamp.imgId]) { const im = doc.images[e.stamp.imgId]; j._img = { ...im, bytes: b64enc(im.bytes) }; } a['prele-data'] = btoa(unescape(encodeURIComponent(JSON.stringify(j)))); }
+        let body = '';
+        const ct = str(g('Contents')); if (ct) body += `<contents>${xmlEsc(ct)}</contents>`;
+        const ink = g('InkList'); if (ink && ink.asArray) body += `<inklist>${ink.asArray().map(s => `<gesture>${nums(s).reduce((o, v, k2, A) => k2 % 2 ? o : o.concat(fmtNum(v) + ',' + fmtNum(A[k2 + 1])), []).join(';')}</gesture>`).join('')}</inklist>`;
+        const vt = nums(g('Vertices')); if (vt) body += `<vertices>${vt.reduce((o, v, k2, A) => k2 % 2 ? o : o.concat(fmtNum(v) + ',' + fmtNum(A[k2 + 1])), []).join(';')}</vertices>`;
+        out.push(`<${tag} ${Object.entries(a).map(([k2, v]) => `${k2}="${xmlEsc(v)}"`).join(' ')}>${body}</${tag}>`);
+      }
+    });
+    if (!out.length) { toast('Aucun commentaire à exporter.'); return; }
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<xfdf xmlns="http://ns.adobe.com/xfdf/" xml:space="preserve">\n<f href="${xmlEsc(doc.name)}"/>\n<annots>\n${out.join('\n')}\n</annots>\n</xfdf>\n`;
+    const data = new TextEncoder().encode(xml), name = stripExt(doc.name) + '.xfdf';
+    busy(false);
+    if ('showSaveFilePicker' in window) {
+      const h = await showSaveFilePicker({ suggestedName: name, id: 'prele-xfdf', types: [{ description: 'Commentaires (XFDF)', accept: { 'application/vnd.adobe.xfdf': ['.xfdf'] } }] });
+      await writeHandle(h, data); toast(`${out.length} commentaire${out.length > 1 ? 's' : ''} exporté${out.length > 1 ? 's' : ''} : ${h.name}`);
+    } else { const url = URL.createObjectURL(new Blob([data], { type: 'application/xml' })); Object.assign(document.createElement('a'), { href: url, download: name }).click(); }
+    S.lastXfdf = xml;
+  } catch (e) { if (e.name !== 'AbortError') handleErr(e); } finally { busy(false); }
+}
+async function cmdImportXfdf() {
+  const doc = S.active; if (!doc) return;
+  try {
+    const [h] = await showOpenFilePicker({ id: 'prele-xfdf', types: [{ description: 'Commentaires (XFDF)', accept: { 'application/vnd.adobe.xfdf': ['.xfdf', '.xml'] } }] });
+    importXfdfText(doc, await (await h.getFile()).text());
+  } catch (e) { if (e.name !== 'AbortError') handleErr(e); }
+}
+function importXfdfText(doc, text) {
+  const xml = new DOMParser().parseFromString(text, 'application/xml');
+  if (xml.querySelector('parsererror')) { toast('Fichier XFDF illisible.', 'err'); return 0; }
+  const annots = xml.getElementsByTagName('annots')[0]; if (!annots) { toast('Aucun commentaire dans ce fichier.'); return 0; }
+  const P = s => (s || '').split(/[,;\s]+/).filter(Boolean).map(Number);
+  const isoOf = s => { const m = /D:(\d{4})(\d\d)(\d\d)(\d\d)?(\d\d)?(\d\d)?/.exec(s || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)).toISOString() : new Date().toISOString(); };
+  const TOOL_OF = { text: 'note', freetext: 'freetext', highlight: 'highlight', underline: 'underline', strikeout: 'strike', squiggly: 'squiggly', line: 'line', square: 'rect', circle: 'ellipse', polygon: 'polygon', polyline: 'polyline', ink: 'ink', stamp: 'stamp', caret: 'insert' };
+  pushUndo(doc);
+  let n = 0, skipped = 0; const touched = new Set();
+  for (const el of annots.children) {
+    const tag = el.localName.toLowerCase(), pg = +el.getAttribute('page');
+    if (!(pg >= 0 && pg < doc.pages.length)) { skipped++; continue; }
+    let e = null;
+    const pd = el.getAttribute('prele-data');
+    if (pd) {
+      try {
+        e = JSON.parse(decodeURIComponent(escape(atob(pd))));
+        if (e._file) { doc.files = doc.files || {}; const fid = uid(); doc.files[fid] = { name: e._file.name, mime: e._file.mime, bytes: b64dec(e._file.b64) }; e.fileId = fid; delete e._file; }
+        if (e._img) { doc.images = doc.images || {}; const iid = uid(); doc.images[iid] = { ...e._img, bytes: b64dec(e._img.bytes) }; e.stamp.imgId = iid; delete e._img; }
+      } catch { e = null; }
+    }
+    if (!e) {
+      const tool = TOOL_OF[tag]; if (!tool) { skipped++; continue; }
+      const col = el.getAttribute('color'), contents = (el.getElementsByTagName('contents')[0] || {}).textContent || '';
+      const f = { rect: P(el.getAttribute('rect')), contents };
+      if (col) f.color = hexToRgb(col);
+      if (el.hasAttribute('opacity')) f.opacity = +el.getAttribute('opacity');
+      if (el.hasAttribute('width')) f.width = +el.getAttribute('width');
+      if (el.hasAttribute('title')) f.author = el.getAttribute('title');
+      f.date = isoOf(el.getAttribute('date'));
+      const cq = P(el.getAttribute('coords'));
+      if (['highlight', 'underline', 'strikeout', 'squiggly'].includes(tag)) { if (cq.length < 8) { skipped++; continue; } f.quads = []; for (let k = 0; k + 7 < cq.length; k += 8) f.quads.push(cq.slice(k, k + 8)); }
+      if (tag === 'line') { f.line = [...P(el.getAttribute('start')), ...P(el.getAttribute('end'))]; f.arrow = /Arrow/i.test(el.getAttribute('tail') || '') ; }
+      if (tag === 'ink') f.ink = [...el.getElementsByTagName('gesture')].map(g => P(g.textContent));
+      if (tag === 'polygon' || tag === 'polyline') f.vertices = P((el.getElementsByTagName('vertices')[0] || {}).textContent);
+      if (tag === 'freetext') { const m = /([\d.]+)\s+Tf/.exec(el.getAttribute('defaultappearance') || ''); f.size = m ? +m[1] : 12; }
+      if (tag === 'stamp') f.stamp = { label: (contents.split(' — ')[0] || el.getAttribute('icon') || 'TAMPON').toUpperCase(), sub: contents.split(' — ')[1] || '' };
+      e = newAnnot(tool, f);
+      if (tag === 'polygon' && /cloud/i.test(el.getAttribute('style') || '')) e.cloud = true;
+    }
+    e.id = uid(); e.type = 'annot'; delete e._editing;
+    doc.pages[pg].edits.push(e); touched.add(pg); n++;
+  }
+  if (!n) { doc.undo.pop(); toast('Aucun commentaire importé.'); return 0; }
+  touched.forEach(i => { if (doc.vps[i]) renderEdits(doc, i); refreshThumbBadge(doc, i); });
+  updateUI(); refreshSidePane();
+  toast(`${n} commentaire${n > 1 ? 's' : ''} importé${n > 1 ? 's' : ''}${skipped ? ` (${skipped} ignoré${skipped > 1 ? 's' : ''})` : ''}.`);
+  return n;
+}
+
+/* ---------- branchements ---------- */
+{
+  const base = renderEdits;
+  renderEdits = function (doc, i) { base(doc, i); if (S.tally.items.length) renderTallyMarks(doc, i); };
+}
+{
+  const base = updateUI;
+  updateUI = function () {
+    base();
+    const v = viewer(); if (v) v.classList.toggle('hide-comments', !!S.hideComments);
+    $$('[data-cmd="showMenu"]').forEach(b => b.classList.toggle('on', !!S.hideComments));
+  };
+}
+const EXTRA_CMDS = {
+  otherTools: cmdOtherTools, showMenu: cmdShowMenu, measureScale: cmdMeasureScale,
+  importComments: cmdImportXfdf, exportComments: cmdExportXfdf,
+  addVideo: () => cmdAddMedia('video'), addSound: () => cmdAddMedia('audio'), add3d: () => cmdAddMedia('3d'),
+  tally: () => setTool('tally'),
+};
+const EXTRA_NEEDDOC = ['showMenu', 'importComments', 'exportComments', 'addVideo', 'addSound', 'add3d', 'tally'];
+window.PRELE_X = { importXfdfText, attachFileAt, numberAt, parseAmount, tallyTotal, cmdExportXfdf, setCommentsHidden, measValue };
+
+/* =====================================================================
    Commandes
    ===================================================================== */
 const CMDS = {
@@ -5295,6 +6282,7 @@ const CMDS = {
 function showInstall(on) { $('#installBtn').hidden = !on; $('#bsInstall').hidden = !on; }
 /* les commandes s'exécutent l'une après l'autre (évite les modifications concurrentes) */
 let cmdChain = Promise.resolve();
+if (typeof EXTRA_CMDS !== 'undefined') Object.assign(CMDS, EXTRA_CMDS);
 function runCmd(name) {
   closeCtxMenu();
   const f = CMDS[name]; if (!f) return Promise.resolve();
