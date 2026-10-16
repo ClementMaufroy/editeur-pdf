@@ -297,7 +297,7 @@ body.dragover-thumbs::after{display:none}
 <body>
 <div id="app">
   <header class="titlebar">
-    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.3</small></div>
+    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.4</small></div>
     <div class="qa">
       <button data-cmd="open" title="Ouvrir (Ctrl+O)" data-icon="FolderOpen" data-icon-size="17"></button>
       <button data-cmd="save" title="Enregistrer (Ctrl+S)" data-icon="Save" data-icon-size="17"></button>
@@ -516,7 +516,7 @@ const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2
    Éditeur PDF — éditeur PDF monofichier (pdf.js + pdf-lib)
    ===================================================================== */
 'use strict';
-const APP_VERSION = '1.3';
+const APP_VERSION = '1.4';
 const { PDFDocument, StandardFonts, rgb, degrees, PDFName, PDFHexString } = PDFLib;
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -617,7 +617,7 @@ function busy(on) { busyCount += on ? 1 : -1; document.body.classList.toggle('bu
 function handleErr(e, ctx) {
   console.error(e);
   const m = String(e && (e.message || e));
-  if (/encrypt/i.test(m)) toast('Ce document est protégé (chiffré) : la modification n\'est pas prise en charge dans cette version.', 'err', 6000);
+  if (/encrypt/i.test(m)) toast('Ce document est protégé et n\'a pas pu être déverrouillé automatiquement.', 'err', 6000);
   else if (e && e.name === 'AbortError') { /* annulé par l'utilisateur */ }
   else toast((ctx ? ctx + ' : ' : '') + m, 'err', 6000);
 }
@@ -675,7 +675,17 @@ async function openBytes(name, bytes, handle = null, opts = {}) {
   busy(true);
   try {
     const doc = { id: uid(), name, handle, bytes, pages: [], dirty: !!opts.dirty, undo: [], redo: [], zoomMode: 'width', scale: 1, selected: new Set(), current: 0, scrollTop: 0 };
+    // PDF protégé sans mot de passe d'ouverture : déverrouillage automatique
+    let unlocked = false;
+    try { const out = await unlockIfNeeded(doc.bytes, ''); if (out) { doc.bytes = out; unlocked = true; } }
+    catch (e) { console.warn('déverrouillage sans mot de passe impossible', e); }
     await loadPdfJs(doc);
+    if (!unlocked && doc.password) {
+      try { const out = await unlockIfNeeded(doc.bytes, doc.password); if (out) { doc.bytes = out; doc.password = null; await loadPdfJs(doc); unlocked = true; } }
+      catch (e) { console.warn('déverrouillage impossible', e); }
+    }
+    doc.unlocked = unlocked;
+    if (unlocked) toast(`« ${name} » était protégé : la protection a été retirée, il est modifiable. Enregistrez-le pour garder cette version.`, '', 6500);
     doc.pages = doc.sizes.map(() => ({ uid: uid(), edits: [] }));
     S.docs.push(doc);
     activate(doc);
@@ -783,7 +793,7 @@ function updateUI() {
   const toolNames = { hand: 'Outil Main', select: 'Sélection de texte', edittext: 'Modifier le texte — cliquez sur une ligne', addtext: 'Ajouter du texte — cliquez à l\'endroit voulu', cover: 'Masquer une zone — tracez un rectangle' };
   $('#stTool').textContent = toolNames[S.tool] || '';
   const nEdits = d ? d.pages.reduce((a, p) => a + p.edits.length, 0) : 0;
-  $('#stInfo').textContent = d ? (nEdits ? `${nEdits} modification${nEdits > 1 ? 's' : ''} de contenu` : '') : '';
+  $('#stInfo').textContent = d ? [d.unlocked ? 'Protection retirée' : '', nEdits ? `${nEdits} modification${nEdits > 1 ? 's' : ''} de contenu` : ''].filter(Boolean).join(' · ') : '';
   $('#stDirty').textContent = d && d.dirty ? 'Modifications non enregistrées' : '';
   $('#stZoom').textContent = d ? Math.round(d.scale * 100) + ' %' : '';
   updateZoomSelects();
@@ -2088,8 +2098,7 @@ async function combineEngine(entries, opts = {}, progress) {
       await imageToPdfPage(out, bytes, e.name);
     } else {
       let src;
-      try { src = await PDFDocument.load(bytes, { updateMetadata: false }); }
-      catch (err) { throw new Error(`« ${e.name} » : ${/encrypt/i.test(err.message) ? 'document protégé par mot de passe' : err.message}`); }
+      src = await loadPdfLibUnlocked(bytes, e.name);
       const idx = parseRanges(e.range, src.getPageCount());
       if (!idx) throw new Error(`« ${e.name} » : plage de pages invalide (${e.range})`);
       const copied = await out.copyPages(src, idx);
@@ -2811,6 +2820,80 @@ function initThumbFileDrop() {
       if (!sources.length) { toast('Seuls les PDF et les images peuvent être insérés.', 'err'); return; }
       await runSerial(() => insertSourcesAt(T.doc, sources, T.at));
     });
+  }
+}
+
+/* =====================================================================
+   v1.4 — Déverrouillage automatique des PDF protégés
+   ---------------------------------------------------------------------
+   Beaucoup de PDF (banques, impôts, notaires…) s'ouvrent sans mot de
+   passe mais sont chiffrés avec des restrictions (modification, copie…).
+   On retire ce chiffrement avec qpdf (WebAssembly, chargé à la demande),
+   entièrement sur l'ordinateur, pour rendre le document modifiable.
+   ===================================================================== */
+const QPDF_BASE = 'libs/qpdf/';
+let qpdfLoad = null;
+function loadQpdf() {
+  if (qpdfLoad) return qpdfLoad;
+  qpdfLoad = (async () => {
+    const prev = window.Module;
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = QPDF_BASE + 'qpdf.js';
+      s.onload = res; s.onerror = () => rej(new Error('module de déverrouillage introuvable (connexion internet ?)'));
+      document.head.appendChild(s);
+    });
+    const factory = window.Module;
+    if (prev === undefined) delete window.Module; else window.Module = prev;
+    const resp = await fetch(QPDF_BASE + 'qpdf.wasm');
+    if (!resp.ok) throw new Error('module de déverrouillage introuvable');
+    const wasmBinary = new Uint8Array(await resp.arrayBuffer());
+    return { factory, wasmBinary };
+  })();
+  qpdfLoad.catch(() => { qpdfLoad = null; });
+  return qpdfLoad;
+}
+
+/* repère rapidement un dictionnaire /Encrypt (début et fin du fichier) */
+function looksEncrypted(bytes) {
+  const span = 96 * 1024;
+  const dec = new TextDecoder('latin1');
+  const tail = dec.decode(bytes.subarray(Math.max(0, bytes.length - span)));
+  if (/\/Encrypt\s/.test(tail) || /\/Encrypt\s*\d/.test(tail)) return true;
+  const head = dec.decode(bytes.subarray(0, Math.min(bytes.length, span)));
+  return /\/Encrypt\s*\d+\s+\d+\s+R/.test(head);
+}
+
+async function qpdfDecrypt(bytes, password = '') {
+  const { factory, wasmBinary } = await loadQpdf();
+  const errs = [];
+  const m = await factory({ wasmBinary, noInitialRun: true, print: () => { }, printErr: t => errs.push(t) });
+  m.FS.writeFile('/in.pdf', bytes);
+  const args = ['--decrypt'];
+  if (password) args.push('--password=' + password);
+  args.push('/in.pdf', '/out.pdf');
+  try { m.callMain(args); } catch (e) { /* code de sortie non nul : on vérifie le résultat ci-dessous */ }
+  let out = null;
+  try { out = m.FS.readFile('/out.pdf'); } catch { }
+  if (!out || out.length < 64) throw new Error(errs.filter(Boolean).slice(-1)[0] || 'déverrouillage impossible');
+  return out;
+}
+
+/* appelé à l'ouverture : renvoie les octets déverrouillés, ou null si le document n'est pas protégé */
+async function unlockIfNeeded(bytes, password) {
+  if (!looksEncrypted(bytes)) return null;
+  try { await PDFDocument.load(bytes, { updateMetadata: false }); return null; }   // pas réellement chiffré
+  catch (e) { if (!/encrypt/i.test(String(e && e.message))) return null; }
+  return await qpdfDecrypt(bytes, password || '');
+}
+
+/* charge un PDF dans pdf-lib en le déverrouillant si nécessaire (combiner, insérer…) */
+async function loadPdfLibUnlocked(bytes, name) {
+  try { return await PDFDocument.load(bytes, { updateMetadata: false }); }
+  catch (e) {
+    if (!/encrypt/i.test(String(e && e.message))) throw e;
+    try { return await PDFDocument.load(await qpdfDecrypt(bytes), { updateMetadata: false }); }
+    catch (e2) { throw new Error(`« ${name} » est protégé et n'a pas pu être déverrouillé (${e2.message})`); }
   }
 }
 
