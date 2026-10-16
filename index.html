@@ -2609,7 +2609,7 @@ async function handleLaunch(files) {
   }
   const before = new Set(S.docs);
   await openHandles(files);
-  S.docs.filter(d => !before.has(d)).forEach(d => launchBatch.docs.push(d));
+  S.docs.filter(d => !before.has(d) && !launchBatch.docs.includes(d)).forEach(d => launchBatch.docs.push(d));
   clearTimeout(launchBatch.timer);
   launchBatch.timer = setTimeout(() => {
     const docs = launchBatch.docs.filter(d => S.docs.includes(d));
