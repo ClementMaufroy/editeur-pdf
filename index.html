@@ -172,7 +172,8 @@ svg{flex:none}
 .ebadge button{width:18px;height:18px;border-radius:4px;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
 .ebadge button.mv{cursor:move;background:var(--brand-2)}
 .rubber{position:absolute;border:1.5px dashed var(--brand-2);background:rgba(255,255,255,.6);z-index:7;pointer-events:none}
-.viewer.t-addtext .page,.viewer.t-cover .page{cursor:crosshair}
+.viewer.t-addtext .page,.viewer.t-cover .page,.viewer.t-snapshot .page{cursor:crosshair}
+.viewer.t-snapshot .textLayer{pointer-events:none}
 
 /* ---------- accueil ---------- */
 .welcome{min-height:100%;display:grid;place-items:center;padding:30px}
@@ -292,12 +293,72 @@ body.pdragging, body.pdragging *{cursor:grabbing!important;user-select:none}
 .toast-act:hover{background:rgba(255,255,255,.25)}
 body.dragover-thumbs::after{display:none}
 
+/* ---------- v1.5 ---------- */
+.searchbox{width:260px}
+.advsearch{display:flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:0;border-radius:7px;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;font-size:12px;white-space:nowrap}
+.advsearch:hover{background:rgba(255,255,255,.22)}
+.rbig.soon{position:relative}
+.rbig.soon::after{content:"bientôt";position:absolute;top:2px;right:0;font-size:9px;background:var(--accent-soft);color:#7a5a12;border-radius:4px;padding:0 4px}
+.rgroup .rcol .rrow{gap:3px;height:23px}
+.rgroup .rcol .rrow .ticon{height:22px}
+.rgroup .rcol .rrow .zoomsel{height:22px}
+.ticon.on{background:var(--sel);border-color:var(--sel-line)}
+.sidetabs button{padding:8px 0;flex:1}
+.sidetitle{padding:6px 10px 5px;font-size:11.5px;font-weight:650;color:var(--brand);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--line-2)}
+.bmtree{list-style:none;margin:0;padding:4px 0}
+.bmtree .bmtree{display:none;padding:0}
+.bmtree li.open>.bmtree{display:block}
+.bmrow{display:flex;align-items:center;gap:3px;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:12.5px}
+.bmrow:hover{background:var(--hover)}
+.bmrow.sel{background:var(--sel)}
+.bmtog{width:18px;height:18px;border:0;background:none;padding:0;display:grid;place-items:center;cursor:pointer;color:var(--muted);transition:transform .12s}
+li.open>.bmrow .bmtog{transform:rotate(90deg)}
+.bmsp{width:18px;flex:none}
+.bmt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clist{padding:4px 6px 20px}
+.cpage{font-size:11px;font-weight:650;color:var(--muted);padding:8px 4px 3px}
+.citem{padding:6px 8px;border:1px solid var(--line-2);border-radius:7px;margin-bottom:4px;cursor:pointer;background:#fff}
+.citem:hover{border-color:var(--sel-line)}
+.citem.sel{background:var(--sel);border-color:var(--sel-line)}
+.chead{font-size:11.5px;display:flex;gap:4px;align-items:baseline}
+.cdate{margin-left:auto;color:var(--muted);font-size:10.5px}
+.ctxt{font-size:12px;margin-top:3px;white-space:pre-wrap;word-break:break-word}
+.alist{padding:6px}
+.aitem{display:flex;align-items:center;gap:7px;padding:6px;border-radius:6px}
+.aitem:hover{background:var(--hover)}
+.aitem>svg{color:var(--brand-2)}
+.ameta{flex:1;min-width:0}
+.aname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+.props{padding:4px 0 16px}
+.psec{font-size:11px;font-weight:650;color:var(--muted);padding:10px 10px 3px;text-transform:uppercase;letter-spacing:.3px}
+.prow{display:flex;flex-direction:column;padding:3px 10px;font-size:11.5px}
+.prow span{color:var(--muted);font-size:10.5px}
+.prow b{font-weight:500;word-break:break-word}
+.eimg{position:absolute;pointer-events:none;overflow:visible}
+.eimg img{position:absolute;display:block;max-width:none;user-select:none}
+.viewer:not(.t-hand):not(.t-snapshot) .ebox.img{pointer-events:auto;cursor:move}
+.viewer:not(.t-hand):not(.t-snapshot) .ebox.img:hover{border-color:var(--accent)}
+.viewer:not(.t-hand):not(.t-snapshot) .ebox.img:hover .ebadge{display:flex}
+.ebox .rs{position:absolute;right:-5px;bottom:-5px;width:10px;height:10px;background:#fff;border:2px solid var(--accent);border-radius:2px;cursor:nwse-resize;display:none;pointer-events:auto}
+.ebox.active .rs,.ebox.img:hover .rs,.viewer.t-cover .ebox:hover .rs{display:block}
+.rubber.snap{border-color:#2a7cd6;background:rgba(42,124,214,.08)}
+.asres{margin-top:10px;max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:8px;min-height:120px}
+.asfile{border-bottom:1px solid var(--line-2)}
+.asfh{display:flex;align-items:center;gap:7px;padding:7px 10px 4px;font-size:12.5px;position:sticky;top:0;background:var(--panel-2)}
+.asfh svg{color:var(--brand-2)}
+.asfh .hint{margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
+.ashit{display:flex;gap:8px;padding:4px 10px 4px 32px;font-size:12px;cursor:pointer}
+.ashit:hover{background:var(--hover)}
+.ashit.sel{background:var(--sel)}
+.ashit mark{background:#ffe08a;border-radius:2px;padding:0 1px}
+.aspg{color:var(--muted);white-space:nowrap;min-width:34px}
+
 </style>
 </head>
 <body>
 <div id="app">
   <header class="titlebar">
-    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.4.1</small></div>
+    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.5</small></div>
     <div class="qa">
       <button data-cmd="open" title="Ouvrir (Ctrl+O)" data-icon="FolderOpen" data-icon-size="17"></button>
       <button data-cmd="save" title="Enregistrer (Ctrl+S)" data-icon="Save" data-icon-size="17"></button>
@@ -312,6 +373,7 @@ body.dragover-thumbs::after{display:none}
       <button data-cmd="searchPrev" title="Précédent (Maj+Entrée)" data-icon="ChevronUp" data-icon-size="15"></button>
       <button data-cmd="searchNext" title="Suivant (Entrée)" data-icon="ChevronDown" data-icon-size="15"></button>
     </div>
+    <button class="advsearch" data-cmd="advSearch" title="Recherche avancée : chercher dans tous les PDF d'un dossier"><span data-icon="FolderSearch" data-icon-size="15"></span>Recherche avancée</button>
     <button class="installbtn" data-cmd="install" id="installBtn" hidden title="Installer comme un logiciel sur cet ordinateur"><span data-icon="MonitorDown" data-icon-size="15"></span>Installer</button>
     <button class="helpbtn" data-cmd="help" title="Aide et notes de version" data-icon="CircleHelp" data-icon-size="18"></button>
   </header>
@@ -319,29 +381,53 @@ body.dragover-thumbs::after{display:none}
   <nav class="tabstrip" id="tabstrip">
     <button class="file" data-rtab="file">Fichier</button>
     <button data-rtab="home" class="active">Accueil</button>
-    <button data-rtab="organize">Organiser</button>
-    <button data-rtab="edit">Édition</button>
     <button data-rtab="view">Affichage</button>
+    <button data-rtab="organize">Organiser</button>
+    <button data-rtab="format">Format</button>
   </nav>
 
   <section class="ribbon">
     <!-- ACCUEIL -->
     <div class="rpanel active" data-rpanel="home">
       <div class="rgroup"><div class="rbody">
-        <button class="rbig" data-cmd="open" data-icon="FolderOpen" data-icon-size="26">Ouvrir</button>
-        <button class="rbig" data-cmd="save" data-icon="Save" data-icon-size="26">Enregistrer</button>
-        <div class="rcol">
-          <button class="rsmall" data-cmd="saveAs" data-icon="FileDown" data-icon-size="16">Enregistrer sous</button>
-          <button class="rsmall" data-cmd="openFolder" data-icon="Folder" data-icon-size="16">Ouvrir un dossier</button>
-          <button class="rsmall" data-cmd="newDoc" data-icon="FilePlus2" data-icon-size="16">Nouveau document</button>
-        </div>
-      </div><div class="rlabel">Fichier</div></div>
-      <div class="rgroup"><div class="rbody">
         <button class="rbig tool" data-tool="hand" data-icon="Hand" data-icon-size="26">Main</button>
-        <button class="rbig tool" data-tool="select" data-icon="TextCursor" data-icon-size="26">Sélection<br>de texte</button>
-        <button class="rbig tool" data-tool="edittext" data-icon="FilePenLine" data-icon-size="26">Modifier<br>le texte</button>
-        <button class="rbig tool" data-tool="addtext" data-icon="Type" data-icon-size="26">Ajouter<br>du texte</button>
+        <button class="rbig tool" data-tool="select" data-icon="TextCursor" data-icon-size="26">Sélectionner<br>du texte</button>
+        <div class="rcol">
+          <button class="rsmall tool" data-tool="snapshot" data-icon="Camera" data-icon-size="16" title="Tracez un rectangle : la zone est copiée en image">Instantané</button>
+          <button class="rsmall" data-cmd="paste" data-icon="ClipboardPaste" data-icon-size="16" title="Coller une image ou un texte sur la page (Ctrl+V)">Coller sur la page</button>
+          <button class="rsmall" data-cmd="pasteNewDoc" data-icon="FilePlus2" data-icon-size="16" title="Créer un PDF à partir du presse-papiers">PDF depuis le presse-papiers</button>
+        </div>
       </div><div class="rlabel">Outils</div></div>
+      <div class="rgroup"><div class="rbody">
+        <div class="rcol">
+          <div class="rrow">
+            <button class="ticon" data-cmd="zoomOut" title="Zoom arrière" data-icon="ZoomOut" data-icon-size="15"></button>
+            <select class="zoomsel" data-zoomsel></select>
+            <button class="ticon" data-cmd="zoomIn" title="Zoom avant" data-icon="ZoomIn" data-icon-size="15"></button>
+          </div>
+          <div class="rrow">
+            <button class="ticon" data-cmd="actualSize" title="Taille réelle (100 %)" data-icon="Scan" data-icon-size="15"></button>
+            <button class="ticon" data-cmd="fitPage" title="Page entière" data-icon="Expand" data-icon-size="15"></button>
+            <button class="ticon" data-cmd="fitWidth" title="Pleine largeur" data-icon="ArrowLeftRight" data-icon-size="15"></button>
+            <button class="ticon" data-cmd="rotateViewLeft" title="Pivoter l'affichage à gauche (ne modifie pas le fichier)" data-icon="RotateCcwSquare" data-icon-size="15"></button>
+            <button class="ticon" data-cmd="rotateViewRight" title="Pivoter l'affichage à droite (ne modifie pas le fichier)" data-icon="RotateCwSquare" data-icon-size="15"></button>
+          </div>
+          <div class="rrow">
+            <button class="ticon panebtn" data-pane="pages" title="Volet Pages (miniatures)" data-icon="Files" data-icon-size="15"></button>
+            <button class="ticon panebtn" data-pane="bookmarks" title="Volet Signets" data-icon="Bookmark" data-icon-size="15"></button>
+            <button class="ticon panebtn" data-pane="comments" title="Volet Commentaires" data-icon="MessageSquare" data-icon-size="15"></button>
+            <button class="ticon panebtn" data-pane="attachments" title="Volet Pièces jointes" data-icon="Paperclip" data-icon-size="15"></button>
+            <button class="ticon panebtn" data-pane="props" title="Volet Propriétés" data-icon="SlidersHorizontal" data-icon-size="15"></button>
+            <button class="ticon panebtn" data-pane="folder" title="Volet Dossier" data-icon="Folder" data-icon-size="15"></button>
+          </div>
+        </div>
+      </div><div class="rlabel">Affichage</div></div>
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig tool" data-tool="edittext" data-icon="FilePenLine" data-icon-size="26">Éditer<br>un texte</button>
+        <button class="rbig tool" data-tool="addtext" data-icon="Type" data-icon-size="26">Ajouter<br>du texte</button>
+        <button class="rbig" data-cmd="addImage" data-icon="ImagePlus" data-icon-size="26">Ajouter<br>une image</button>
+        <button class="rbig tool" data-tool="cover" data-icon="Eraser" data-icon-size="26">Masquer<br>une zone</button>
+      </div><div class="rlabel">Éléments</div></div>
       <div class="rgroup"><div class="rbody">
         <button class="rbig" data-cmd="combine" data-icon="Merge" data-icon-size="26">Combiner<br>des fichiers</button>
         <button class="rbig" data-cmd="split" data-icon="Split" data-icon-size="26">Scinder</button>
@@ -352,16 +438,47 @@ body.dragover-thumbs::after{display:none}
         </div>
       </div><div class="rlabel">Document</div></div>
       <div class="rgroup"><div class="rbody">
+        <button class="rbig soon" disabled title="Bientôt : signature avec certificat" data-icon="FileSignature" data-icon-size="26">Signer le<br>document</button>
+      </div><div class="rlabel">Protéger</div></div>
+    </div>
+
+    <!-- AFFICHAGE -->
+    <div class="rpanel" data-rpanel="view">
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig" data-cmd="actualSize" data-icon="Scan" data-icon-size="26">Taille<br>réelle</button>
+        <button class="rbig" data-cmd="fitPage" data-icon="Expand" data-icon-size="26">Page<br>entière</button>
+        <button class="rbig" data-cmd="fitWidth" data-icon="ArrowLeftRight" data-icon-size="26">Pleine<br>largeur</button>
         <div class="rcol">
           <div class="rrow">
             <button class="ticon" data-cmd="zoomOut" title="Zoom arrière" data-icon="ZoomOut" data-icon-size="15"></button>
             <select class="zoomsel" data-zoomsel></select>
             <button class="ticon" data-cmd="zoomIn" title="Zoom avant" data-icon="ZoomIn" data-icon-size="15"></button>
           </div>
-          <button class="rsmall" data-cmd="fitWidth" data-icon="ArrowLeftRight" data-icon-size="16">Pleine largeur</button>
-          <button class="rsmall" data-cmd="fitPage" data-icon="Expand" data-icon-size="16">Page entière</button>
+          <button class="rsmall" data-cmd="zoomIn" data-icon="ZoomIn" data-icon-size="16">Zoom avant</button>
+          <button class="rsmall" data-cmd="zoomOut" data-icon="ZoomOut" data-icon-size="16">Zoom arrière</button>
         </div>
       </div><div class="rlabel">Zoom</div></div>
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig" data-cmd="rotateViewLeft" data-icon="RotateCcwSquare" data-icon-size="26">Pivoter<br>à gauche</button>
+        <button class="rbig" data-cmd="rotateViewRight" data-icon="RotateCwSquare" data-icon-size="26">Pivoter<br>à droite</button>
+      </div><div class="rlabel">Rotation de l'affichage</div></div>
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig" data-cmd="togglePane" data-icon="PanelLeft" data-icon-size="26">Volet<br>latéral</button>
+        <div class="rcol">
+          <button class="rsmall panebtn" data-pane="pages" data-icon="Files" data-icon-size="16">Pages</button>
+          <button class="rsmall panebtn" data-pane="bookmarks" data-icon="Bookmark" data-icon-size="16">Signets</button>
+          <button class="rsmall panebtn" data-pane="comments" data-icon="MessageSquare" data-icon-size="16">Commentaires</button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall panebtn" data-pane="attachments" data-icon="Paperclip" data-icon-size="16">Pièces jointes</button>
+          <button class="rsmall panebtn" data-pane="props" data-icon="SlidersHorizontal" data-icon-size="16">Propriétés</button>
+          <button class="rsmall panebtn" data-pane="folder" data-icon="Folder" data-icon-size="16">Dossier</button>
+        </div>
+      </div><div class="rlabel">Volets</div></div>
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig" data-cmd="advSearch" data-icon="FolderSearch" data-icon-size="26">Recherche<br>avancée</button>
+        <button class="rbig" data-cmd="docProps" data-icon="Info" data-icon-size="26">Propriétés du<br>document</button>
+      </div><div class="rlabel">Document</div></div>
     </div>
 
     <!-- ORGANISER -->
@@ -394,8 +511,8 @@ body.dragover-thumbs::after{display:none}
       </div><div class="rlabel">Sélection</div></div>
     </div>
 
-    <!-- ÉDITION -->
-    <div class="rpanel" data-rpanel="edit">
+    <!-- FORMAT -->
+    <div class="rpanel" data-rpanel="format">
       <div class="rgroup"><div class="rbody">
         <button class="rbig tool" data-tool="edittext" data-icon="FilePenLine" data-icon-size="26">Modifier<br>le texte</button>
         <button class="rbig tool" data-tool="addtext" data-icon="Type" data-icon-size="26">Ajouter<br>du texte</button>
@@ -433,28 +550,6 @@ body.dragover-thumbs::after{display:none}
       </div><div class="rlabel">Historique</div></div>
     </div>
 
-    <!-- AFFICHAGE -->
-    <div class="rpanel" data-rpanel="view">
-      <div class="rgroup"><div class="rbody">
-        <button class="rbig" data-cmd="zoomIn" data-icon="ZoomIn" data-icon-size="26">Zoom<br>avant</button>
-        <button class="rbig" data-cmd="zoomOut" data-icon="ZoomOut" data-icon-size="26">Zoom<br>arrière</button>
-        <div class="rcol">
-          <div class="rrow"><select class="zoomsel" data-zoomsel></select></div>
-          <button class="rsmall" data-cmd="fitWidth" data-icon="ArrowLeftRight" data-icon-size="16">Pleine largeur</button>
-          <button class="rsmall" data-cmd="fitPage" data-icon="Expand" data-icon-size="16">Page entière</button>
-        </div>
-      </div><div class="rlabel">Zoom</div></div>
-      <div class="rgroup"><div class="rbody">
-        <button class="rbig" data-cmd="togglePane" data-icon="PanelLeft" data-icon-size="26">Volet<br>latéral</button>
-        <div class="rcol">
-          <button class="rsmall" data-cmd="showPages" data-icon="Files" data-icon-size="16">Miniatures des pages</button>
-          <button class="rsmall" data-cmd="showFolder" data-icon="Folder" data-icon-size="16">Explorateur de dossier</button>
-        </div>
-      </div><div class="rlabel">Volets</div></div>
-      <div class="rgroup"><div class="rbody">
-        <button class="rbig" data-cmd="docProps" data-icon="Info" data-icon-size="26">Propriétés</button>
-      </div><div class="rlabel">Document</div></div>
-    </div>
   </section>
 
   <div class="doctabs" id="doctabs"></div>
@@ -462,11 +557,20 @@ body.dragover-thumbs::after{display:none}
   <div class="workspace">
     <aside class="sidepane" id="sidepane">
       <div class="sidetabs">
-        <button data-side="pages" class="active"><span data-icon="Files" data-icon-size="14"></span>Pages</button>
-        <button data-side="folder"><span data-icon="Folder" data-icon-size="14"></span>Dossier</button>
+        <button data-side="pages" class="active" title="Pages"><span data-icon="Files" data-icon-size="16"></span></button>
+        <button data-side="bookmarks" title="Signets"><span data-icon="Bookmark" data-icon-size="16"></span></button>
+        <button data-side="comments" title="Commentaires"><span data-icon="MessageSquare" data-icon-size="16"></span></button>
+        <button data-side="attachments" title="Pièces jointes"><span data-icon="Paperclip" data-icon-size="16"></span></button>
+        <button data-side="props" title="Propriétés"><span data-icon="SlidersHorizontal" data-icon-size="16"></span></button>
+        <button data-side="folder" title="Dossier"><span data-icon="Folder" data-icon-size="16"></span></button>
       </div>
+      <div class="sidetitle" id="sideTitle">Pages</div>
       <div class="sidebody">
         <div class="sideview active" data-sideview="pages"><div class="thumbs" id="thumbs"></div></div>
+        <div class="sideview" data-sideview="bookmarks" id="bookmarksView"></div>
+        <div class="sideview" data-sideview="comments" id="commentsView"></div>
+        <div class="sideview" data-sideview="attachments" id="attachmentsView"></div>
+        <div class="sideview" data-sideview="props" id="propsView"></div>
         <div class="sideview" data-sideview="folder" id="folderView"></div>
       </div>
     </aside>
@@ -511,12 +615,12 @@ body.dragover-thumbs::after{display:none}
 <input type="file" id="fileFallback" accept="application/pdf,.pdf" multiple hidden>
 
 <script>
-const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/>","X":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","Plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","FolderOpen":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\"/>","Merge":"<path d=\"m8 6 4-4 4 4\"/><path d=\"M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22\"/><path d=\"m20 22-5-5\"/>","Folder":"<path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","RefreshCw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M8 16H3v5\"/>","Check":"<path d=\"M20 6 9 17l-5-5\"/>","Image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","FileX":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"m14.5 12.5-5 5\"/><path d=\"m9.5 12.5 5 5\"/>","Move":"<path d=\"M12 2v20\"/><path d=\"m15 19-3 3-3-3\"/><path d=\"m19 9 3 3-3 3\"/><path d=\"M2 12h20\"/><path d=\"m5 9-3 3 3 3\"/><path d=\"m9 5 3-3 3 3\"/>","FilePlus2":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M3 15h6\"/><path d=\"M6 12v6\"/>","FolderPlus":"<path d=\"M12 10v6\"/><path d=\"M9 13h6\"/><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Files":"<path d=\"M20 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z\"/><path d=\"M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8\"/>","ArrowDownAZ":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"M20 8h-5\"/><path d=\"M15 10V6.5a2.5 2.5 0 0 1 5 0V10\"/><path d=\"M15 14h5l-5 6h5\"/>","Trash2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","GripVertical":"<circle cx=\"9\" cy=\"12\" r=\"1\"/><circle cx=\"9\" cy=\"5\" r=\"1\"/><circle cx=\"9\" cy=\"19\" r=\"1\"/><circle cx=\"15\" cy=\"12\" r=\"1\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><circle cx=\"15\" cy=\"19\" r=\"1\"/>","ArrowUp":"<path d=\"m5 12 7-7 7 7\"/><path d=\"M12 19V5\"/>","ArrowDown":"<path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/>","RotateCcw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","RotateCw":"<path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/>","FileOutput":"<path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M4 7V4a2 2 0 0 1 2-2 2 2 0 0 0-2 2\"/><path d=\"M4.063 20.999a2 2 0 0 0 2 1L18 22a2 2 0 0 0 2-2V7l-5-5H6\"/><path d=\"m5 11-3 3\"/><path d=\"m5 17-3-3h10\"/>","File":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/>","Save":"<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7\"/><path d=\"M7 3v4a1 1 0 0 0 1 1h7\"/>","Undo2":"<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\"/>","Redo2":"<path d=\"m15 14 5-5-5-5\"/><path d=\"M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13\"/>","Search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","ChevronUp":"<path d=\"m18 15-6-6-6 6\"/>","ChevronDown":"<path d=\"m6 9 6 6 6-6\"/>","MonitorDown":"<path d=\"M12 13V7\"/><path d=\"m15 10-3 3-3-3\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><path d=\"M12 17v4\"/><path d=\"M8 21h8\"/>","CircleHelp":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>","FileDown":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M12 18v-6\"/><path d=\"m9 15 3 3 3-3\"/>","Hand":"<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"/><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>","TextCursor":"<path d=\"M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1\"/><path d=\"M7 22h1a4 4 0 0 0 4-4v-1\"/><path d=\"M7 2h1a4 4 0 0 1 4 4v1\"/>","FilePenLine":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","Type":"<polyline points=\"4 7 4 4 20 4 20 7\"/><line x1=\"9\" x2=\"15\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"12\" y1=\"4\" y2=\"20\"/>","Split":"<path d=\"M16 3h5v5\"/><path d=\"M8 3H3v5\"/><path d=\"M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3\"/><path d=\"m15 9 6-6\"/>","ZoomOut":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","ZoomIn":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"11\" x2=\"11\" y1=\"8\" y2=\"14\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","ArrowLeftRight":"<path d=\"M8 3 4 7l4 4\"/><path d=\"M4 7h16\"/><path d=\"m16 21 4-4-4-4\"/><path d=\"M20 17H4\"/>","Expand":"<path d=\"m21 21-6-6m6 6v-4.8m0 4.8h-4.8\"/><path d=\"M3 16.2V21m0 0h4.8M3 21l6-6\"/><path d=\"M21 7.8V3m0 0h-4.8M21 3l-6 6\"/><path d=\"M3 7.8V3m0 0h4.8M3 3l6 6\"/>","Copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","ArrowDownUp":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"m21 8-4-4-4 4\"/><path d=\"M17 4v16\"/>","Square":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>","Eraser":"<path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/>","Bold":"<path d=\"M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8\"/>","Italic":"<line x1=\"19\" x2=\"10\" y1=\"4\" y2=\"4\"/><line x1=\"14\" x2=\"5\" y1=\"20\" y2=\"20\"/><line x1=\"15\" x2=\"9\" y1=\"4\" y2=\"20\"/>","AlignLeft":"<path d=\"M15 12H3\"/><path d=\"M17 18H3\"/><path d=\"M21 6H3\"/>","AlignRight":"<path d=\"M21 12H9\"/><path d=\"M21 18H7\"/><path d=\"M21 6H3\"/>","PanelLeft":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>","Info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","CornerLeftUp":"<polyline points=\"14 9 9 4 4 9\"/><path d=\"M20 20h-7a4 4 0 0 1-4-4V4\"/>"};
+const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/>","X":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","Plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","FolderOpen":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\"/>","Merge":"<path d=\"m8 6 4-4 4 4\"/><path d=\"M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22\"/><path d=\"m20 22-5-5\"/>","Folder":"<path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","RefreshCw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M8 16H3v5\"/>","Check":"<path d=\"M20 6 9 17l-5-5\"/>","Image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","FileX":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"m14.5 12.5-5 5\"/><path d=\"m9.5 12.5 5 5\"/>","Move":"<path d=\"M12 2v20\"/><path d=\"m15 19-3 3-3-3\"/><path d=\"m19 9 3 3-3 3\"/><path d=\"M2 12h20\"/><path d=\"m5 9-3 3 3 3\"/><path d=\"m9 5 3-3 3 3\"/>","FilePlus2":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M3 15h6\"/><path d=\"M6 12v6\"/>","FolderPlus":"<path d=\"M12 10v6\"/><path d=\"M9 13h6\"/><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Files":"<path d=\"M20 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z\"/><path d=\"M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8\"/>","ArrowDownAZ":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"M20 8h-5\"/><path d=\"M15 10V6.5a2.5 2.5 0 0 1 5 0V10\"/><path d=\"M15 14h5l-5 6h5\"/>","Trash2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","GripVertical":"<circle cx=\"9\" cy=\"12\" r=\"1\"/><circle cx=\"9\" cy=\"5\" r=\"1\"/><circle cx=\"9\" cy=\"19\" r=\"1\"/><circle cx=\"15\" cy=\"12\" r=\"1\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><circle cx=\"15\" cy=\"19\" r=\"1\"/>","ArrowUp":"<path d=\"m5 12 7-7 7 7\"/><path d=\"M12 19V5\"/>","ArrowDown":"<path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/>","ChevronRight":"<path d=\"m9 18 6-6-6-6\"/>","Download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\"/>","Info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","Search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","RotateCcw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","RotateCw":"<path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/>","FileOutput":"<path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M4 7V4a2 2 0 0 1 2-2 2 2 0 0 0-2 2\"/><path d=\"M4.063 20.999a2 2 0 0 0 2 1L18 22a2 2 0 0 0 2-2V7l-5-5H6\"/><path d=\"m5 11-3 3\"/><path d=\"m5 17-3-3h10\"/>","File":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/>","Save":"<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7\"/><path d=\"M7 3v4a1 1 0 0 0 1 1h7\"/>","Undo2":"<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\"/>","Redo2":"<path d=\"m15 14 5-5-5-5\"/><path d=\"M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13\"/>","ChevronUp":"<path d=\"m18 15-6-6-6 6\"/>","ChevronDown":"<path d=\"m6 9 6 6 6-6\"/>","FolderSearch":"<path d=\"M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1\"/><path d=\"m21 21-1.9-1.9\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/>","MonitorDown":"<path d=\"M12 13V7\"/><path d=\"m15 10-3 3-3-3\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><path d=\"M12 17v4\"/><path d=\"M8 21h8\"/>","CircleHelp":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>","Hand":"<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"/><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>","TextCursor":"<path d=\"M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1\"/><path d=\"M7 22h1a4 4 0 0 0 4-4v-1\"/><path d=\"M7 2h1a4 4 0 0 1 4 4v1\"/>","Camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","ClipboardPaste":"<path d=\"M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z\"/><path d=\"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10\"/><path d=\"m17 10 4 4-4 4\"/>","ZoomOut":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","ZoomIn":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"11\" x2=\"11\" y1=\"8\" y2=\"14\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","Scan":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/>","Expand":"<path d=\"m21 21-6-6m6 6v-4.8m0 4.8h-4.8\"/><path d=\"M3 16.2V21m0 0h4.8M3 21l6-6\"/><path d=\"M21 7.8V3m0 0h-4.8M21 3l-6 6\"/><path d=\"M3 7.8V3m0 0h4.8M3 3l6 6\"/>","ArrowLeftRight":"<path d=\"M8 3 4 7l4 4\"/><path d=\"M4 7h16\"/><path d=\"m16 21 4-4-4-4\"/><path d=\"M20 17H4\"/>","RotateCcwSquare":"<path d=\"M20 9V7a2 2 0 0 0-2-2h-6\"/><path d=\"m15 2-3 3 3 3\"/><path d=\"M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2\"/>","RotateCwSquare":"<path d=\"M12 5H6a2 2 0 0 0-2 2v3\"/><path d=\"m9 8 3-3-3-3\"/><path d=\"M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2\"/>","Bookmark":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/>","MessageSquare":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>","Paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","SlidersHorizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","FilePenLine":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","Type":"<polyline points=\"4 7 4 4 20 4 20 7\"/><line x1=\"9\" x2=\"15\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"12\" y1=\"4\" y2=\"20\"/>","ImagePlus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","Eraser":"<path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/>","Split":"<path d=\"M16 3h5v5\"/><path d=\"M8 3H3v5\"/><path d=\"M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3\"/><path d=\"m15 9 6-6\"/>","FileSignature":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","PanelLeft":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>","Copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","ArrowDownUp":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"m21 8-4-4-4 4\"/><path d=\"M17 4v16\"/>","Square":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>","Bold":"<path d=\"M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8\"/>","Italic":"<line x1=\"19\" x2=\"10\" y1=\"4\" y2=\"4\"/><line x1=\"14\" x2=\"5\" y1=\"20\" y2=\"20\"/><line x1=\"15\" x2=\"9\" y1=\"4\" y2=\"20\"/>","AlignLeft":"<path d=\"M15 12H3\"/><path d=\"M17 18H3\"/><path d=\"M21 6H3\"/>","AlignRight":"<path d=\"M21 12H9\"/><path d=\"M21 18H7\"/><path d=\"M21 6H3\"/>","CornerLeftUp":"<polyline points=\"14 9 9 4 4 9\"/><path d=\"M20 20h-7a4 4 0 0 1-4-4V4\"/>","FileDown":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M12 18v-6\"/><path d=\"m9 15 3 3 3-3\"/>"};
 /* =====================================================================
    Éditeur PDF — éditeur PDF monofichier (pdf.js + pdf-lib)
    ===================================================================== */
 'use strict';
-const APP_VERSION = '1.4.1';
+const APP_VERSION = '1.5';
 const { PDFDocument, StandardFonts, rgb, degrees, PDFName, PDFHexString } = PDFLib;
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -650,6 +754,11 @@ function askPassword(name, again) {
   });
 }
 
+/* viewport d'une page, avec la rotation d'affichage éventuelle (qui ne modifie pas le fichier) */
+function vpOf(doc, i, scale) {
+  const p = doc.pageObjs[i];
+  return p.getViewport({ scale, rotation: (p.rotate + (doc.viewRot || 0)) % 360 });
+}
 async function loadPdfJs(doc) {
   doc.gen = (doc.gen || 0) + 1;   // invalide les rendus en cours de l'ancienne version
   const old = doc.pdf; doc.pageObjs = [];
@@ -666,7 +775,7 @@ async function loadPdfJs(doc) {
   for (let i = 1; i <= doc.pdf.numPages; i++) {
     const p = await doc.pdf.getPage(i);
     doc.pageObjs.push(p);
-    const vp = p.getViewport({ scale: 1 });
+    const vp = vpOf(doc, doc.pageObjs.length - 1, 1);
     doc.sizes.push({ w: vp.width, h: vp.height });
   }
 }
@@ -778,7 +887,7 @@ function updateUI() {
   const d = S.active;
   $('#titleDoc').textContent = d ? d.name + (d.dirty ? ' •' : '') : '';
   document.title = d ? `${d.name} — Éditeur PDF` : 'Éditeur PDF';
-  const needDoc = ['save', 'saveAs', 'split', 'insertFile', 'extract', 'deletePages', 'rotateLeft', 'rotateRight', 'duplicatePages', 'reversePages', 'deleteBlank', 'insertBlank', 'selectAllPages', 'selectNone', 'zoomIn', 'zoomOut', 'fitWidth', 'fitPage', 'docProps', 'clearPageEdits', 'closeDoc'];
+  const needDoc = ['save', 'saveAs', 'split', 'insertFile', 'extract', 'deletePages', 'rotateLeft', 'rotateRight', 'duplicatePages', 'reversePages', 'deleteBlank', 'insertBlank', 'selectAllPages', 'selectNone', 'zoomIn', 'zoomOut', 'fitWidth', 'fitPage', 'docProps', 'clearPageEdits', 'closeDoc', 'actualSize', 'rotateViewLeft', 'rotateViewRight', 'paste', 'addImage'];
   $$('[data-cmd]').forEach(b => {
     const c = b.dataset.cmd;
     if (needDoc.includes(c)) b.disabled = !d;
@@ -790,7 +899,7 @@ function updateUI() {
   $('#pgCount').textContent = d ? d.sizes.length : '–';
   $('#pgInput').value = d ? d.current + 1 : '';
   $('#pgInput').disabled = !d;
-  const toolNames = { hand: 'Outil Main', select: 'Sélection de texte', edittext: 'Modifier le texte — cliquez sur une ligne', addtext: 'Ajouter du texte — cliquez à l\'endroit voulu', cover: 'Masquer une zone — tracez un rectangle' };
+  const toolNames = { hand: 'Outil Main', select: 'Sélection de texte', edittext: 'Modifier le texte — cliquez sur une ligne', addtext: 'Ajouter du texte — cliquez à l\'endroit voulu', cover: 'Masquer une zone — tracez un rectangle', snapshot: 'Instantané — tracez la zone à copier en image' };
   $('#stTool').textContent = toolNames[S.tool] || '';
   const nEdits = d ? d.pages.reduce((a, p) => a + p.edits.length, 0) : 0;
   $('#stInfo').textContent = d ? [d.unlocked ? 'Protection retirée' : '', nEdits ? `${nEdits} modification${nEdits > 1 ? 's' : ''} de contenu` : ''].filter(Boolean).join(' · ') : '';
@@ -802,6 +911,7 @@ function updateUI() {
   const v = viewer();
   v.className = 'viewer t-' + S.tool;
   $('#sidepane').classList.toggle('hidden', !S.paneVisible);
+  $$('.panebtn').forEach(b => { b.classList.toggle('on', S.paneVisible && b.dataset.pane === S.side); });
   renderDocTabs();
   syncFmtControls();
 }
@@ -891,7 +1001,7 @@ async function renderPage(doc, i) {
   if (el.dataset.gen == gen) return;
   el.dataset.gen = gen;
   const page = doc.pageObjs[i];
-  const vp = page.getViewport({ scale: doc.scale });
+  const vp = vpOf(doc, i, doc.scale);
   doc.vps[i] = vp;
   const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
   const canvas = document.createElement('canvas');
@@ -1052,7 +1162,7 @@ function buildThumbs() {
   const box = $('#thumbs');
   if (thumbObserver) thumbObserver.disconnect();
   const doc = S.active;
-  if (!doc) { box.innerHTML = '<div class="sideempty">Aucun document ouvert.</div>'; return; }
+  if (!doc) { box.innerHTML = '<div class="sideempty">Aucun document ouvert.</div>'; refreshSidePane(); return; }
   const TW = 128;
   box.innerHTML = doc.sizes.map((s, i) => {
     const r = s.w / s.h, w = r >= 1 ? TW : Math.round(TW * r * 1.0), h = r >= 1 ? Math.round(TW / r) : TW;
@@ -1064,13 +1174,14 @@ function buildThumbs() {
     for (const en of ens) if (en.isIntersecting) { renderThumb(doc, +en.target.dataset.index, en.target); thumbObserver.unobserve(en.target); }
   }, { root: $('.sidebody'), rootMargin: '300px 0px' });
   $$('.thumb', box).forEach(t => thumbObserver.observe(t));
+  refreshSidePane();
 }
 async function renderThumb(doc, i, el) {
   const ph = el.querySelector('.tph'); if (!ph || el.dataset.pdfgen != doc.gen) return;
   const w = parseFloat(ph.style.width), h = parseFloat(ph.style.height);
   const page = doc.pageObjs[i]; if (!page) return;
-  const base = page.getViewport({ scale: 1 });
-  const vp = page.getViewport({ scale: w / base.width });
+  const base = vpOf(doc, i, 1);
+  const vp = vpOf(doc, i, w / base.width);
   const c = document.createElement('canvas');
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   c.width = Math.floor(vp.width * dpr); c.height = Math.floor(vp.height * dpr);
@@ -1184,11 +1295,15 @@ async function folderThumb(row) {
   } catch { box.innerHTML = svgIcon('FileX', 16); }
 }
 
+const SIDE_TITLES = { pages: 'Pages', bookmarks: 'Signets', comments: 'Commentaires', attachments: 'Pièces jointes', props: 'Propriétés', folder: 'Dossier' };
 function showSide(which) {
   S.side = which;
   $$('.sidetabs button').forEach(b => b.classList.toggle('active', b.dataset.side === which));
   $$('.sideview').forEach(v => v.classList.toggle('active', v.dataset.sideview === which));
+  $('#sideTitle').textContent = SIDE_TITLES[which] || '';
   if (which === 'folder' && !S.folder.root) renderFolderEmpty();
+  refreshSidePane();
+  $$('.panebtn').forEach(b => b.classList.toggle('on', S.paneVisible && b.dataset.pane === which));
 }
 
 /* =====================================================================
@@ -1312,8 +1427,9 @@ async function cmdReverse() {
 async function cmdInsertBlank() {
   const doc = S.active; if (!doc) return;
   const at = doc.current + 1;
-  const s = doc.sizes[doc.current];
-  const rot = doc.pageObjs[doc.current].rotate % 180 !== 0;
+  const s = { ...doc.sizes[doc.current] };
+  const raw = doc.pageObjs[doc.current].getViewport({ scale: 1, rotation: 0 }); s.w = raw.width; s.h = raw.height;
+  const rot = false;
   await mutate(doc, (pdf, pages) => {
     pdf.insertPage(at, rot ? [s.h, s.w] : [s.w, s.h]);
     pages.splice(at, 0, { uid: uid(), edits: [] });
@@ -1379,8 +1495,13 @@ async function applyEdits(pdfDoc, pages, doc) {
         }
       } catch (err) { console.warn('suppression du texte impossible, masque conservé', err); }
     }
-    // 2) masques et nouveaux textes
+    // 2) masques, images et nouveaux textes
     for (const e of pages[i].edits) {
+      if (e.type === 'image') {
+        const img = await embedEditImage(pdfDoc, doc, e.imgId, cache);
+        if (img) page.drawImage(img, { x: e.x, y: e.y, width: e.w, height: e.h });
+        continue;
+      }
       if (e.cover && !removed.has(e.id)) page.drawRectangle({ x: e.cover.x, y: e.cover.y, width: e.cover.w, height: e.cover.h, color: rgb(...e.bg), borderWidth: 0 });
       if (e.text && e.type !== 'cover') {
         const { f, set } = await fontFor(e.family, e.bold, e.italic);
@@ -1523,6 +1644,7 @@ function buildEditEl(doc, i, e, vp) {
     Object.assign(cv.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', background: rgbToHex(e.bg) });
     wrap.appendChild(cv);
   }
+  if (e.type === 'image') return buildImageEl(doc, i, e, vp, wrap);
   let t = null;
   const right = e.align === 'right' && e.x2 != null;
   const p = vp.convertToViewportPoint(right ? e.x2 : (e.x ?? 0), e.y ?? 0);
@@ -1561,6 +1683,7 @@ function buildEditEl(doc, i, e, vp) {
   badge.style.left = (r.width + 6) + 'px'; badge.style.top = '-2px';
   badge.innerHTML = (e.type !== 'replace' ? `<button class="mv" title="Déplacer">${svgIcon('Move', 12)}</button>` : '') + `<button class="del" title="Supprimer cette modification">${svgIcon('X', 12)}</button>`;
   box.appendChild(badge);
+  if (e.type === 'cover') box.insertAdjacentHTML('beforeend', '<span class="rs" title="Redimensionner"></span>');
   wrap.appendChild(box);
   box.addEventListener('mousedown', ev => onEditBoxDown(ev, doc, i, e));
   return wrap;
@@ -1572,11 +1695,14 @@ function measureText(e) {
 }
 
 function onEditBoxDown(ev, doc, i, e) {
-  if (!['edittext', 'addtext', 'cover'].includes(S.tool)) return;
+  const imgTools = ['select', 'edittext', 'addtext', 'cover'];
+  if (!(['edittext', 'addtext', 'cover'].includes(S.tool) || (e.type === 'image' && imgTools.includes(S.tool)))) return;
   ev.stopPropagation(); ev.preventDefault();
   const btn = ev.target.closest('button');
   if (btn && btn.classList.contains('del')) { deleteEdit(doc, i, e); return; }
   if (btn && btn.classList.contains('mv')) { startMoveEdit(ev, doc, i, e); return; }
+  if (ev.target.closest('.rs')) { startResizeEdit(ev, doc, i, e); return; }
+  if (e.type === 'image') { finishEditor(true); S.activeEdit = e; renderEdits(doc, i); updateUI(); startMoveEdit(ev, doc, i, e); return; }
   if (S.editing && S.editing.edit.id === e.id) return;
   finishEditor(true);
   if (e.type === 'cover') { S.activeEdit = e; renderEdits(doc, i); updateUI(); return; }
@@ -1595,14 +1721,14 @@ function startMoveEdit(ev, doc, i, e) {
   const snap = snapshot(doc);
   const rect = el.getBoundingClientRect();
   const p0 = vp.convertToPdfPoint(ev.clientX - rect.left, ev.clientY - rect.top);
-  const orig = { x: e.x, y: e.y, cx: e.cover && e.cover.x, cy: e.cover && e.cover.y };
+  const orig = { x: e.x, y: e.y, x2: e.x2, cx: e.cover && e.cover.x, cy: e.cover && e.cover.y };
   let moved = false;
   const mm = m => {
     const p = vp.convertToPdfPoint(m.clientX - rect.left, m.clientY - rect.top);
     const dx = p[0] - p0[0], dy = p[1] - p0[1];
     if (Math.abs(dx) + Math.abs(dy) > 0.5) moved = true;
     const live = doc.pages[i].edits.find(x => x.id === e.id); if (!live) return;
-    if (live.x != null) { live.x = orig.x + dx; live.y = orig.y + dy; }
+    if (live.x != null) { live.x = orig.x + dx; live.y = orig.y + dy; if (live.x2 != null && orig.x2 != null) live.x2 = orig.x2 + dx; }
     if (live.cover) { live.cover.x = orig.cx + dx; live.cover.y = orig.cy + dy; }
     renderEdits(doc, i);
   };
@@ -2492,6 +2618,7 @@ function cmdHelp() {
         <li>Modifier le texte existant (PDF natifs), ajouter du texte, masquer une zone.</li>
         <li><b>Glisser des pages entre documents</b> : sélectionnez des miniatures, faites-les glisser sur l'onglet d'un autre document et attendez qu'il s'ouvre, puis lâchez-les à l'endroit voulu (miniatures ou page). Lâcher directement sur l'onglet les ajoute à la fin. Copie par défaut, <span class="kbd">Maj</span> au moment de lâcher pour déplacer.</li>
         <li>Glisser des fichiers depuis l'Explorateur sur les miniatures les insère à cet endroit ; sur la page affichée, ils s'ouvrent dans un nouvel onglet.</li>
+        <li><b>v1.5</b> — Ruban Accueil : instantané (zone copiée en image), coller une image ou un texte sur la page (<span class="kbd">Ctrl+V</span>), PDF depuis le presse-papiers, ajout d'image (déplacer, redimensionner), taille réelle, rotation de l'affichage, volets Signets, Commentaires, Pièces jointes et Propriétés, <b>recherche avancée</b> dans tous les PDF d'un dossier (<span class="kbd">Ctrl+Maj+F</span>).</li>
         <li>Depuis Windows : clic droit sur plusieurs PDF → Envoyer vers → « Combiner dans Éditeur PDF » ouvre directement la fenêtre Combiner.</li>
       </ul>
       <h4>Modification du texte : comment ça marche</h4>
@@ -2582,7 +2709,7 @@ function gotoSearch(k) {
   doc.sizes.forEach((_, i) => { if (doc.vps[i]) renderSearchHL(doc, i); });
   const el = pageEl(r.page); if (!el) return;
   const b = searchRect(doc, r);
-  const vp = doc.vps[r.page] || doc.pageObjs[r.page].getViewport({ scale: doc.scale });
+  const vp = doc.vps[r.page] || vpOf(doc, r.page, doc.scale);
   const rr = rectToVp(vp, b.x, b.y, b.w, b.h);
   const v = viewer();
   v.scrollTo({ top: el.offsetTop + rr.top - v.clientHeight / 3, left: Math.max(0, el.offsetLeft + rr.left - v.clientWidth / 2), behavior: 'auto' });
@@ -2898,6 +3025,494 @@ async function loadPdfLibUnlocked(bytes, name) {
 }
 
 /* =====================================================================
+   v1.5 — Ruban « Accueil » complet : affichage, volets, instantané,
+   presse-papiers, images, recherche avancée
+   ===================================================================== */
+
+/* ---------- affichage ---------- */
+function rotateView(delta) {
+  const d = S.active; if (!d) return;
+  finishEditor(true);
+  const cur = d.current;
+  d.viewRot = (((d.viewRot || 0) + delta) % 360 + 360) % 360;
+  d.sizes = d.pageObjs.map((_, i) => { const v = vpOf(d, i, 1); return { w: v.width, h: v.height }; });
+  buildViewer(); buildThumbs();
+  requestAnimationFrame(() => scrollToPage(cur, false));
+  toast(d.viewRot ? `Affichage pivoté de ${d.viewRot}° (le fichier n'est pas modifié).` : 'Affichage remis à l\'endroit.');
+}
+
+/* ---------- volets latéraux ---------- */
+function togglePaneFor(pane) {
+  if (S.paneVisible && S.side === pane) { S.paneVisible = false; updateUI(); }
+  else { S.paneVisible = true; showSide(pane); updateUI(); }
+  const d = S.active; if (d && d.zoomMode !== 'custom') rerenderAll();
+}
+let sidePaneTimer = null;
+function refreshSidePane() {
+  clearTimeout(sidePaneTimer);
+  sidePaneTimer = setTimeout(() => {
+    const w = S.side;
+    const f = { bookmarks: renderBookmarksPane, comments: renderCommentsPane, attachments: renderAttachmentsPane, props: renderPropsPane }[w];
+    if (f) f().catch(e => console.warn('volet', w, e));
+  }, 30);
+}
+const paneEmpty = msg => `<div class="sideempty">${msg}</div>`;
+
+async function destToPage(doc, dest) {
+  try {
+    if (typeof dest === 'string') dest = await doc.pdf.getDestination(dest);
+    if (!Array.isArray(dest)) return null;
+    const ref = dest[0];
+    return typeof ref === 'object' ? await doc.pdf.getPageIndex(ref) : ref;
+  } catch { return null; }
+}
+async function renderBookmarksPane() {
+  const box = $('#bookmarksView'), doc = S.active;
+  if (!doc) { box.innerHTML = paneEmpty('Aucun document ouvert.'); return; }
+  const outline = await doc.pdf.getOutline();
+  if (S.active !== doc || S.side !== 'bookmarks') return;
+  if (!outline || !outline.length) { box.innerHTML = paneEmpty('Ce document ne contient pas de signets.<br><br><span class="hint">La création et la modification des signets arrivent avec la version 1.7.</span>'); return; }
+  const items = [];
+  const walk = (list, depth) => list.forEach(it => { const id = items.length; items.push(it); it._id = id; it._depth = depth; if (it.items && it.items.length) walk(it.items, depth + 1); });
+  walk(outline, 0);
+  const html = list => `<ul class="bmtree">${list.map(it => `<li${it.items && it.items.length ? ' class="has"' : ''}>
+      <div class="bmrow" data-bm="${it._id}" style="padding-left:${6 + it._depth * 14}px">
+        ${it.items && it.items.length ? `<button class="bmtog" data-tog="${it._id}">${svgIcon('ChevronRight', 13)}</button>` : '<span class="bmsp"></span>'}
+        <span class="bmt" title="${esc(it.title)}">${esc(it.title || '(sans titre)')}</span></div>
+      ${it.items && it.items.length ? html(it.items) : ''}</li>`).join('')}</ul>`;
+  box.innerHTML = html(outline);
+  box.onclick = async ev => {
+    const tg = ev.target.closest('[data-tog]');
+    if (tg) { tg.closest('li').classList.toggle('open'); return; }
+    const row = ev.target.closest('[data-bm]'); if (!row) return;
+    $$('.bmrow.sel', box).forEach(r => r.classList.remove('sel')); row.classList.add('sel');
+    const it = items[+row.dataset.bm];
+    if (it.url) { window.open(it.url, '_blank', 'noopener'); return; }
+    const p = await destToPage(doc, it.dest);
+    if (p != null) scrollToPage(p, false);
+  };
+}
+
+const ANNOT_FR = { Text: 'Note', FreeText: 'Zone de texte', Highlight: 'Surlignage', Underline: 'Soulignement', StrikeOut: 'Barré', Squiggly: 'Ondulé', Square: 'Rectangle', Circle: 'Ovale', Line: 'Ligne', Polygon: 'Polygone', PolyLine: 'Polyligne', Ink: 'Crayon', Stamp: 'Tampon', Caret: 'Insertion', FileAttachment: 'Pièce jointe', Sound: 'Son' };
+async function renderCommentsPane() {
+  const box = $('#commentsView'), doc = S.active;
+  if (!doc) { box.innerHTML = paneEmpty('Aucun document ouvert.'); return; }
+  box.innerHTML = paneEmpty('Lecture des commentaires…');
+  const list = [];
+  for (let i = 0; i < doc.pageObjs.length; i++) {
+    let anns = [];
+    try { anns = await doc.pageObjs[i].getAnnotations(); } catch { }
+    for (const a of anns) if (ANNOT_FR[a.subtype]) list.push({ page: i, a });
+    if (S.active !== doc) return;
+  }
+  if (S.side !== 'comments') return;
+  if (!list.length) { box.innerHTML = paneEmpty('Aucun commentaire dans ce document.<br><br><span class="hint">Les outils de commentaire (surlignage, notes, tampons…) arrivent avec la version 1.6.</span>'); return; }
+  let last = -1;
+  box.innerHTML = `<div class="clist">${list.map(({ page, a }, k) => {
+    const head = page !== last ? `<div class="cpage">Page ${page + 1}</div>` : ''; last = page;
+    const txt = (a.contentsObj && a.contentsObj.str) || a.contents || '';
+    const who = (a.titleObj && a.titleObj.str) || a.title || '';
+    const date = a.modificationDate ? fmtPdfDate(a.modificationDate) : '';
+    return `${head}<div class="citem" data-k="${k}"><div class="chead"><b>${esc(ANNOT_FR[a.subtype])}</b>${who ? ' · ' + esc(who) : ''}${date ? `<span class="cdate">${date}</span>` : ''}</div>${txt ? `<div class="ctxt">${esc(txt)}</div>` : ''}</div>`;
+  }).join('')}</div>`;
+  box.onclick = ev => {
+    const it = ev.target.closest('[data-k]'); if (!it) return;
+    const { page, a } = list[+it.dataset.k];
+    $$('.citem.sel', box).forEach(x => x.classList.remove('sel')); it.classList.add('sel');
+    const vp = doc.vps[page] || vpOf(doc, page, doc.scale);
+    const r = a.rect ? rectToVp(vp, a.rect[0], a.rect[1], a.rect[2] - a.rect[0], a.rect[3] - a.rect[1]) : { top: 0 };
+    scrollToPage(page, false, Math.max(0, r.top - 80));
+  };
+}
+function fmtPdfDate(s) {
+  const m = String(s).match(/D?:?(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?/);
+  if (!m) return '';
+  return `${m[3] || '01'}/${m[2] || '01'}/${m[1]}${m[4] ? ` ${m[4]}:${m[5] || '00'}` : ''}`;
+}
+
+async function renderAttachmentsPane() {
+  const box = $('#attachmentsView'), doc = S.active;
+  if (!doc) { box.innerHTML = paneEmpty('Aucun document ouvert.'); return; }
+  const att = await doc.pdf.getAttachments();
+  if (S.active !== doc || S.side !== 'attachments') return;
+  const list = att ? Object.values(att) : [];
+  if (!list.length) { box.innerHTML = paneEmpty('Aucune pièce jointe dans ce document.'); return; }
+  box.innerHTML = `<div class="alist">${list.map((a, k) => `<div class="aitem">${svgIcon(isPdfName(a.filename) ? 'FileText' : 'Paperclip', 18)}
+      <div class="ameta"><div class="aname" title="${esc(a.filename)}">${esc(a.filename)}</div><div class="hint">${fmtSize(a.content.length)}</div></div>
+      ${isPdfName(a.filename) ? `<button class="ticon" data-open="${k}" title="Ouvrir dans un onglet">${svgIcon('FolderOpen', 14)}</button>` : ''}
+      <button class="ticon" data-save="${k}" title="Enregistrer sous…">${svgIcon('Download', 14)}</button></div>`).join('')}</div>`;
+  box.onclick = async ev => {
+    const o = ev.target.closest('[data-open]'), sv = ev.target.closest('[data-save]');
+    if (o) { const a = list[+o.dataset.open]; await openBytes(a.filename, a.content.slice(), null); }
+    if (sv) {
+      const a = list[+sv.dataset.save];
+      try {
+        if ('showSaveFilePicker' in window) { const h = await showSaveFilePicker({ suggestedName: a.filename }); await writeHandle(h, a.content); toast('Pièce jointe enregistrée : ' + h.name); }
+        else downloadBytes(a.filename, a.content);
+      } catch (e) { handleErr(e); }
+    }
+  };
+}
+
+async function renderPropsPane() {
+  const box = $('#propsView'), doc = S.active;
+  if (!doc) { box.innerHTML = paneEmpty('Aucun document ouvert.'); return; }
+  let info = {};
+  try { info = (await doc.pdf.getMetadata()).info || {}; } catch { }
+  if (S.active !== doc || S.side !== 'props') return;
+  const raw = doc.pageObjs[doc.current].getViewport({ scale: 1, rotation: 0 });
+  const mm = v => Math.round(v / 72 * 25.4);
+  const row = (k, v) => v ? `<div class="prow"><span>${k}</span><b>${esc(v)}</b></div>` : '';
+  const nEdits = doc.pages.reduce((a, p) => a + p.edits.length, 0);
+  box.innerHTML = `<div class="props">
+      <div class="psec">Fichier</div>
+      ${row('Nom', doc.name)}${row('Taille', fmtSize(doc.bytes.length))}${row('Pages', String(doc.sizes.length))}
+      ${row('Version PDF', info.PDFFormatVersion)}${row('Protection', doc.unlocked ? 'retirée à l\'ouverture' : (info.IsEncrypted || doc.password) ? 'chiffré' : 'aucune')}
+      ${row('Modifications', nEdits ? `${nEdits} en attente d'enregistrement` : '')}
+      <div class="psec">Page ${doc.current + 1}</div>
+      ${row('Format', `${mm(raw.width)} × ${mm(raw.height)} mm`)}${row('Rotation', doc.pageObjs[doc.current].rotate ? doc.pageObjs[doc.current].rotate + '°' : '')}
+      ${row('Affichage pivoté', doc.viewRot ? doc.viewRot + '°' : '')}
+      <div class="psec">Description</div>
+      ${row('Titre', info.Title)}${row('Auteur', info.Author)}${row('Sujet', info.Subject)}${row('Mots-clés', info.Keywords)}
+      ${row('Créé avec', info.Creator)}${row('Producteur', info.Producer)}
+      ${row('Création', info.CreationDate ? fmtPdfDate(info.CreationDate) : '')}${row('Modification', info.ModDate ? fmtPdfDate(info.ModDate) : '')}
+      <button class="btn" data-cmd="docProps" style="margin:10px 8px">${svgIcon('Info', 14)} Modifier la description…</button>
+    </div>`;
+}
+
+/* ---------- images (élément « image » modifiable) ---------- */
+async function normalizeImage(bytes, name, mime) {
+  const ext = extOf(name || '');
+  const isJpg = mime === 'image/jpeg' || ext === 'jpg' || ext === 'jpeg';
+  const isPng = mime === 'image/png' || ext === 'png';
+  const bmp = await createImageBitmap(new Blob([bytes], { type: mime || undefined }));
+  const dims = { w: bmp.width, h: bmp.height };
+  if (isJpg || isPng) { bmp.close && bmp.close(); return { bytes, kind: isJpg ? 'jpg' : 'png', ...dims }; }
+  const c = document.createElement('canvas'); c.width = dims.w; c.height = dims.h;
+  c.getContext('2d').drawImage(bmp, 0, 0);
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  return { bytes: new Uint8Array(await blob.arrayBuffer()), kind: 'png', ...dims };
+}
+function imageUrl(doc, imgId) {
+  doc.imgUrls = doc.imgUrls || {};
+  if (!doc.imgUrls[imgId]) { const im = doc.images[imgId]; doc.imgUrls[imgId] = URL.createObjectURL(new Blob([im.bytes], { type: im.kind === 'jpg' ? 'image/jpeg' : 'image/png' })); }
+  return doc.imgUrls[imgId];
+}
+async function embedEditImage(pdfDoc, doc, imgId, cache) {
+  const key = 'img:' + imgId;
+  if (cache[key]) return cache[key];
+  const im = doc && doc.images && doc.images[imgId]; if (!im) return null;
+  cache[key] = im.kind === 'jpg' ? await pdfDoc.embedJpg(im.bytes) : await pdfDoc.embedPng(im.bytes);
+  return cache[key];
+}
+/* place une image au centre de la zone visible de la page courante */
+async function addImageEdit(doc, bytes, name, mime) {
+  let im;
+  try { im = await normalizeImage(bytes, name, mime); } catch (e) { toast('Image illisible : ' + (name || 'presse-papiers'), 'err'); return; }
+  const i = doc.current;
+  const raw = doc.pageObjs[i].getViewport({ scale: 1, rotation: 0 });
+  const vb = doc.pageObjs[i].view;            // [x0, y0, x1, y1]
+  const maxW = raw.width * 0.45, maxH = raw.height * 0.35;
+  const k = Math.min(1, maxW / (im.w * 0.75), maxH / (im.h * 0.75));   // 96 dpi → points
+  const w = im.w * 0.75 * k, h = im.h * 0.75 * k;
+  // centre de la partie visible de la page, à défaut centre de la page
+  let cx = (vb[0] + vb[2]) / 2, cy = (vb[1] + vb[3]) / 2;
+  const el = pageEl(i), vp = doc.vps[i];
+  if (el && vp) {
+    const r = el.getBoundingClientRect(), v = viewer().getBoundingClientRect();
+    const top = Math.max(r.top, v.top), bot = Math.min(r.bottom, v.bottom);
+    if (bot > top) { const p = vp.convertToPdfPoint(r.width / 2, (top + bot) / 2 - r.top); cx = p[0]; cy = p[1]; }
+  }
+  doc.images = doc.images || {};
+  const imgId = uid();
+  doc.images[imgId] = im;
+  const e = { id: uid(), type: 'image', imgId, x: cx - w / 2, y: cy - h / 2, w, h };
+  pushUndo(doc);
+  doc.pages[i].edits.push(e);
+  S.activeEdit = e;
+  renderEdits(doc, i); refreshThumbBadge(doc, i); updateUI();
+  toast('Image ajoutée : faites-la glisser pour la placer, poignée en bas à droite pour la redimensionner.');
+}
+function buildImageEl(doc, i, e, vp, wrap) {
+  const r = rectToVp(vp, e.x, e.y, e.w, e.h);
+  const holder = document.createElement('div');
+  holder.className = 'eimg';
+  Object.assign(holder.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+  const rot = vp.rotation % 360;
+  const img = document.createElement('img');
+  img.src = imageUrl(doc, e.imgId); img.draggable = false;
+  const sw = rot % 180 ? r.height : r.width, sh = rot % 180 ? r.width : r.height;
+  Object.assign(img.style, { width: sw + 'px', height: sh + 'px', left: (r.width - sw) / 2 + 'px', top: (r.height - sh) / 2 + 'px', transform: `rotate(${rot}deg)` });
+  holder.appendChild(img);
+  wrap.appendChild(holder);
+  const box = document.createElement('div');
+  box.className = 'ebox img' + (S.activeEdit && S.activeEdit.id === e.id ? ' active' : '');
+  Object.assign(box.style, { left: (r.left - 2) + 'px', top: (r.top - 2) + 'px', width: (r.width + 4) + 'px', height: (r.height + 4) + 'px' });
+  box.innerHTML = `<div class="ebadge" style="left:${r.width + 6}px;top:-2px"><button class="del" title="Supprimer l'image">${svgIcon('X', 12)}</button></div><span class="rs" title="Redimensionner (Maj : déformer)"></span>`;
+  box.addEventListener('mousedown', ev => onEditBoxDown(ev, doc, i, e));
+  wrap.appendChild(box);
+  return wrap;
+}
+/* redimensionnement (images : proportions conservées sauf Maj ; masques : libre) */
+function startResizeEdit(ev, doc, i, e) {
+  finishEditor(true);
+  const vp = doc.vps[i], el = pageEl(i); if (!vp || !el) return;
+  const snap = snapshot(doc);
+  const pr = el.getBoundingClientRect();
+  const rect0 = e.type === 'image' ? { x: e.x, y: e.y, w: e.w, h: e.h } : { ...e.cover };
+  const r0 = rectToVp(vp, rect0.x, rect0.y, rect0.w, rect0.h);
+  let moved = false;
+  S.activeEdit = e;
+  const mm = m => {
+    const mx = m.clientX - pr.left, my = m.clientY - pr.top;
+    let w = Math.max(8, mx - r0.left), h = Math.max(8, my - r0.top);
+    if (e.type === 'image' && !m.shiftKey) { const s = Math.max(w / r0.width, h / r0.height); w = r0.width * s; h = r0.height * s; }
+    const a = vp.convertToPdfPoint(r0.left, r0.top), b = vp.convertToPdfPoint(r0.left + w, r0.top + h);
+    const nr = { x: Math.min(a[0], b[0]), y: Math.min(a[1], b[1]), w: Math.abs(a[0] - b[0]), h: Math.abs(a[1] - b[1]) };
+    const live = doc.pages[i].edits.find(x => x.id === e.id); if (!live) return;
+    if (live.type === 'image') Object.assign(live, nr); else live.cover = nr;
+    moved = true;
+    renderEdits(doc, i);
+  };
+  const mu = () => { window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); if (moved) { pushUndo(doc, snap); updateUI(); } };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+async function cmdAddImage() {
+  const doc = S.active; if (!doc) return;
+  try {
+    if (hasFS) {
+      const [h] = await showOpenFilePicker({ id: 'prele-img', types: [{ description: 'Images', accept: { 'image/*': IMG_EXT.map(x => '.' + x) } }] });
+      const f = await h.getFile();
+      await addImageEdit(doc, new Uint8Array(await f.arrayBuffer()), f.name, f.type);
+    } else {
+      const inp = Object.assign(document.createElement('input'), { type: 'file', accept: 'image/*' });
+      inp.onchange = async () => { const f = inp.files[0]; if (f) await addImageEdit(doc, new Uint8Array(await f.arrayBuffer()), f.name, f.type); };
+      inp.click();
+    }
+  } catch (e) { handleErr(e); }
+}
+
+/* ---------- presse-papiers ---------- */
+async function readClipboard() {
+  if (!navigator.clipboard || !navigator.clipboard.read) throw new Error('presse-papiers inaccessible dans ce navigateur');
+  const items = await navigator.clipboard.read();
+  for (const it of items) {
+    const t = it.types.find(x => x.startsWith('image/'));
+    if (t) { const b = await it.getType(t); return { kind: 'image', bytes: new Uint8Array(await b.arrayBuffer()), mime: t }; }
+  }
+  for (const it of items) if (it.types.includes('text/plain')) { const b = await it.getType('text/plain'); const text = await b.text(); if (text.trim()) return { kind: 'text', text }; }
+  return null;
+}
+function pasteTextEdit(doc, text) {
+  const i = doc.current, vb = doc.pageObjs[i].view;
+  const el = pageEl(i), vp = doc.vps[i];
+  let x = vb[0] + 50, y = vb[3] - 80;
+  if (el && vp) { const r = el.getBoundingClientRect(), v = viewer().getBoundingClientRect(); const p = vp.convertToPdfPoint(Math.min(60, r.width / 4), Math.max(40, v.top - r.top + 60)); x = p[0]; y = p[1]; }
+  const f = S.fmt;
+  const e = { id: uid(), type: 'add', text: text.replace(/\r\n?/g, '\n').trimEnd(), x, y, size: f.size, family: f.family, bold: f.bold, italic: f.italic, color: [...f.color], bg: [...f.bg], cover: null };
+  pushUndo(doc);
+  doc.pages[i].edits.push(e);
+  S.activeEdit = e;
+  renderEdits(doc, i); refreshThumbBadge(doc, i); updateUI();
+  toast('Texte collé sur la page (outil « Ajouter du texte » pour le modifier ou le déplacer).');
+}
+async function handlePasteData(data) {
+  const doc = S.active;
+  if (!data) { toast('Le presse-papiers ne contient ni image ni texte.'); return; }
+  if (!doc) { await pasteToNewDoc(data); return; }
+  if (data.kind === 'image') await addImageEdit(doc, data.bytes, 'presse-papiers.png', data.mime);
+  else pasteTextEdit(doc, data.text);
+}
+async function cmdPaste() {
+  try { await handlePasteData(await readClipboard()); }
+  catch (e) { toast('Accès au presse-papiers refusé : utilisez Ctrl+V dans la page, ou autorisez l\'accès dans Chrome.', 'err', 6000); }
+}
+async function pasteToNewDoc(data) {
+  if (!data) { toast('Le presse-papiers ne contient ni image ni texte.'); return; }
+  const stamp = new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/[/:]/g, '-').replace(' ', ' ');
+  if (data.kind === 'image') {
+    const ext = data.mime === 'image/jpeg' ? 'jpg' : 'png';
+    const bytes = await combineEngine([{ name: 'presse-papiers.' + ext, kind: 'image', range: '', getBytes: async () => data.bytes }], {});
+    await openBytes(`Presse-papiers ${stamp}.pdf`, bytes, null, { dirty: true });
+  } else {
+    const pdf = await PDFDocument.create();
+    const font = await pdf.embedFont(StandardFonts.Helvetica);
+    const set = new Set(font.getCharacterSet());
+    const size = 11, lh = size * 1.35, W = 595.28, H = 841.89, M = 56;
+    let page = pdf.addPage([W, H]), y = H - M;
+    const clean = t => [...t].map(c => set.has(c.codePointAt(0)) ? c : c === '\t' ? '    ' : '?').join('');
+    for (const para of data.text.replace(/\r\n?/g, '\n').split('\n')) {
+      const words = clean(para).split(/(\s+)/); let line = '';
+      const flush = () => { if (y < M) { page = pdf.addPage([W, H]); y = H - M; } page.drawText(line, { x: M, y, size, font }); y -= lh; line = ''; };
+      for (const w of words) { if (font.widthOfTextAtSize(line + w, size) > W - 2 * M && line.trim()) { flush(); if (!w.trim()) continue; } line += w; }
+      flush();
+    }
+    await openBytes(`Presse-papiers ${stamp}.pdf`, await pdf.save(), null, { dirty: true });
+  }
+}
+async function cmdPasteNewDoc() {
+  try { await pasteToNewDoc(await readClipboard()); }
+  catch (e) { toast('Accès au presse-papiers refusé : autorisez-le dans Chrome (icône à droite de la barre d\'adresse).', 'err', 6000); }
+}
+
+/* ---------- instantané ---------- */
+function startSnapshot(P) {
+  const d = S.active;
+  const rb = document.createElement('div'); rb.className = 'rubber snap'; P.pel.appendChild(rb);
+  const r0 = P.pel.getBoundingClientRect();
+  let x1 = P.x, y1 = P.y;
+  const draw = () => Object.assign(rb.style, { left: Math.min(P.x, x1) + 'px', top: Math.min(P.y, y1) + 'px', width: Math.abs(x1 - P.x) + 'px', height: Math.abs(y1 - P.y) + 'px' });
+  const mm = m => { x1 = Math.max(0, Math.min(r0.width, m.clientX - r0.left)); y1 = Math.max(0, Math.min(r0.height, m.clientY - r0.top)); draw(); };
+  const mu = () => {
+    window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); rb.remove();
+    const L = Math.min(P.x, x1), T = Math.min(P.y, y1), Wd = Math.abs(x1 - P.x), Ht = Math.abs(y1 - P.y);
+    if (Wd < 4 || Ht < 4) return;
+    const k = Math.max(2, Math.min(4, 300 / 72 / d.scale));   // ≈ 300 dpi, plafonné
+    const blobP = (async () => {
+      const vp = vpOf(d, P.i, d.scale * k);
+      const c = document.createElement('canvas');
+      c.width = Math.round(Wd * k); c.height = Math.round(Ht * k);
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      await d.pageObjs[P.i].render({ canvasContext: ctx, viewport: vp, transform: [1, 0, 0, 1, -L * k, -T * k] }).promise;
+      // superpose les modifications non encore enregistrées (images, textes, masques)
+      const layer = P.pel.querySelector('.edits');
+      if (layer && layer.children.length) await drawEditsOnCanvas(d, P.i, ctx, vp, L * k, T * k);
+      return await new Promise(r => c.toBlob(r, 'image/png'));
+    })();
+    S.lastSnapshot = blobP;
+    (navigator.clipboard && window.ClipboardItem ? navigator.clipboard.write([new ClipboardItem({ 'image/png': blobP })]) : Promise.reject())
+      .then(() => toastAction('Zone copiée dans le presse-papiers (Ctrl+V dans un mail, Word…).', 'Enregistrer l\'image…', saveLastSnapshot))
+      .catch(() => toastAction('Impossible d\'écrire dans le presse-papiers.', 'Enregistrer l\'image…', saveLastSnapshot));
+  };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+async function drawEditsOnCanvas(doc, i, ctx, vp, ox, oy) {
+  for (const e of doc.pages[i].edits) {
+    if (e.cover) { const r = rectToVp(vp, e.cover.x, e.cover.y, e.cover.w, e.cover.h); ctx.fillStyle = rgbToHex(e.bg); ctx.fillRect(r.left - ox, r.top - oy, r.width, r.height); }
+    if (e.type === 'image') {
+      const r = rectToVp(vp, e.x, e.y, e.w, e.h);
+      const img = new Image(); img.src = imageUrl(doc, e.imgId); await img.decode().catch(() => { });
+      ctx.save(); ctx.translate(r.left - ox + r.width / 2, r.top - oy + r.height / 2); ctx.rotate(vp.rotation * Math.PI / 180);
+      const sw = vp.rotation % 180 ? r.height : r.width, sh = vp.rotation % 180 ? r.width : r.height;
+      ctx.drawImage(img, -sw / 2, -sh / 2, sw, sh); ctx.restore();
+    } else if (e.text && e.type !== 'cover' && vp.rotation % 360 === 0) {
+      const s = e.size * vp.scale;
+      ctx.fillStyle = rgbToHex(e.color);
+      ctx.font = `${e.italic ? 'italic ' : ''}${e.bold ? '700 ' : ''}${s}px ${CSS_FAMILY[e.family]}`;
+      const p = vp.convertToViewportPoint(e.align === 'right' && e.x2 != null ? e.x2 : e.x, e.y);
+      ctx.textAlign = e.align === 'right' && e.x2 != null ? 'right' : 'left';
+      e.text.split('\n').forEach((ln, k) => ctx.fillText(ln, p[0] - ox, p[1] - oy + k * s * 1.2));
+      ctx.textAlign = 'left';
+    }
+  }
+}
+async function saveLastSnapshot() {
+  const blob = await S.lastSnapshot; if (!blob) return;
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  const name = `Instantané ${stripExt(S.active ? S.active.name : 'page')}.png`;
+  try {
+    if ('showSaveFilePicker' in window) { const h = await showSaveFilePicker({ suggestedName: name, types: [{ description: 'Image PNG', accept: { 'image/png': ['.png'] } }] }); await writeHandle(h, bytes); toast('Image enregistrée : ' + h.name); }
+    else { const url = URL.createObjectURL(blob); const a = Object.assign(document.createElement('a'), { href: url, download: name }); a.click(); setTimeout(() => URL.revokeObjectURL(url), 3000); }
+  } catch (e) { handleErr(e); }
+}
+
+/* ---------- recherche avancée (tous les PDF d'un dossier) ---------- */
+function openAdvSearch() {
+  let dir = S.folder.stack.length ? S.folder.stack[S.folder.stack.length - 1] : null;
+  let stop = false, running = false, results = [];
+  const d = dialog({
+    title: 'Recherche avancée', icon: 'FolderSearch', width: 760,
+    body: `<div class="inline" style="margin-bottom:8px">
+        <input type="text" id="asQ" placeholder="Mot ou expression à rechercher" style="flex:1;height:32px;border:1px solid var(--line);border-radius:6px;padding:0 10px;font-size:13.5px">
+        <button class="btn primary" id="asGo">${svgIcon('Search', 15)} Rechercher</button>
+      </div>
+      <div class="inline" style="margin-bottom:10px">
+        <button class="btn" id="asDir">${svgIcon('Folder', 15)} <span id="asDirName">${dir ? esc(dir.name) : 'Choisir un dossier…'}</span></button>
+        <label class="check" style="margin:0"><input type="checkbox" id="asSub" checked> inclure les sous-dossiers</label>
+        <label class="check" style="margin:0"><input type="checkbox" id="asOpen"> chercher aussi dans les documents ouverts</label>
+      </div>
+      <div class="inline"><div class="progress" id="asProg" style="max-width:none"><div></div></div><span class="hint" id="asInfo">Recherche sans tenir compte des majuscules ni des accents.</span></div>
+      <div class="asres" id="asRes"></div>`,
+    buttons: [{ spacer: true }, { label: 'Fermer', value: null }],
+    onClose: () => { stop = true; },
+  });
+  const el = d.el, q = el.querySelector('#asQ'), res = el.querySelector('#asRes'), info = el.querySelector('#asInfo'), prog = el.querySelector('#asProg');
+  setTimeout(() => { q.value = $('#searchInput').value || ''; q.focus(); q.select(); }, 30);
+  el.querySelector('#asDir').onclick = async () => {
+    try { dir = await showDirectoryPicker({ id: 'prele-folder' }); el.querySelector('#asDirName').textContent = dir.name; } catch (e) { handleErr(e); }
+  };
+  q.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); go(); } });
+  el.querySelector('#asGo').onclick = () => { if (running) { stop = true; } else go(); };
+  async function searchBytes(bytes, nq) {
+    const hits = [];
+    const pdf = await pdfjsLib.getDocument({ data: bytes, isEvalSupported: false }).promise;
+    try {
+      for (let p = 1; p <= pdf.numPages && !stop; p++) {
+        const tc = await (await pdf.getPage(p)).getTextContent();
+        const txt = tc.items.map(it => it.str + (it.hasEOL ? ' ' : '')).join('').replace(/\s+/g, ' ');
+        const n = normTxt(txt);   // même longueur que txt (diacritiques retirés un à un)
+        let k = n.indexOf(nq);
+        while (k >= 0 && hits.length < 200) {
+          hits.push({ page: p - 1, snip: [txt.slice(Math.max(0, k - 50), k), txt.slice(k, k + nq.length), txt.slice(k + nq.length, k + nq.length + 70)], pre: k > 50 });
+          k = n.indexOf(nq, k + Math.max(1, nq.length));
+        }
+      }
+    } finally { pdf.destroy(); }
+    return hits;
+  }
+  async function go() {
+    const nq = normTxt(q.value.trim());
+    if (!nq) { q.focus(); return; }
+    const withOpen = el.querySelector('#asOpen').checked;
+    if (!dir && !withOpen) { el.querySelector('#asDir').click(); return; }
+    running = true; stop = false; results = [];
+    el.querySelector('#asGo').innerHTML = `${svgIcon('X', 15)} Arrêter`;
+    res.innerHTML = ''; prog.style.display = 'block';
+    const files = [];
+    if (withOpen) for (const doc of S.docs) files.push({ name: doc.name, path: 'document ouvert', doc });
+    if (dir) {
+      info.textContent = 'Inventaire du dossier…';
+      try { if (await verifyPerm(dir, false)) for await (const f of walkDir(dir, el.querySelector('#asSub').checked)) if (isPdfName(f.name)) files.push({ name: f.name, path: f.path.join(' › '), handle: f.handle }); }
+      catch (e) { handleErr(e, 'Lecture du dossier'); }
+    }
+    let nHits = 0, nFiles = 0, skipped = 0;
+    for (let k = 0; k < files.length && !stop; k++) {
+      const F = files[k];
+      prog.firstElementChild.style.width = (k / files.length * 100) + '%';
+      info.textContent = `${k + 1}/${files.length} — ${F.name}`;
+      try {
+        const bytes = F.doc ? F.doc.bytes.slice() : new Uint8Array(await (await F.handle.getFile()).arrayBuffer());
+        const hits = await searchBytes(bytes, nq);
+        if (hits.length) {
+          nFiles++; nHits += hits.length;
+          const id = results.length; results.push({ F, hits });
+          res.insertAdjacentHTML('beforeend', `<div class="asfile"><div class="asfh">${svgIcon('FileText', 15)}<b>${esc(F.name)}</b><span class="hint">${esc(F.path)} · ${hits.length} résultat${hits.length > 1 ? 's' : ''}</span></div>
+            ${hits.slice(0, 30).map((h, j) => `<div class="ashit" data-r="${id}" data-h="${j}"><span class="aspg">p. ${h.page + 1}</span><span>${h.pre ? '…' : ''}${esc(h.snip[0])}<mark>${esc(h.snip[1])}</mark>${esc(h.snip[2])}…</span></div>`).join('')}
+            ${hits.length > 30 ? `<div class="hint" style="padding:2px 10px 6px">… et ${hits.length - 30} autres dans ce fichier</div>` : ''}</div>`);
+        }
+      } catch (e) { skipped++; }
+    }
+    prog.firstElementChild.style.width = '100%';
+    info.textContent = `${stop ? 'Recherche arrêtée — ' : ''}${nHits} résultat${nHits > 1 ? 's' : ''} dans ${nFiles} fichier${nFiles > 1 ? 's' : ''} sur ${files.length} parcouru${files.length > 1 ? 's' : ''}${skipped ? ` (${skipped} illisible${skipped > 1 ? 's' : ''} ou protégé${skipped > 1 ? 's' : ''} par mot de passe)` : ''}.`;
+    if (!nHits && !stop) res.innerHTML = '<div class="sideempty">Aucun résultat.</div>';
+    el.querySelector('#asGo').innerHTML = `${svgIcon('Search', 15)} Rechercher`;
+    running = false; setTimeout(() => { prog.style.display = 'none'; }, 600);
+  }
+  res.addEventListener('click', async ev => {
+    const h = ev.target.closest('.ashit'); if (!h) return;
+    const R = results[+h.dataset.r], hit = R.hits[+h.dataset.h];
+    $$('.ashit.sel', res).forEach(x => x.classList.remove('sel')); h.classList.add('sel');
+    let doc = R.F.doc;
+    if (!doc || !S.docs.includes(doc)) { await openHandles([R.F.handle]); doc = S.active; } else activate(doc);
+    if (!doc) return;
+    $('#searchInput').value = q.value.trim();
+    await runSearch(q.value.trim(), false);
+    const idx = S.search.results.findIndex(r => r.page === hit.page);
+    if (idx >= 0) gotoSearch(idx); else scrollToPage(hit.page, false);
+  });
+}
+
+/* =====================================================================
    Commandes
    ===================================================================== */
 const CMDS = {
@@ -2921,6 +3536,8 @@ const CMDS = {
   deleteEdit: () => { const e = S.activeEdit, d = S.active; if (!e || !d) return; const i = d.pages.findIndex(p => p.edits.some(x => x.id === e.id)); if (i >= 0) deleteEdit(d, i, e); },
   clearPageEdits: () => { const d = S.active; if (!d) return; finishEditor(true); const i = d.current; if (!d.pages[i].edits.length) { toast('Aucune modification sur cette page.'); return; } pushUndo(d); d.pages[i].edits = []; S.activeEdit = null; renderEdits(d, i); renderHits(d, i); refreshThumbBadge(d, i); updateUI(); },
   closeBackstage: () => toggleBackstage(false),
+  actualSize: () => setZoom('custom', 1), rotateViewLeft: () => rotateView(-90), rotateViewRight: () => rotateView(90),
+  paste: cmdPaste, pasteNewDoc: cmdPasteNewDoc, addImage: cmdAddImage, advSearch: openAdvSearch,
   install: async () => {
     if (!S.installPrompt) { toast('Installation : utilisez l\'icône d\'installation dans la barre d\'adresse de Chrome.'); return; }
     S.installPrompt.prompt();
@@ -2951,7 +3568,7 @@ function setTool(t) {
   const d = S.active;
   if (d) d.sizes.forEach((_, i) => { if (d.vps[i]) { renderHits(d, i); renderEdits(d, i); } });
   if (t === 'edittext' || t === 'addtext' || t === 'cover') {
-    if (S.rtab !== 'edit' && S.rtab !== 'home') setRibbonTab('edit');
+    if (S.rtab !== 'format' && S.rtab !== 'home') setRibbonTab('format');
   }
 }
 function setRibbonTab(t) {
@@ -2993,6 +3610,8 @@ function bindEvents() {
     if (t && !t.disabled) { setTool(t.dataset.tool); return; }
     const rt = ev.target.closest('[data-rtab]');
     if (rt) { setRibbonTab(rt.dataset.rtab); return; }
+    const pb = ev.target.closest('[data-pane]');
+    if (pb && !pb.disabled) { togglePaneFor(pb.dataset.pane); return; }
     const sd = ev.target.closest('[data-side]');
     if (sd) { showSide(sd.dataset.side); return; }
     closeCtxMenu();
@@ -3114,6 +3733,16 @@ function bindEvents() {
     if (handles.length) await openHandles(handles);
     if (loose.length) await openFiles(loose);
   });
+  // Ctrl+V dans la page : coller une image ou un texte sur la page courante
+  document.addEventListener('paste', async ev => {
+    if (ev.target.closest && ev.target.closest('input,textarea,[contenteditable="plaintext-only"],[contenteditable="true"],dialog')) return;
+    const dt = ev.clipboardData; if (!dt) return;
+    const file = [...dt.items].find(i => i.kind === 'file' && i.type.startsWith('image/'));
+    ev.preventDefault();
+    if (file) { const f = file.getAsFile(); await handlePasteData({ kind: 'image', bytes: new Uint8Array(await f.arrayBuffer()), mime: f.type }); return; }
+    const text = dt.getData('text/plain');
+    if (text && text.trim()) await handlePasteData({ kind: 'text', text });
+  });
   $('#fileFallback').addEventListener('change', ev => { openFiles([...ev.target.files]); ev.target.value = ''; });
 
   // clavier
@@ -3123,6 +3752,7 @@ function bindEvents() {
     if (ev.ctrlKey || ev.metaKey) {
       if (k === 'o') { ev.preventDefault(); runCmd('open'); }
       else if (k === 's') { ev.preventDefault(); runCmd(ev.shiftKey ? 'saveAs' : 'save'); }
+      else if (k === 'f' && ev.shiftKey) { ev.preventDefault(); runCmd('advSearch'); }
       else if (k === 'f') { ev.preventDefault(); $('#searchInput').focus(); $('#searchInput').select(); }
       else if (k === 'w') { ev.preventDefault(); runCmd('closeDoc'); }
       else if ((k === 'z' && !inField) || (k === 'z' && S.editing)) { ev.preventDefault(); runCmd(ev.shiftKey ? 'redo' : 'undo'); }
@@ -3166,6 +3796,10 @@ function onViewerDown(ev) {
     window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
     ev.preventDefault();
     return;
+  }
+  if (S.tool === 'snapshot') {
+    const P = pagePoint(ev); if (!P) return;
+    ev.preventDefault(); startSnapshot(P); return;
   }
   if (S.tool === 'cover') {
     const P = pagePoint(ev); if (!P || ev.target.closest('.ebox')) return;
@@ -3240,7 +3874,7 @@ function init() {
   window.addEventListener('beforeinstallprompt', ev => { ev.preventDefault(); S.installPrompt = ev; showInstall(true); });
   window.addEventListener('appinstalled', () => { S.installPrompt = null; showInstall(false); });
 }
-window.PRELE = { S, handleLaunch, copyPagesBetween, openBytes, buildOutputBytes, combineEngine, mutate, reorderPages, startReplaceEdit, finishEditor, getText, runCmd, setTool, applyFmt };
+window.PRELE = { S, addImageEdit, handleLaunch, copyPagesBetween, openBytes, buildOutputBytes, combineEngine, mutate, reorderPages, startReplaceEdit, finishEditor, getText, runCmd, setTool, applyFmt };
 init();
 
 </script>
