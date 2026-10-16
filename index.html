@@ -277,12 +277,27 @@ dialog::backdrop{background:rgba(15,30,24,.35)}
 .bs-main{padding:28px 36px;overflow:auto}
 .bs-main h2{margin:0 0 14px;font-size:20px;color:var(--brand);font-weight:600}
 
+/* ---------- v1.3 : glisser des pages entre documents ---------- */
+body.pdragging, body.pdragging *{cursor:grabbing!important;user-select:none}
+.pdrag-ghost{position:fixed;z-index:2000;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;background:#fff;border:1px solid var(--sel-line);border-radius:8px;box-shadow:var(--shadow);opacity:.95}
+.pdrag-ghost canvas{display:block;box-shadow:0 0 0 1px #cfd7d2}
+.pdrag-n{font-size:11.5px;font-weight:600;color:var(--brand)}
+.pdrag-hint{font-size:10px;color:var(--muted)}
+.pdrag-ghost.move .pdrag-hint{color:#a35c00;font-weight:600}
+.pdrag-ghost.move .pdrag-hint::before{content:"Déplacement · "}
+.doctab.drop-tab{outline:2px dashed var(--accent);outline-offset:-2px;background:var(--accent-soft)}
+.page.drop-page{box-shadow:0 0 0 3px var(--accent),var(--shadow)}
+.toast{display:flex;align-items:center;gap:12px}
+.toast-act{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;white-space:nowrap}
+.toast-act:hover{background:rgba(255,255,255,.25)}
+body.dragover-thumbs::after{display:none}
+
 </style>
 </head>
 <body>
 <div id="app">
   <header class="titlebar">
-    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.2</small></div>
+    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.3</small></div>
     <div class="qa">
       <button data-cmd="open" title="Ouvrir (Ctrl+O)" data-icon="FolderOpen" data-icon-size="17"></button>
       <button data-cmd="save" title="Enregistrer (Ctrl+S)" data-icon="Save" data-icon-size="17"></button>
@@ -501,7 +516,7 @@ const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2
    Éditeur PDF — éditeur PDF monofichier (pdf.js + pdf-lib)
    ===================================================================== */
 'use strict';
-const APP_VERSION = '1.2';
+const APP_VERSION = '1.3';
 const { PDFDocument, StandardFonts, rgb, degrees, PDFName, PDFHexString } = PDFLib;
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -1032,7 +1047,7 @@ function buildThumbs() {
   box.innerHTML = doc.sizes.map((s, i) => {
     const r = s.w / s.h, w = r >= 1 ? TW : Math.round(TW * r * 1.0), h = r >= 1 ? Math.round(TW / r) : TW;
     const ww = Math.min(w, TW), hh = Math.round(ww / r);
-    return `<div class="thumb ${doc.selected.has(i) ? 'sel' : ''} ${i === doc.current ? 'cur' : ''}" data-index="${i}" data-pdfgen="${doc.gen}" draggable="true">
+    return `<div class="thumb ${doc.selected.has(i) ? 'sel' : ''} ${i === doc.current ? 'cur' : ''}" data-index="${i}" data-pdfgen="${doc.gen}">
       <div class="tph" style="width:${ww}px;height:${hh}px"></div>${doc.pages[i].edits.length ? '<span class="tedit" title="Page modifiée"></span>' : ''}<span class="tn">${i + 1}</span></div>`;
   }).join('');
   thumbObserver = new IntersectionObserver(ens => {
@@ -2122,7 +2137,7 @@ async function* walkDir(dir, recursive, path = []) {
   if (recursive) for (const [name, h] of list) if (h.kind === 'directory' && !name.startsWith('.')) yield* walkDir(h, true, [...path, dir.name]);
 }
 
-function openCombineDialog(initial = []) {
+function openCombineDialog(initial = [], opts = {}) {
   let rows = [];
   let selRow = -1;
   const addRows = list => {
@@ -2155,6 +2170,7 @@ function openCombineDialog(initial = []) {
     buttons: [
       { html: `<div class="progress" id="cProg"><div></div></div><span class="hint" id="cProgTxt"></span>` },
       { spacer: true },
+      ...(opts.openSeparately ? [{ label: 'Ouvrir séparément', icon: 'Files', onClick: api => { const hs = rows.filter(r => r.src.type === 'handle').map(r => r.src.handle); api.close(null); openHandles(hs); } }] : []),
       { label: 'Annuler', value: null },
       { label: 'Combiner', icon: 'Merge', primary: true, id: 'cGo', onClick: api => run(api) },
     ],
@@ -2465,6 +2481,9 @@ function cmdHelp() {
         <li>Scinder (toutes les N pages, par plages, par signets), extraire des pages.</li>
         <li>Volet « Dossier » : parcourir un dossier, miniatures, ouvrir ou combiner une sélection, enregistrer directement dans le dossier.</li>
         <li>Modifier le texte existant (PDF natifs), ajouter du texte, masquer une zone.</li>
+        <li><b>Glisser des pages entre documents</b> : sélectionnez des miniatures, faites-les glisser sur l'onglet d'un autre document et attendez qu'il s'ouvre, puis lâchez-les à l'endroit voulu (miniatures ou page). Lâcher directement sur l'onglet les ajoute à la fin. Copie par défaut, <span class="kbd">Maj</span> au moment de lâcher pour déplacer.</li>
+        <li>Glisser des fichiers depuis l'Explorateur sur les miniatures les insère à cet endroit ; sur la page affichée, ils s'ouvrent dans un nouvel onglet.</li>
+        <li>Depuis Windows : clic droit sur plusieurs PDF → Envoyer vers → « Combiner dans Éditeur PDF » ouvre directement la fenêtre Combiner.</li>
       </ul>
       <h4>Modification du texte : comment ça marche</h4>
       <p class="hint" style="font-size:12.5px">La ligne d'origine est recouverte par un masque de la couleur du fond, puis le nouveau texte est écrit par-dessus, avec la police standard la plus proche (Helvetica/Arial, Times ou Courier), la même taille et la même couleur. Le rendu est identique à l'impression ; en revanche l'ancien texte reste présent sous le masque (il peut ressortir lors d'un copier-coller). La suppression réelle du texte d'origine est prévue dans une prochaine version.</p>
@@ -2558,6 +2577,241 @@ function gotoSearch(k) {
   const rr = rectToVp(vp, b.x, b.y, b.w, b.h);
   const v = viewer();
   v.scrollTo({ top: el.offsetTop + rr.top - v.clientHeight / 3, left: Math.max(0, el.offsetLeft + rr.left - v.clientWidth / 2), behavior: 'auto' });
+}
+
+/* =====================================================================
+   v1.3 — Glisser des pages d'un document à l'autre, dépôt de fichiers
+   dans les miniatures, ouverture/combinaison depuis l'Explorateur
+   ===================================================================== */
+
+/* --- notification avec bouton d'action --- */
+function toastAction(msg, label, fn, ms = 9000) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span>${esc(msg)}</span><button class="toast-act">${esc(label)}</button>`;
+  el.querySelector('button').onclick = () => { el.remove(); fn(); };
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), ms);
+}
+
+/* --- fichiers transmis par Windows ---------------------------------
+   • plusieurs fichiers dans un même lancement (menu « Envoyer vers →
+     Combiner dans … ») → fenêtre « Combiner » pré-remplie ;
+   • fichiers ouverts un par un (double-clic, Entrée sur une sélection)
+     → onglets, puis proposition de les combiner s'ils arrivent ensemble. */
+const launchBatch = { docs: [], timer: null };
+async function handleLaunch(files) {
+  if (!files || !files.length) return;
+  const pdfs = files.filter(h => h.kind !== 'directory');
+  if (pdfs.length >= 2) {
+    openCombineDialog(pdfs.map(h => ({ name: h.name, src: { type: 'handle', handle: h } })), { openSeparately: true });
+    return;
+  }
+  const before = new Set(S.docs);
+  await openHandles(files);
+  S.docs.filter(d => !before.has(d)).forEach(d => launchBatch.docs.push(d));
+  clearTimeout(launchBatch.timer);
+  launchBatch.timer = setTimeout(() => {
+    const docs = launchBatch.docs.filter(d => S.docs.includes(d));
+    launchBatch.docs = [];
+    if (docs.length >= 2) toastAction(`${docs.length} documents ouverts depuis l'Explorateur.`, 'Les combiner…',
+      () => openCombineDialog(docs.map(d => ({ name: d.name, sub: 'document ouvert', src: { type: 'doc', doc: d } }))));
+  }, 2500);
+}
+
+/* --- copie / déplacement de pages entre documents --- */
+async function copyPagesBetween(src, idx, dst, at, move = false) {
+  if (!idx.length) return;
+  busy(true);
+  let srcPdf;
+  try { srcPdf = await PDFDocument.load(await buildOutputBytes(src), { updateMetadata: false }); }
+  catch (e) { busy(false); handleErr(e, 'Lecture du document source'); return; }
+  busy(false);
+  const n = idx.length;
+  const ok = await mutate(dst, async (pdf, pages) => {
+    const cp = await pdf.copyPages(srcPdf, idx);
+    cp.forEach((p, k) => pdf.insertPage(at + k, p));
+    pages.splice(at, 0, ...cp.map(() => ({ uid: uid(), edits: [] })));
+    return pages;
+  }, { current: at, select: idx.map((_, k) => at + k) });
+  if (!ok) return;
+  let moved = false;
+  if (move) {
+    if (idx.length >= src.sizes.length) toast('Toutes les pages ont été copiées : le document d\'origine est conservé tel quel.', 'err', 6000);
+    else {
+      moved = await mutate(src, (pdf, pages) => { [...idx].sort((a, b) => b - a).forEach(i => { pdf.removePage(i); pages.splice(i, 1); }); return pages; });
+      if (S.active === dst) renderDocTabs();
+    }
+  }
+  toast(`${n} page${n > 1 ? 's' : ''} ${moved ? 'déplacée' : 'copiée'}${n > 1 ? 's' : ''} dans « ${dst.name} » (position ${at + 1}).`);
+}
+
+/* --- insertion de fichiers (PDF / images) à une position --- */
+async function insertSourcesAt(doc, sources, at) {
+  if (!sources.length) return;
+  try {
+    const bytes = await combineEngine(sources.map(s => ({ name: s.name, range: '', getBytes: () => srcBytes(s.src) })), {});
+    const add = await PDFDocument.load(bytes);
+    const cnt = add.getPageCount();
+    await mutate(doc, async (pdf, pages) => {
+      const cp = await pdf.copyPages(add, [...Array(cnt).keys()]);
+      cp.forEach((p, k) => pdf.insertPage(at + k, p));
+      pages.splice(at, 0, ...cp.map(() => ({ uid: uid(), edits: [] })));
+      return pages;
+    }, { current: at, select: [...Array(cnt).keys()].map(k => at + k) });
+    toast(`${cnt} page${cnt > 1 ? 's' : ''} insérée${cnt > 1 ? 's' : ''} à la position ${at + 1}.`);
+  } catch (e) { handleErr(e, 'Insertion'); }
+}
+
+/* --- glisser-déposer des miniatures (souris) ---
+   • dans le même document : réordonner ;
+   • sur l'onglet d'un autre document : s'y arrêter ~0,7 s l'ouvre, on choisit
+     alors l'emplacement dans ses miniatures ou sur une page ; lâcher directement
+     sur l'onglet ajoute les pages à la fin ;
+   • copie par défaut, Maj enfoncée au moment de lâcher = déplacement. */
+const PD = { on: false };
+function clearDropMarks() {
+  $$('.thumb.drop-before, .thumb.drop-after').forEach(x => x.classList.remove('drop-before', 'drop-after'));
+  $$('.doctab.drop-tab').forEach(x => x.classList.remove('drop-tab'));
+  $$('.page.drop-page').forEach(x => x.classList.remove('drop-page'));
+}
+function dropTargetAt(x, y) {
+  const el = document.elementFromPoint(x, y);
+  if (!el) return null;
+  const tab = el.closest('.doctab');
+  if (tab) { const doc = S.docs.find(d => d.id === tab.dataset.doc); return doc ? { kind: 'tab', doc, el: tab } : null; }
+  const d = S.active; if (!d) return null;
+  const thumb = el.closest('.thumb');
+  if (thumb) { const r = thumb.getBoundingClientRect(); const before = y < r.top + r.height / 2; return { kind: 'pos', doc: d, at: +thumb.dataset.index + (before ? 0 : 1), el: thumb, mark: before ? 'drop-before' : 'drop-after' }; }
+  if (el.closest('[data-sideview="pages"]')) {
+    const all = $$('.thumb', $('#thumbs'));
+    const last = all[all.length - 1];
+    if (last) { const first = all[0]; if (y < first.getBoundingClientRect().top) return { kind: 'pos', doc: d, at: 0, el: first, mark: 'drop-before' }; return { kind: 'pos', doc: d, at: d.sizes.length, el: last, mark: 'drop-after' }; }
+  }
+  const pg = el.closest('.page');
+  if (pg) return { kind: 'pos', doc: d, at: +pg.dataset.index + 1, el: pg, mark: 'drop-page' };
+  return null;
+}
+function showDropTarget(T) {
+  clearDropMarks();
+  if (!T) return;
+  if (T.kind === 'tab') T.el.classList.add('drop-tab');
+  else T.el.classList.add(T.mark);
+}
+function autoScrollLoop() {
+  if (!PD.on) return;
+  const box = $('.sidebody'), r = box.getBoundingClientRect();
+  if (PD.x >= r.left && PD.x <= r.right) {
+    if (PD.y < r.top + 36) box.scrollTop -= 10;
+    else if (PD.y > r.bottom - 36) box.scrollTop += 10;
+  }
+  const v = viewer(), rv = v.getBoundingClientRect();
+  if (PD.x >= rv.left && PD.x <= rv.right) {
+    if (PD.y < rv.top + 30 && PD.y > rv.top - 4) v.scrollTop -= 14;
+    else if (PD.y > rv.bottom - 30) v.scrollTop += 14;
+  }
+  requestAnimationFrame(autoScrollLoop);
+}
+function initPageDrag(th) {
+  th.addEventListener('mousedown', ev => {
+    if (ev.button !== 0) return;
+    const t = ev.target.closest('.thumb'); const d = S.active; if (!t || !d) return;
+    ev.preventDefault();
+    const i = +t.dataset.index, sx = ev.clientX, sy = ev.clientY;
+    let started = false;
+    const mm = m => {
+      if (!started) {
+        if (Math.hypot(m.clientX - sx, m.clientY - sy) < 6) return;
+        started = true; beginPageDrag(d, i, t);
+      }
+      PD.x = m.clientX; PD.y = m.clientY;
+      PD.ghost.style.left = (m.clientX + 14) + 'px'; PD.ghost.style.top = (m.clientY + 10) + 'px';
+      PD.ghost.classList.toggle('move', m.shiftKey);
+      const T = dropTargetAt(m.clientX, m.clientY);
+      PD.target = T;
+      showDropTarget(T);
+      // s'attarder sur l'onglet d'un autre document l'ouvre
+      if (T && T.kind === 'tab' && T.doc !== S.active) {
+        if (PD.dwellDoc !== T.doc) {
+          clearTimeout(PD.dwellTimer); PD.dwellDoc = T.doc;
+          PD.dwellTimer = setTimeout(() => { if (PD.on && PD.dwellDoc === T.doc) { activate(T.doc); PD.dwellDoc = null; } }, 700);
+        }
+      } else { clearTimeout(PD.dwellTimer); PD.dwellDoc = null; }
+    };
+    const end = async (m, cancel) => {
+      window.removeEventListener('mousemove', mm, true); window.removeEventListener('mouseup', mu, true); window.removeEventListener('keydown', kd, true);
+      if (!started) return;
+      S.suppressClick = true; setTimeout(() => { S.suppressClick = false; }, 0);
+      const src = PD.src, pages = PD.pages, T = cancel ? null : PD.target, move = !!(m && m.shiftKey);
+      endPageDrag();
+      if (!T) return;
+      if (T.doc === src) {
+        if (T.kind === 'tab') return;
+        const n = src.sizes.length, to = T.at;
+        const rest = [...Array(n).keys()].filter(k => !pages.includes(k));
+        const before = rest.filter(k => k < to).length;
+        const order = [...rest.slice(0, before), ...pages, ...rest.slice(before)];
+        if (order.every((o, k) => o === k)) return;
+        await runSerial(() => reorderPages(src, order, { select: pages.map((_, k) => before + k), current: before }));
+      } else {
+        const at = T.kind === 'tab' ? T.doc.sizes.length : T.at;
+        await runSerial(() => copyPagesBetween(src, pages, T.doc, at, move));
+      }
+    };
+    const mu = m => end(m, false);
+    const kd = k => { if (k.key === 'Escape') { k.preventDefault(); end(null, true); } };
+    window.addEventListener('mousemove', mm, true); window.addEventListener('mouseup', mu, true); window.addEventListener('keydown', kd, true);
+  });
+  initThumbFileDrop();
+}
+function beginPageDrag(d, i, t) {
+  if (!d.selected.has(i)) { d.selected = new Set([i]); d.anchor = i; refreshThumbSel(); }
+  PD.on = true; PD.src = d; PD.pages = [...d.selected].sort((a, b) => a - b); PD.target = null;
+  const g = document.createElement('div');
+  g.className = 'pdrag-ghost';
+  const c = t.querySelector('canvas');
+  if (c) { const cc = document.createElement('canvas'); cc.width = c.width; cc.height = c.height; cc.getContext('2d').drawImage(c, 0, 0); cc.style.width = Math.round(parseFloat(c.style.width) * 0.55) + 'px'; g.appendChild(cc); }
+  const n = PD.pages.length;
+  g.insertAdjacentHTML('beforeend', `<span class="pdrag-n">${n} page${n > 1 ? 's' : ''}</span><span class="pdrag-hint">Maj = déplacer</span>`);
+  document.body.appendChild(g);
+  PD.ghost = g;
+  document.body.classList.add('pdragging');
+  requestAnimationFrame(autoScrollLoop);
+}
+function endPageDrag() {
+  PD.on = false; clearTimeout(PD.dwellTimer); PD.dwellDoc = null;
+  if (PD.ghost) PD.ghost.remove();
+  PD.ghost = null;
+  document.body.classList.remove('pdragging');
+  clearDropMarks();
+}
+
+/* --- fichiers glissés depuis l'Explorateur sur les miniatures ou sur une page :
+       insertion à cet endroit du document ouvert --- */
+function initThumbFileDrop() {
+  const zones = [$('[data-sideview="pages"]')];   // sur la page affichée, un fichier déposé s'ouvre dans un nouvel onglet
+  const hasFiles = ev => [...(ev.dataTransfer?.types || [])].includes('Files');
+  for (const z of zones) {
+    z.addEventListener('dragover', ev => {
+      if (!hasFiles(ev) || !S.active) return;
+      const T = dropTargetAt(ev.clientX, ev.clientY);
+      if (!T || T.kind !== 'pos') { document.body.classList.remove('dragover-thumbs'); clearDropMarks(); return; }
+      ev.preventDefault(); ev.stopPropagation();
+      ev.dataTransfer.dropEffect = 'copy';
+      document.body.classList.add('dragover-thumbs');
+      showDropTarget(T);
+    });
+    z.addEventListener('drop', async ev => {
+      if (!hasFiles(ev) || !S.active) return;
+      const T = dropTargetAt(ev.clientX, ev.clientY);
+      if (!T || T.kind !== 'pos') return;
+      ev.preventDefault(); ev.stopPropagation();
+      S.dragDepth = 0; document.body.classList.remove('dragover-all', 'dragover-thumbs'); clearDropMarks();
+      const sources = await dropToSources(ev.dataTransfer);
+      if (!sources.length) { toast('Seuls les PDF et les images peuvent être insérés.', 'err'); return; }
+      await runSerial(() => insertSourcesAt(T.doc, sources, T.at));
+    });
+  }
 }
 
 /* =====================================================================
@@ -2700,6 +2954,7 @@ function bindEvents() {
   const th = $('#thumbs');
   th.addEventListener('click', ev => {
     const t = ev.target.closest('.thumb'); const d = S.active; if (!t || !d) return;
+    if (S.suppressClick) { S.suppressClick = false; return; }
     const i = +t.dataset.index;
     if (ev.ctrlKey || ev.metaKey) { d.selected.has(i) ? d.selected.delete(i) : d.selected.add(i); d.anchor = i; }
     else if (ev.shiftKey && d.anchor != null) { const [a, b] = [Math.min(d.anchor, i), Math.max(d.anchor, i)]; d.selected = new Set([...Array(b - a + 1).keys()].map(k => a + k)); }
@@ -2721,41 +2976,7 @@ function bindEvents() {
     ]);
     d.current = i;
   });
-  let dragFrom = null;
-  th.addEventListener('dragstart', ev => {
-    const t = ev.target.closest('.thumb'); const d = S.active; if (!t || !d) return;
-    const i = +t.dataset.index;
-    if (!d.selected.has(i)) { d.selected = new Set([i]); refreshThumbSel(); }
-    dragFrom = [...d.selected].sort((a, b) => a - b);
-    ev.dataTransfer.effectAllowed = 'move';
-    ev.dataTransfer.setData('text/plain', 'pages');
-  });
-  const clearDrop = () => $$('.thumb', th).forEach(x => x.classList.remove('drop-before', 'drop-after'));
-  th.addEventListener('dragover', ev => {
-    if (!dragFrom) return;
-    ev.preventDefault();
-    clearDrop();
-    const t = ev.target.closest('.thumb'); if (!t) return;
-    const r = t.getBoundingClientRect();
-    t.classList.add(ev.clientY < r.top + r.height / 2 ? 'drop-before' : 'drop-after');
-  });
-  th.addEventListener('drop', async ev => {
-    if (!dragFrom) return;
-    ev.preventDefault(); ev.stopPropagation();
-    const d = S.active; const t = ev.target.closest('.thumb');
-    const moving = dragFrom; dragFrom = null;
-    clearDrop();
-    if (!t || !d) return;
-    const r = t.getBoundingClientRect();
-    let to = +t.dataset.index + (ev.clientY < r.top + r.height / 2 ? 0 : 1);
-    const n = d.sizes.length;
-    const rest = [...Array(n).keys()].filter(k => !moving.includes(k));
-    const before = rest.filter(k => k < to).length;
-    const order = [...rest.slice(0, before), ...moving, ...rest.slice(before)];
-    if (order.every((o, k) => o === k)) return;
-    await runSerial(() => reorderPages(d, order, { select: moving.map((_, k) => before + k), current: before }));
-  });
-  th.addEventListener('dragend', () => { dragFrom = null; clearDrop(); });
+  initPageDrag(th);
   th.addEventListener('keydown', ev => { if (ev.key === 'Delete') runCmd('deletePages'); });
   th.tabIndex = 0;
 
@@ -2795,12 +3016,11 @@ function bindEvents() {
   });
 
   // glisser-déposer de fichiers dans la fenêtre
-  let dragDepth = 0;
-  window.addEventListener('dragenter', ev => { if ([...ev.dataTransfer.types].includes('Files') && !document.querySelector('dialog[open]')) { dragDepth++; document.body.classList.add('dragover-all'); } });
-  window.addEventListener('dragleave', () => { dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) document.body.classList.remove('dragover-all'); });
+  window.addEventListener('dragenter', ev => { if ([...ev.dataTransfer.types].includes('Files') && !document.querySelector('dialog[open]')) { S.dragDepth = (S.dragDepth || 0) + 1; document.body.classList.add('dragover-all'); } });
+  window.addEventListener('dragleave', () => { S.dragDepth = Math.max(0, (S.dragDepth || 0) - 1); if (!S.dragDepth) document.body.classList.remove('dragover-all', 'dragover-thumbs'); });
   window.addEventListener('dragover', ev => { if ([...ev.dataTransfer.types].includes('Files')) ev.preventDefault(); });
   window.addEventListener('drop', async ev => {
-    dragDepth = 0; document.body.classList.remove('dragover-all');
+    S.dragDepth = 0; document.body.classList.remove('dragover-all', 'dragover-thumbs');
     if (![...ev.dataTransfer.types].includes('Files')) return;
     ev.preventDefault();
     const items = [...ev.dataTransfer.items].filter(i => i.kind === 'file');
@@ -2928,7 +3148,7 @@ function init() {
   buildThumbs();
   if (!hasFS) toast('Pour enregistrer directement dans vos dossiers, utilisez Google Chrome ou Microsoft Edge.', 'err', 8000);
   // fichiers transmis par Windows (double-clic sur un PDF, « Ouvrir avec ») quand l'application est installée
-  if ('launchQueue' in window) launchQueue.setConsumer(async p => { if (p.files && p.files.length) await openHandles(p.files); });
+  if ('launchQueue' in window) launchQueue.setConsumer(p => handleLaunch(p.files || []));
   // application installable (PWA) : service worker + bouton « Installer »
   const secure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
   if (secure && 'serviceWorker' in navigator && document.querySelector('link[rel="manifest"]')) {
@@ -2937,7 +3157,7 @@ function init() {
   window.addEventListener('beforeinstallprompt', ev => { ev.preventDefault(); S.installPrompt = ev; showInstall(true); });
   window.addEventListener('appinstalled', () => { S.installPrompt = null; showInstall(false); });
 }
-window.PRELE = { S, openBytes, buildOutputBytes, combineEngine, mutate, reorderPages, startReplaceEdit, finishEditor, getText, runCmd, setTool, applyFmt };
+window.PRELE = { S, handleLaunch, copyPagesBetween, openBytes, buildOutputBytes, combineEngine, mutate, reorderPages, startReplaceEdit, finishEditor, getText, runCmd, setTool, applyFmt };
 init();
 
 </script>
