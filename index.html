@@ -567,7 +567,7 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
 <body>
 <div id="app">
   <header class="titlebar">
-    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v2.1</small></div>
+    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v2.2</small></div>
     <div class="qa">
       <button data-cmd="open" title="Ouvrir (Ctrl+O)" data-icon="FolderOpen" data-icon-size="17"></button>
       <button data-cmd="save" title="Enregistrer (Ctrl+S)" data-icon="Save" data-icon-size="17"></button>
@@ -1097,7 +1097,7 @@ const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2
    Éditeur PDF — éditeur PDF monofichier (pdf.js + pdf-lib)
    ===================================================================== */
 'use strict';
-const APP_VERSION = '2.1';
+const APP_VERSION = '2.2';
 const { PDFDocument, StandardFonts, rgb, degrees, PDFName, PDFHexString } = PDFLib;
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -10158,6 +10158,392 @@ Object.assign(TIPS, {
 // icônes : svgIcon('Signature') svgIcon('PenLine') svgIcon('Type') svgIcon('Image') svgIcon('Star') svgIcon('Upload') svgIcon('Layers') svgIcon('Mail') svgIcon('Share2') svgIcon('FileType')
 setTimeout(() => { const l = $('#fxLayer'); if (l && !l.dataset.b) { l.dataset.b = '1'; l.addEventListener('change', onLayerChange); } }, 0);
 window.PRELE_V21 = { rtfToText, buildEml, cmdEmail, placeSignature, docLayers };
+
+/* =====================================================================
+   v2.2 — Conversion Excel (.xlsx) fidèle à l'impression d'Excel
+   Lecture directe du classeur : largeurs de colonnes calculées comme
+   Excel (largeur du « 0 » de la police par défaut), hauteurs de lignes,
+   marges, échelle et « ajuster à la page », zone d'impression, sauts de
+   page, bordures cellule par cellule (y compris cellules fusionnées),
+   remplissages, polices, alignements, renvoi à la ligne, en-têtes / pieds
+   de page, et les objets dessinés : flèches, lignes, formes, zones de
+   texte, images.
+   ===================================================================== */
+const EMU_PT = 12700;
+const PAPER = { 1: [612, 792], 5: [612, 1008], 8: [841.89, 1190.55], 9: [595.28, 841.89], 11: [419.53, 595.28] };
+function xmlKids(el, tag) { return el ? [...el.children].filter(c => c.localName === tag) : []; }
+function xmlOne(el, tag) { return xmlKids(el, tag)[0] || null; }
+function xmlDeep(el, tag) { return el ? el.getElementsByTagNameNS('*', tag) : []; }
+const colIdx = s => { let n = 0; for (const ch of s) n = n * 26 + ch.charCodeAt(0) - 64; return n - 1; };
+const parseRef = r => { const m = /^\$?([A-Z]+)\$?(\d+)$/.exec(r); return m ? { c: colIdx(m[1]), r: +m[2] - 1 } : null; };
+function maxDigitWidth(fontName, sizePt) {
+  // largeur du « 0 » mesurée avec la police réellement utilisée dans le PDF
+  // (Helvetica / Times / Courier) : les textes gardent la même place relative qu'Excel
+  const n = (fontName || '').toLowerCase();
+  const em = /courier|consol|mono/.test(n) ? 0.6 : /times|cambria|georgia|garamond/.test(n) ? 0.5 : 0.556;
+  return Math.max(4, Math.round(em * sizePt * 96 / 72));
+}
+function drawColor(el, theme) {   // couleur DrawingML (srgbClr / schemeClr / sysClr, avec lumMod / lumOff / tint / shade)
+  if (!el) return null;
+  const c = xmlOne(el, 'srgbClr') || xmlOne(el, 'schemeClr') || xmlOne(el, 'sysClr') || xmlOne(el, 'prstClr');
+  if (!c) return null;
+  let hex = c.localName === 'srgbClr' ? c.getAttribute('val') : c.localName === 'sysClr' ? (c.getAttribute('lastClr') || '000000') : c.localName === 'prstClr' ? ({ black: '000000', white: 'FFFFFF', red: 'FF0000', blue: '0000FF', green: '00FF00' }[c.getAttribute('val')] || '000000') : (theme[{ tx1: 'dk1', bg1: 'lt1', tx2: 'dk2', bg2: 'lt2' }[c.getAttribute('val')] || c.getAttribute('val')] || '000000');
+  let [r, g, b] = [0, 2, 4].map(k => parseInt(hex.slice(k, k + 2), 16) / 255);
+  for (const m of c.children) {
+    const v = +m.getAttribute('val') / 100000;
+    if (m.localName === 'lumMod') { r *= v; g *= v; b *= v; }
+    if (m.localName === 'lumOff') { r += v; g += v; b += v; }
+    if (m.localName === 'tint') { r = r * v + (1 - v); g = g * v + (1 - v); b = b * v + (1 - v); }
+    if (m.localName === 'shade') { r *= v; g *= v; b *= v; }
+  }
+  return rgb(...[r, g, b].map(x => Math.max(0, Math.min(1, x))));
+}
+async function readXlsxModel(bytes) {
+  const JSZip = await loadJSZip(), zip = await JSZip.loadAsync(bytes);
+  const P = new DOMParser();
+  const xml = async p => { const f = zip.file(p.replace(/^\//, '')); return f ? P.parseFromString(await f.async('string'), 'application/xml') : null; };
+  const resolve = (base, t) => { if (t.startsWith('/')) return t.slice(1); const parts = base.split('/'); parts.pop(); for (const s of t.split('/')) { if (s === '..') parts.pop(); else if (s !== '.') parts.push(s); } return parts.join('/'); };
+  const rels = async p => { const d = await xml(p.replace(/([^/]+)$/, '_rels/$1.rels')); const m = {}; if (d) for (const r of xmlDeep(d, 'Relationship')) m[r.getAttribute('Id')] = { target: resolve(p, r.getAttribute('Target')), type: r.getAttribute('Type'), ext: r.getAttribute('TargetMode') === 'External' }; return m; };
+  const wb = await xml('xl/workbook.xml'), wrels = await rels('xl/workbook.xml');
+  const th = await xml('xl/theme/theme1.xml'), theme = {};
+  if (th) { const cs = xmlDeep(th, 'clrScheme')[0]; if (cs) for (const c of cs.children) { const s = xmlOne(c, 'srgbClr'), y = xmlOne(c, 'sysClr'); theme[c.localName] = s ? s.getAttribute('val') : y ? y.getAttribute('lastClr') : '000000'; } }
+  const themeArr = ['lt1', 'dk1', 'lt2', 'dk2', 'accent1', 'accent2', 'accent3', 'accent4', 'accent5', 'accent6', 'hlink', 'folHlink'].map(k => theme[k] || '000000');
+  // styles
+  const st = await xml('xl/styles.xml'), root = st ? st.documentElement : null;
+  const xc = el => xColor(el, themeArr);
+  const fonts = xmlKids(xmlOne(root, 'fonts'), 'font').map(f => { const v = (t, d) => { const e = xmlOne(f, t); return e ? (e.getAttribute('val') ?? true) : d; }; return { b: !!xmlOne(f, 'b') && v('b') !== '0', i: !!xmlOne(f, 'i') && v('i') !== '0', u: !!xmlOne(f, 'u'), strike: !!xmlOne(f, 'strike'), sz: parseFloat(v('sz', 11)) || 11, color: xc(xmlOne(f, 'color')), name: v('name', 'Calibri') }; });
+  const fills = xmlKids(xmlOne(root, 'fills'), 'fill').map(f => { const p = xmlOne(f, 'patternFill'); if (!p || (p.getAttribute('patternType') || 'none') === 'none') return null; return xc(xmlOne(p, 'fgColor')) || xc(xmlOne(p, 'bgColor')); });
+  const borders = xmlKids(xmlOne(root, 'borders'), 'border').map(b => { const o = {}; for (const s of ['left', 'right', 'top', 'bottom']) { const e = xmlOne(b, s); if (e && e.getAttribute('style')) o[s] = { style: e.getAttribute('style'), color: xc(xmlOne(e, 'color')) || '000000' }; } return o; });
+  const numFmts = {}; for (const n of xmlKids(xmlOne(root, 'numFmts'), 'numFmt')) numFmts[n.getAttribute('numFmtId')] = n.getAttribute('formatCode');
+  const xfs = xmlKids(xmlOne(root, 'cellXfs'), 'xf').map(x => { const a = xmlOne(x, 'alignment'); return { font: fonts[+x.getAttribute('fontId') || 0], fill: fills[+x.getAttribute('fillId') || 0], border: borders[+x.getAttribute('borderId') || 0], h: a && a.getAttribute('horizontal'), v: a && a.getAttribute('vertical'), wrap: a && a.getAttribute('wrapText') === '1', indent: a ? +a.getAttribute('indent') || 0 : 0, rot: a ? +a.getAttribute('textRotation') || 0 : 0, shrink: a && a.getAttribute('shrinkToFit') === '1' }; });
+  const defFont = fonts[0] || { name: 'Calibri', sz: 11 };
+  const mdw = maxDigitWidth(defFont.name, defFont.sz);
+  // zones d'impression
+  const printAreas = {};
+  for (const dn of xmlDeep(wb, 'definedName')) if (dn.getAttribute('name') === '_xlnm.Print_Area' && dn.getAttribute('localSheetId') != null) printAreas[+dn.getAttribute('localSheetId')] = dn.textContent;
+  const sheets = [];
+  const sheetEls = xmlDeep(wb, 'sheet');
+  for (let si = 0; si < sheetEls.length; si++) {
+    const s = sheetEls[si];
+    if (s.getAttribute('state') === 'hidden' || s.getAttribute('state') === 'veryHidden') continue;
+    const rid = s.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id') || s.getAttribute('r:id');
+    const rel = wrels[rid]; if (!rel || !/worksheet/.test(rel.type)) continue;
+    const doc = await xml(rel.target); if (!doc) continue;
+    const ws = doc.documentElement, srels = await rels(rel.target);
+    const fmt = xmlOne(ws, 'sheetFormatPr');
+    const baseW = fmt && fmt.getAttribute('baseColWidth') ? +fmt.getAttribute('baseColWidth') : 8;
+    const defColPx = fmt && fmt.getAttribute('defaultColWidth') ? Math.trunc(((256 * +fmt.getAttribute('defaultColWidth') + Math.trunc(128 / mdw)) / 256) * mdw) : Math.trunc(((256 * (baseW + Math.ceil(5 / mdw * 100) / 100 * 1) + Math.trunc(128 / mdw)) / 256) * mdw) + 0;
+    const defRowPt = fmt && fmt.getAttribute('defaultRowHeight') ? +fmt.getAttribute('defaultRowHeight') : Math.round(defFont.sz * 1.36 * 4) / 4;
+    const colW = {}, colHidden = {}, colStyle = {};
+    for (const c of xmlKids(xmlOne(ws, 'cols'), 'col')) {
+      const a = +c.getAttribute('min') - 1, b = +c.getAttribute('max') - 1, w = c.getAttribute('width');
+      for (let k = a; k <= Math.min(b, a + 16383); k++) { if (w != null) colW[k] = Math.trunc(((256 * +w + Math.trunc(128 / mdw)) / 256) * mdw); if (c.getAttribute('hidden') === '1') colHidden[k] = true; if (c.getAttribute('style')) colStyle[k] = +c.getAttribute('style'); if (k > 2000) break; }
+    }
+    const rowH = {}, rowHidden = {}, rowStyle = {}, cells = {};
+    let maxR = -1, maxC = -1;
+    for (const r of xmlDeep(xmlOne(ws, 'sheetData'), 'row')) {
+      const ri = +r.getAttribute('r') - 1;
+      if (r.getAttribute('ht') != null && (r.getAttribute('customHeight') === '1' || true)) rowH[ri] = +r.getAttribute('ht');
+      if (r.getAttribute('hidden') === '1') rowHidden[ri] = true;
+      if (r.getAttribute('customFormat') === '1' && r.getAttribute('s')) rowStyle[ri] = +r.getAttribute('s');
+      for (const c of xmlKids(r, 'c')) {
+        const ref = parseRef(c.getAttribute('r')); if (!ref) continue;
+        const sIdx = c.getAttribute('s') != null ? +c.getAttribute('s') : null;
+        cells[ref.r + ':' + ref.c] = { s: sIdx };
+        const hasVal = xmlOne(c, 'v') || xmlOne(c, 'is');
+        const xf = sIdx != null ? xfs[sIdx] : null;
+        if (hasVal || (xf && (xf.fill || Object.keys(xf.border || {}).length))) { maxR = Math.max(maxR, ref.r); maxC = Math.max(maxC, ref.c); }
+      }
+    }
+    const merges = xmlKids(xmlOne(ws, 'mergeCells'), 'mergeCell').map(m => { const [a, b] = m.getAttribute('ref').split(':').map(parseRef); return { s: a, e: b || a }; });
+    merges.forEach(m => { maxR = Math.max(maxR, m.e.r); maxC = Math.max(maxC, m.e.c); });
+    const ps = xmlOne(ws, 'pageSetup'), pm = xmlOne(ws, 'pageMargins'), po = xmlOne(ws, 'printOptions'), spr = xmlOne(xmlOne(ws, 'sheetPr'), 'pageSetUpPr');
+    const setup = {
+      paper: ps && PAPER[+ps.getAttribute('paperSize')] || PAPER[9], land: ps && ps.getAttribute('orientation') === 'landscape',
+      scale: ps && ps.getAttribute('scale') ? +ps.getAttribute('scale') : 100,
+      fit: spr && spr.getAttribute('fitToPage') === '1', fitW: ps && ps.getAttribute('fitToWidth') != null ? +ps.getAttribute('fitToWidth') : 1, fitH: ps && ps.getAttribute('fitToHeight') != null ? +ps.getAttribute('fitToHeight') : 1,
+      m: pm ? ['left', 'right', 'top', 'bottom', 'header', 'footer'].reduce((o, k) => (o[k] = (+pm.getAttribute(k) || 0) * 72, o), {}) : { left: 51, right: 51, top: 54, bottom: 54, header: 22, footer: 22 },
+      hCenter: po && po.getAttribute('horizontalCentered') === '1', vCenter: po && po.getAttribute('verticalCentered') === '1', grid: po && po.getAttribute('gridLines') === '1',
+      firstPage: ps && ps.getAttribute('useFirstPageNumber') === '1' ? +ps.getAttribute('firstPageNumber') : 1,
+    };
+    const hf = xmlOne(ws, 'headerFooter');
+    setup.header = hf ? (xmlOne(hf, 'oddHeader') || {}).textContent || '' : '';
+    setup.footer = hf ? (xmlOne(hf, 'oddFooter') || {}).textContent || '' : '';
+    const rowBreaks = xmlKids(xmlOne(ws, 'rowBreaks'), 'brk').map(b => +b.getAttribute('id'));
+    const colBreaks = xmlKids(xmlOne(ws, 'colBreaks'), 'brk').map(b => +b.getAttribute('id'));
+    // objets dessinés
+    const shapes = [];
+    const drw = xmlOne(ws, 'drawing');
+    if (drw) {
+      const drel = srels[drw.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id') || drw.getAttribute('r:id')];
+      const dd = drel && await xml(drel.target), drels = drel ? await rels(drel.target) : {};
+      if (dd) for (const anc of dd.documentElement.children) {
+        let A = null;
+        const fr = xmlOne(anc, 'from'), to = xmlOne(anc, 'to'), num = (e, t) => +(xmlOne(e, t) || { textContent: 0 }).textContent;
+        if (anc.localName === 'twoCellAnchor' && fr && to) A = { c0: num(fr, 'col'), co0: num(fr, 'colOff'), r0: num(fr, 'row'), ro0: num(fr, 'rowOff'), c1: num(to, 'col'), co1: num(to, 'colOff'), r1: num(to, 'row'), ro1: num(to, 'rowOff') };
+        else if (anc.localName === 'oneCellAnchor' && fr) { const ext = xmlOne(anc, 'ext'); A = { c0: num(fr, 'col'), co0: num(fr, 'colOff'), r0: num(fr, 'row'), ro0: num(fr, 'rowOff'), cx: +ext.getAttribute('cx'), cy: +ext.getAttribute('cy') }; }
+        else if (anc.localName === 'absoluteAnchor') { const pos = xmlOne(anc, 'pos'), ext = xmlOne(anc, 'ext'); A = { abs: true, x: +pos.getAttribute('x'), y: +pos.getAttribute('y'), cx: +ext.getAttribute('cx'), cy: +ext.getAttribute('cy') }; }
+        if (!A) continue;
+        const obj = [...anc.children].find(c => ['sp', 'cxnSp', 'pic', 'grpSp', 'graphicFrame'].includes(c.localName));
+        if (!obj) continue;
+        const items = [];
+        const parse = (o, grp) => {
+          if (o.localName === 'grpSp') { for (const ch of o.children) if (['sp', 'cxnSp', 'pic', 'grpSp'].includes(ch.localName)) parse(ch, true); return; }
+          const spPr = xmlOne(o, 'spPr'), xf = spPr && xmlOne(spPr, 'xfrm');
+          const off = xf && xmlOne(xf, 'off'), ext = xf && xmlOne(xf, 'ext');
+          const it = { kind: o.localName, flipH: xf && xf.getAttribute('flipH') === '1', flipV: xf && xf.getAttribute('flipV') === '1', rot: xf && xf.getAttribute('rot') ? +xf.getAttribute('rot') / 60000 : 0,
+            emu: off && ext ? [+off.getAttribute('x'), +off.getAttribute('y'), +ext.getAttribute('cx'), +ext.getAttribute('cy')] : null, grp };
+          const geom = spPr && xmlOne(spPr, 'prstGeom'); it.geom = geom ? geom.getAttribute('prst') : (o.localName === 'cxnSp' ? 'line' : 'rect');
+          const style = xmlOne(o, 'style');
+          const ln = spPr && xmlOne(spPr, 'ln');
+          it.line = null;
+          if (!(ln && xmlOne(ln, 'noFill'))) {
+            const lnRef = style && xmlOne(style, 'lnRef');
+            const col = (ln && drawColor(xmlOne(ln, 'solidFill'), theme)) || (lnRef && +lnRef.getAttribute('idx') > 0 ? drawColor(lnRef, theme) : null) || (o.localName === 'cxnSp' ? rgb(0, 0, 0) : null);
+            const wEmu = ln && ln.getAttribute('w') ? +ln.getAttribute('w') : (lnRef ? [0, 6350, 12700, 19050][+lnRef.getAttribute('idx')] || 9525 : 9525);
+            if (col) it.line = { col, w: Math.max(0.25, wEmu / EMU_PT), dash: ln && xmlOne(ln, 'prstDash') ? xmlOne(ln, 'prstDash').getAttribute('val') : null, head: ln && xmlOne(ln, 'headEnd') ? xmlOne(ln, 'headEnd').getAttribute('type') : null, tail: ln && xmlOne(ln, 'tailEnd') ? xmlOne(ln, 'tailEnd').getAttribute('type') : null };
+          }
+          const fillRef = style && xmlOne(style, 'fillRef');
+          it.fill = spPr && xmlOne(spPr, 'noFill') ? null : (spPr && drawColor(xmlOne(spPr, 'solidFill'), theme)) || (fillRef && +fillRef.getAttribute('idx') > 0 && !['line', 'straightConnector1'].includes(it.geom) && o.localName !== 'cxnSp' ? drawColor(fillRef, theme) : null);
+          const tx = xmlOne(o, 'txBody');
+          if (tx) {
+            const fontRef = style && xmlOne(style, 'fontRef'), defCol = fontRef ? drawColor(fontRef, theme) : null;
+            const bp = xmlOne(tx, 'bodyPr');
+            it.text = { anchor: bp && bp.getAttribute('anchor') || 't', paras: xmlKids(tx, 'p').map(p => { const pPr = xmlOne(p, 'pPr'); return { algn: pPr && pPr.getAttribute('algn') || 'l', runs: [...p.children].filter(r => r.localName === 'r' || r.localName === 'fld').map(r => { const rp = xmlOne(r, 'rPr'); return { t: (xmlOne(r, 't') || {}).textContent || '', sz: rp && rp.getAttribute('sz') ? +rp.getAttribute('sz') / 100 : 11, b: rp && rp.getAttribute('b') === '1', i: rp && rp.getAttribute('i') === '1', col: (rp && drawColor(xmlOne(rp, 'solidFill'), theme)) || defCol || rgb(0, 0, 0) }; }) }; }) };
+          }
+          if (o.localName === 'pic') { const bl = xmlDeep(o, 'blip')[0]; const rid = bl && (bl.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'embed') || bl.getAttribute('r:embed')); const r = rid && drels[rid]; if (r && !r.ext) it.img = r.target; }
+          items.push(it);
+        };
+        parse(obj, false);
+        // groupe : coordonnées enfants rapportées à l'ancre
+        let gx = null;
+        if (obj.localName === 'grpSp') { const gxf = xmlDeep(xmlOne(obj, 'grpSpPr'), 'xfrm')[0]; if (gxf) { const o = xmlOne(gxf, 'off'), e = xmlOne(gxf, 'ext'), co = xmlOne(gxf, 'chOff'), ce = xmlOne(gxf, 'chExt'); gx = { off: [+o.getAttribute('x'), +o.getAttribute('y')], ext: [+e.getAttribute('cx'), +e.getAttribute('cy')], chOff: [+co.getAttribute('x'), +co.getAttribute('y')], chExt: [+ce.getAttribute('cx'), +ce.getAttribute('cy')] }; } }
+        shapes.push({ A, items, gx });
+        if (A.c1 != null) { maxR = Math.max(maxR, A.r1); maxC = Math.max(maxC, A.c1); }
+      }
+    }
+    // images
+    for (const sh of shapes) for (const it of sh.items) if (it.img) { const f = zip.file(it.img); if (f) it.imgBytes = await f.async('uint8array'); }
+    sheets.push({ name: s.getAttribute('name'), index: si, colW, colHidden, colStyle, rowH, rowHidden, rowStyle, cells, merges, maxR, maxC, defColPx, defRowPt, setup, rowBreaks, colBreaks, shapes, printArea: printAreas[si], showGrid: true });
+  }
+  return { sheets, xfs, defFont, mdw, theme };
+}
+const HF_RE = /&([LCR])/g;
+function hfParts(s, ctx) {
+  if (!s) return {};
+  const out = { L: '', C: '', R: '' }; let cur = 'C';
+  const parts = s.split(/(&[LCR])/);
+  for (const p of parts) { if (/^&[LCR]$/.test(p)) { cur = p[1]; continue; } out[cur] += p; }
+  for (const k in out) out[k] = out[k].replace(/&"[^"]*"/g, '').replace(/&\d+/g, '').replace(/&[BIUSXYEKOH]/g, '').replace(/&P/g, ctx.p).replace(/&N/g, ctx.n).replace(/&D/g, new Date().toLocaleDateString('fr-FR')).replace(/&T/g, new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })).replace(/&F/g, ctx.file).replace(/&A/g, ctx.sheet).replace(/&Z/g, '').replace(/&&/g, '&').trim();
+  return out;
+}
+async function xlsxToPdfFaithful(bytes, name) {
+  const XLSX = await loadSheetJS();
+  const wb = XLSX.read(bytes, { type: 'array', cellDates: true, cellNF: true, cellStyles: false });
+  const M = await readXlsxModel(bytes);
+  const pdf = await PDFDocument.create(), cache = {}, outline = [];
+  const fontKey = f => { const n = (f && f.name || '').toLowerCase(); const k = /courier|consol|mono/.test(n) ? 'C' : /times|cambria|georgia|garamond|serif/.test(n) && !/sans/.test(n) ? 'T' : 'H'; return k + (f && f.b ? 'B' : '') + (f && f.i ? 'I' : ''); };
+  const BW = s => /thick/.test(s) ? 1.5 : /medium/.test(s) ? 1 : s === 'hair' ? 0.25 : 0.5;
+  for (const sh of M.sheets) {
+    const ws = wb.Sheets[sh.name]; if (!ws) continue;
+    // zone imprimée
+    let r0 = 0, c0 = 0, r1 = sh.maxR, c1 = sh.maxC;
+    if (sh.printArea) { const m = /!\$?([A-Z]+)\$?(\d+):\$?([A-Z]+)\$?(\d+)/.exec(sh.printArea.split(',')[0]); if (m) { c0 = colIdx(m[1]); r0 = +m[2] - 1; c1 = colIdx(m[3]); r1 = +m[4] - 1; } }
+    if (r1 < 0 || c1 < 0) continue;
+    const cw = c => sh.colHidden[c] ? 0 : (sh.colW[c] ?? sh.defColPx) * 0.75;
+    const rh = r => sh.rowHidden[r] ? 0 : (sh.rowH[r] ?? sh.defRowPt);
+    const X = [0]; for (let c = 0; c <= Math.max(c1, 0) + 1; c++) X.push(X[c] + cw(c));
+    const Y = [0]; for (let r = 0; r <= Math.max(r1, 0) + 1; r++) Y.push(Y[r] + rh(r));
+    const colX = c => { while (X.length <= c + 1) X.push(X[X.length - 1] + cw(X.length - 1)); return X[c]; };
+    const rowY = r => { while (Y.length <= r + 1) Y.push(Y[Y.length - 1] + rh(Y.length - 1)); return Y[r]; };
+    // objets : position en points dans la feuille
+    const objs = [];
+    for (const s of sh.shapes) {
+      let bx, by, bw, bh;
+      if (s.A.abs) { bx = s.A.x / EMU_PT; by = s.A.y / EMU_PT; bw = s.A.cx / EMU_PT; bh = s.A.cy / EMU_PT; }
+      else { bx = colX(s.A.c0) + s.A.co0 / EMU_PT; by = rowY(s.A.r0) + s.A.ro0 / EMU_PT; if (s.A.c1 != null) { bw = colX(s.A.c1) + s.A.co1 / EMU_PT - bx; bh = rowY(s.A.r1) + s.A.ro1 / EMU_PT - by; } else { bw = s.A.cx / EMU_PT; bh = s.A.cy / EMU_PT; } }
+      for (const it of s.items) {
+        let x = bx, y = by, w = bw, h = bh;
+        if (s.gx && it.emu) { const kx = bw / (s.gx.chExt[0] || 1), ky = bh / (s.gx.chExt[1] || 1); x = bx + (it.emu[0] - s.gx.chOff[0]) * kx; y = by + (it.emu[1] - s.gx.chOff[1]) * ky; w = it.emu[2] * kx; h = it.emu[3] * ky; }
+        objs.push({ ...it, x, y, w, h });
+      }
+      c1 = Math.max(c1, 0); r1 = Math.max(r1, 0);
+    }
+    // l'impression s'étend jusqu'aux objets
+    for (const o of objs) { while (colX(c1 + 1) < o.x + o.w - 0.5 && c1 < 300) c1++; while (rowY(r1 + 1) < o.y + o.h - 0.5 && r1 < 5000) r1++; }
+    // texte qui déborde à droite de la dernière colonne : on l'imprime en entier
+    for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
+      const cell = ws[XLSX.utils.encode_cell({ r, c })]; if (!cell || cell.v == null || cell.t === 'n') continue;
+      const cl = sh.cells[r + ':' + c], xf = cl && cl.s != null ? M.xfs[cl.s] : null;
+      if (xf && (xf.wrap || (xf.h && !/left|general/.test(xf.h)))) continue;
+      const fo = (xf && xf.font) || M.defFont, f = await getStdFont(pdf, cache, fontKey(fo));
+      const end = colX(c) + f.widthOfTextAtSize(fontSafe(f, String(frenchCellText(cell)).split('\n')[0]), fo.sz) + 3;
+      while (colX(c1 + 1) < end && c1 < 300) c1++;
+    }
+    const totalW = colX(c1 + 1) - colX(c0), totalH = rowY(r1 + 1) - rowY(r0);
+    const S0 = sh.setup;
+    let [PW, PH] = S0.paper; if (S0.land) [PW, PH] = [PH, PW];
+    const m = S0.m, availW = PW - m.left - m.right, availH = PH - m.top - m.bottom;
+    let k = S0.scale / 100;
+    if (S0.fit) { const kw = S0.fitW > 0 ? availW * S0.fitW / totalW : Infinity, kh = S0.fitH > 0 ? availH * S0.fitH / totalH : Infinity; k = Math.min(1, kw, kh); if (!isFinite(k)) k = 1; }
+    k = Math.max(0.1, Math.min(4, k));
+    // découpage en pages (colonnes puis lignes), avec les sauts manuels
+    const groups = (n0, n1, pos, avail, breaks) => { const out = []; let s = n0; while (s <= n1) { let e = s; while (e + 1 <= n1 && (pos(e + 2) - pos(s)) * k <= avail + 0.5 && !breaks.includes(e + 1)) e++; out.push([s, e]); s = e + 1; } return out; };
+    const cg = groups(c0, c1, colX, availW, sh.colBreaks), rg = groups(r0, r1, rowY, availH, sh.rowBreaks);
+    const mergeAt = (r, c) => sh.merges.find(q => r >= q.s.r && r <= q.e.r && c >= q.s.c && c <= q.e.c);
+    const xfOf = (r, c) => { const cl = sh.cells[r + ':' + c]; const i = cl && cl.s != null ? cl.s : sh.rowStyle[r] != null ? sh.rowStyle[r] : sh.colStyle[c]; return i != null ? M.xfs[i] : null; };
+    let firstPage = null, pageNo = 0;
+    const nPages = cg.length * rg.length;
+    for (const [ra, rb] of rg) for (const [ca, cb] of cg) {
+      pageNo++;
+      const page = pdf.addPage([PW, PH]); if (!firstPage) firstPage = page;
+      const areaW = (colX(cb + 1) - colX(ca)) * k, areaH = (rowY(rb + 1) - rowY(ra)) * k;
+      const ox = m.left + (S0.hCenter ? (availW - areaW) / 2 : 0), oy = PH - m.top - (S0.vCenter ? (availH - areaH) / 2 : 0);
+      const PX_ = x => ox + (x - colX(ca)) * k, PY_ = y => oy - (y - rowY(ra)) * k;
+      page.pushOperators(PDFLib.pushGraphicsState(), PDFLib.rectangle(PX_(colX(ca)) - 1, PY_(rowY(rb + 1)) - 1, areaW + 2, areaH + 2), PDFLib.clip(), PDFLib.endPath());
+      const box = (r, c) => { const q = mergeAt(r, c); if (q) { if (q.s.r !== r || q.s.c !== c) return null; return { x: colX(q.s.c), y: rowY(q.s.r), w: colX(q.e.c + 1) - colX(q.s.c), h: rowY(q.e.r + 1) - rowY(q.s.r) }; } return { x: colX(c), y: rowY(r), w: colX(c + 1) - colX(c), h: rowY(r + 1) - rowY(r) }; };
+      // remplissages
+      for (let r = ra; r <= rb; r++) for (let c = ca; c <= cb; c++) {
+        const xf = xfOf(r, c); if (!xf || !xf.fill) continue; const b = box(r, c); if (!b) continue;
+        page.drawRectangle({ x: PX_(b.x), y: PY_(b.y + b.h), width: b.w * k, height: b.h * k, color: hexRgb(xf.fill) });
+      }
+      if (S0.grid) for (let r = ra; r <= rb; r++) for (let c = ca; c <= cb; c++) page.drawRectangle({ x: PX_(colX(c)), y: PY_(rowY(r + 1)), width: cw(c) * k, height: rh(r) * k, borderColor: rgb(0.75, 0.75, 0.75), borderWidth: 0.3 });
+      // textes
+      for (let r = ra; r <= rb; r++) for (let c = ca; c <= cb; c++) {
+        const a = XLSX.utils.encode_cell({ r, c }), cell = ws[a]; if (!cell || cell.v == null || cell.v === '') continue;
+        const b = box(r, c); if (!b) continue;
+        const xf = xfOf(r, c), fo = (xf && xf.font) || M.defFont;
+        const font = await getStdFont(pdf, cache, fontKey(fo)), size = fo.sz * k, color = hexRgb(fo.color) || rgb(0, 0, 0);
+        const txt = frenchCellText(cell).replace(/\r\n?/g, '\n').split('\n').map(l => fontSafe(font, l)).join('\n');
+        const isNum = cell.t === 'n' || cell.t === 'd';
+        const hal = (xf && xf.h && xf.h !== 'general') ? xf.h : (isNum ? 'right' : cell.t === 'b' || cell.t === 'e' ? 'center' : 'left');
+        const val = (xf && xf.v) || 'bottom', pad = 1.5 * k + (xf ? xf.indent * 9 * k : 0);
+        const bwPt = b.w * k;
+        let lines = [txt.replace(/\n/g, ' ')];
+        if (xf && xf.wrap) { lines = []; for (const para of txt.split('\n')) { let cur = ''; for (const w of para.split(/(\s+)/)) { if (font.widthOfTextAtSize(cur + w, size) > bwPt - 2 * pad && cur.trim()) { lines.push(cur.trimEnd()); cur = w.trimStart(); } else cur += w; } lines.push(cur); } }
+        // débordement sur les cellules vides voisines (texte non renvoyé)
+        let left = b.x, right = b.x + b.w;
+        if (!(xf && xf.wrap) && !isNum) {
+          const tw = font.widthOfTextAtSize(lines[0], size) / k + 3;
+          const empty = cc => { const cl = ws[XLSX.utils.encode_cell({ r, c: cc })]; return !(cl && cl.v != null && cl.v !== '') && !mergeAt(r, cc); };
+          if (hal === 'left' || hal === 'general') { let q = c + 1; while (right - b.x < tw && q <= c1 + 20 && empty(q)) { right = colX(q + 1); q++; } }
+          else if (hal === 'right') { let q = c - 1; while (right - left < tw && q >= 0 && empty(q)) { left = colX(q); q--; } }
+          else if (hal === 'center' || hal === 'centerContinuous') { let ql = c - 1, qr = c + 1; while (right - left < tw && (empty(ql) || empty(qr)) && ql > -50) { if (qr <= c1 + 20 && empty(qr)) { right = colX(qr + 1); qr++; } if (ql >= 0 && empty(ql)) { left = colX(ql); ql--; } else if (!(qr <= c1 + 20 && empty(qr))) break; } }
+        }
+        let fsz = size;
+        if (isNum && font.widthOfTextAtSize(lines[0], fsz) > (right - left) * k - 2 * pad + 0.5) lines = ['#'.repeat(Math.max(1, Math.floor(((right - left) * k - 2 * pad) / font.widthOfTextAtSize('#', fsz))))];
+        if (xf && xf.shrink) { const tw0 = font.widthOfTextAtSize(lines[0], fsz); if (tw0 > bwPt - 2 * pad) fsz = fsz * (bwPt - 2 * pad) / tw0; }
+        const lh = fsz * 1.2, blockH = lines.length * lh;
+        const bh = b.h * k, top = PY_(b.y);
+        let ty = val === 'top' ? top - pad - fsz * 0.9 : (val === 'center' || val === 'distributed' || val === 'justify') ? top - bh / 2 + blockH / 2 - fsz * 0.92 : top - bh + 1.5 * k + (lines.length - 1) * lh + fsz * 0.22;
+        // le texte reste dans la zone de la cellule (et des cellules débordées)
+        page.pushOperators(PDFLib.pushGraphicsState(), PDFLib.rectangle(PX_(left), top - bh, (right - left) * k, bh), PDFLib.clip(), PDFLib.endPath());
+        for (const ln of lines) {
+          const tw = font.widthOfTextAtSize(ln, fsz);
+          const tx = hal === 'right' ? PX_(right) - pad - tw : (hal === 'center' || hal === 'centerContinuous') ? PX_(left) + ((right - left) * k - tw) / 2 : PX_(b.x) + pad;
+          const room = (hal === 'right' || hal === 'center' || hal === 'centerContinuous' ? (right - left) * k : PX_(right) - PX_(b.x)) - 2 * pad;
+          if (tw > room && room > 0 && !isNum) {   // police de remplacement plus large : on resserre le texte au lieu de le couper
+            const z = Math.max(60, Math.floor(100 * room / tw)), tw2 = tw * z / 100;
+            const tx2 = hal === 'right' ? PX_(right) - pad - tw2 : (hal === 'center' || hal === 'centerContinuous') ? PX_(left) + ((right - left) * k - tw2) / 2 : PX_(b.x) + pad;
+            page.pushOperators(PDFLib.pushGraphicsState(), PDFLib.concatTransformationMatrix(z / 100, 0, 0, 1, 0, 0));
+            page.drawText(ln, { x: tx2 * 100 / z, y: ty, size: fsz, font, color });
+            page.pushOperators(PDFLib.popGraphicsState());
+            ty -= lh; continue;
+          }
+          page.drawText(ln, { x: tx, y: ty, size: fsz, font, color });
+          if (fo.u) page.drawLine({ start: { x: tx, y: ty - fsz * 0.12 }, end: { x: tx + tw, y: ty - fsz * 0.12 }, thickness: Math.max(0.4, fsz * 0.06), color });
+          if (fo.strike) page.drawLine({ start: { x: tx, y: ty + fsz * 0.3 }, end: { x: tx + tw, y: ty + fsz * 0.3 }, thickness: Math.max(0.4, fsz * 0.06), color });
+          ty -= lh;
+        }
+        page.pushOperators(PDFLib.popGraphicsState());
+      }
+      // bordures : cellule par cellule (comme Excel, y compris dans les fusions)
+      for (let r = ra; r <= rb; r++) for (let c = ca; c <= cb; c++) {
+        const xf = xfOf(r, c); const bd = xf && xf.border; if (!bd) continue;
+        const x0 = PX_(colX(c)), x1 = PX_(colX(c + 1)), y0 = PY_(rowY(r)), y1 = PY_(rowY(r + 1));
+        const L = (s, a, b2, cc, d) => { const e = bd[s]; if (!e) return; const t = BW(e.style) * Math.max(k, 0.5); page.drawLine({ start: { x: a, y: b2 }, end: { x: cc, y: d }, thickness: t, color: hexRgb(e.color) || rgb(0, 0, 0), dashArray: /dash|dot/i.test(e.style) ? [2.5 * t, 1.5 * t] : undefined, lineCap: PDFLib.LineCapStyle.Projecting }); if (e.style === 'double') page.drawLine({ start: { x: a + (s === 'left' ? 1.5 : s === 'right' ? -1.5 : 0), y: b2 + (s === 'top' ? -1.5 : s === 'bottom' ? 1.5 : 0) }, end: { x: cc + (s === 'left' ? 1.5 : s === 'right' ? -1.5 : 0), y: d + (s === 'top' ? -1.5 : s === 'bottom' ? 1.5 : 0) }, thickness: t, color: hexRgb(e.color) || rgb(0, 0, 0) }); };
+        L('top', x0, y0, x1, y0); L('bottom', x0, y1, x1, y1); L('left', x0, y0, x0, y1); L('right', x1, y0, x1, y1);
+      }
+      // objets dessinés (flèches, formes, zones de texte, images)
+      for (const o of objs) {
+        if (o.x > colX(cb + 1) || o.x + o.w < colX(ca) || o.y > rowY(rb + 1) || o.y + o.h < rowY(ra)) continue;
+        await drawXlsxShape(pdf, page, o, PX_, PY_, k, cache);
+      }
+      page.pushOperators(PDFLib.popGraphicsState());
+      // en-tête / pied de page d'Excel
+      const ctx = { p: S0.firstPage + pageNo - 1, n: nPages, file: stripExt(name), sheet: sh.name };
+      for (const [src, y] of [[S0.header, PH - m.header - 8], [S0.footer, m.footer]]) {
+        const parts = hfParts(src, ctx); const f = await getStdFont(pdf, cache, 'H');
+        for (const [z, t] of Object.entries(parts)) { if (!t) continue; const s2 = fontSafe(f, t), w = f.widthOfTextAtSize(s2, 9); page.drawText(s2, { x: z === 'L' ? m.left : z === 'R' ? PW - m.right - w : (PW - w) / 2, y, size: 9, font: f, color: rgb(0, 0, 0) }); }
+      }
+    }
+    if (firstPage) outline.push({ title: sh.name, pageIndex: pdf.getPages().indexOf(firstPage) });
+  }
+  if (!pdf.getPageCount()) throw new Error('classeur vide');
+  if (outline.length > 1) addOutlines(pdf, outline);
+  pdf.setTitle(stripExt(name)); pdf.setCreator('Éditeur PDF'); pdf.setProducer('Éditeur PDF ' + APP_VERSION);
+  return await pdf.save();
+}
+async function drawXlsxShape(pdf, page, o, PX_, PY_, k, cache) {
+  const x0 = PX_(o.x), y0 = PY_(o.y), x1 = PX_(o.x + o.w), y1 = PY_(o.y + o.h);
+  const lineLike = ['line', 'straightConnector1', 'bentConnector2', 'bentConnector3', 'bentConnector4', 'curvedConnector3'].includes(o.geom) || o.kind === 'cxnSp';
+  if (o.kind === 'pic' && o.imgBytes) {
+    try {
+      const b = o.imgBytes, img = b[0] === 0x89 ? await pdf.embedPng(b) : (b[0] === 0xFF ? await pdf.embedJpg(b) : null);
+      if (img) page.drawImage(img, { x: x0, y: y1, width: x1 - x0, height: y0 - y1 });
+    } catch (e) { console.warn(e); }
+    return;
+  }
+  if (lineLike) {
+    if (!o.line) return;
+    let ax = x0, ay = y0, bx = x1, by = y1;
+    if (o.flipH) [ax, bx] = [bx, ax];
+    if (o.flipV) [ay, by] = [by, ay];
+    const w = o.line.w * k, col = o.line.col, dash = o.line.dash && o.line.dash !== 'solid' ? [3 * w, 2 * w] : undefined;
+    if (/bent/.test(o.geom)) { const mx = (ax + bx) / 2; page.drawLine({ start: { x: ax, y: ay }, end: { x: mx, y: ay }, thickness: w, color: col, dashArray: dash }); page.drawLine({ start: { x: mx, y: ay }, end: { x: mx, y: by }, thickness: w, color: col, dashArray: dash }); page.drawLine({ start: { x: mx, y: by }, end: { x: bx, y: by }, thickness: w, color: col, dashArray: dash }); ax = mx; ay = by; }
+    else page.drawLine({ start: { x: ax, y: ay }, end: { x: bx, y: by }, thickness: w, color: col, dashArray: dash, lineCap: PDFLib.LineCapStyle.Round });
+    const head = (tx, ty, fx, fy, type) => {
+      if (!type || type === 'none') return;
+      const ang = Math.atan2(ty - fy, tx - fx), L = Math.max(5, w * 4.5), sp = 0.42;
+      const p1 = [tx - L * Math.cos(ang - sp), ty - L * Math.sin(ang - sp)], p2 = [tx - L * Math.cos(ang + sp), ty - L * Math.sin(ang + sp)];
+      if (type === 'oval') { page.drawEllipse({ x: tx, y: ty, xScale: L * 0.35, yScale: L * 0.35, color: col }); return; }
+      if (type === 'arrow') { page.drawLine({ start: { x: p1[0], y: p1[1] }, end: { x: tx, y: ty }, thickness: w, color: col }); page.drawLine({ start: { x: p2[0], y: p2[1] }, end: { x: tx, y: ty }, thickness: w, color: col }); return; }
+      const pts = type === 'diamond' ? [[tx, ty], [tx - L * 0.5 * Math.cos(ang) - L * 0.3 * Math.sin(ang), ty - L * 0.5 * Math.sin(ang) + L * 0.3 * Math.cos(ang)], [tx - L * Math.cos(ang), ty - L * Math.sin(ang)], [tx - L * 0.5 * Math.cos(ang) + L * 0.3 * Math.sin(ang), ty - L * 0.5 * Math.sin(ang) - L * 0.3 * Math.cos(ang)]] : [[tx, ty], p1, p2];
+      page.drawSvgPath(`M${pts.map(p => `${p[0]},${-p[1]}`).join(' L')} Z`, { x: 0, y: 0, color: col, borderWidth: 0 });
+    };
+    head(bx, by, ax, ay, o.line.tail); head(x0 === ax && y0 === ay ? x0 : ax, ay, bx, by, o.line.head);
+    return;
+  }
+  // formes fermées
+  const rx = Math.min(x0, x1), ry = Math.min(y0, y1), w = Math.abs(x1 - x0), h = Math.abs(y1 - y0);
+  const bw = o.line ? o.line.w * k : 0, opt = { color: o.fill || undefined, borderColor: o.line ? o.line.col : undefined, borderWidth: bw };
+  if (o.geom === 'ellipse') page.drawEllipse({ x: rx + w / 2, y: ry + h / 2, xScale: w / 2, yScale: h / 2, ...opt });
+  else if (o.fill || o.line) page.drawRectangle({ x: rx, y: ry, width: w, height: h, ...opt });
+  if (o.text) {
+    const lines = [];
+    for (const p of o.text.paras) {
+      const runs = p.runs.filter(r => r.t); if (!runs.length) { lines.push({ runs: [], algn: p.algn, sz: 11 }); continue; }
+      lines.push({ runs, algn: p.algn, sz: Math.max(...runs.map(r => r.sz)) });
+    }
+    const totalH = lines.reduce((a, l) => a + l.sz * k * 1.2, 0);
+    let y = o.text.anchor === 'ctr' ? ry + h / 2 + totalH / 2 : o.text.anchor === 'b' ? ry + totalH + 3.6 * k : ry + h - 3.6 * k;
+    for (const L of lines) {
+      y -= L.sz * k * 1.2;
+      let widths = 0; const fs = [];
+      for (const r of L.runs) { const f = await getStdFont(pdf, cache, 'H' + (r.b ? 'B' : '') + (r.i ? 'I' : '')); fs.push(f); widths += f.widthOfTextAtSize(fontSafe(f, r.t), r.sz * k); }
+      let x = L.algn === 'ctr' ? rx + (w - widths) / 2 : L.algn === 'r' ? rx + w - 7.2 * k - widths : rx + 7.2 * k;
+      L.runs.forEach((r, q) => { const s = fontSafe(fs[q], r.t); page.drawText(s, { x, y: y + L.sz * k * 0.25, size: r.sz * k, font: fs[q], color: r.col }); x += fs[q].widthOfTextAtSize(s, r.sz * k); });
+    }
+  }
+}
+{
+  const base = sheetToPdf;
+  sheetToPdf = async function (bytes, name) {
+    if (/\.(xlsx|xlsm)$/i.test(name)) { try { return await xlsxToPdfFaithful(bytes, name); } catch (e) { console.warn('conversion fidèle impossible, repli', e); } }
+    return base(bytes, name);
+  };
+}
+window.PRELE_XLSX = { readXlsxModel, xlsxToPdfFaithful };
 
 /* =====================================================================
    Commandes
