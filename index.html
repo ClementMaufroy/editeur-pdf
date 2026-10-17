@@ -507,13 +507,56 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
 .viewer.t-hand.hand-seltext .textLayer span{cursor:text}
 .viewer.t-hand.hand-excl .lnk,.viewer.t-hand.hand-excl .nicon{pointer-events:none}
 [data-rpanel="convert"] .rbig{max-width:96px}
+/* ===== v2.0 : bulles d'explication, objets, organiser ===== */
+.stip{position:fixed;z-index:3000;max-width:320px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.16);padding:8px 11px;font-size:12.5px;line-height:1.4;pointer-events:none;animation:stipin .12s ease-out}
+@keyframes stipin{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.stip .sth{display:flex;align-items:center;gap:10px;justify-content:space-between;color:var(--brand)}
+.stip .sth .kbd{font-size:11px;color:var(--muted);background:var(--hover);border:1px solid var(--line-2);border-radius:4px;padding:0 5px;white-space:nowrap}
+.stip .std{margin-top:3px;color:#3b4240}
+.stip .stdis{margin-top:4px;color:#9a6700;font-size:11.5px}
+.viewer.t-objedit .page{cursor:default}
+.viewer.t-objedit .textLayer{pointer-events:none}
+.viewer.t-crop .page{cursor:crosshair}
+.viewer.t-zoom .page{cursor:zoom-in}
+.layer.objl{pointer-events:none;z-index:6}
+.objbox{position:absolute;box-sizing:border-box}
+.objbox.hover{outline:1.5px dashed #0969da;background:rgba(9,105,218,.06)}
+.objbox.sel{outline:2px solid #0969da;background:rgba(9,105,218,.08);pointer-events:auto;cursor:move}
+.objbox .oh{position:absolute;width:9px;height:9px;background:#fff;border:1.5px solid #0969da;border-radius:2px}
+.objbox .oh.nw{left:-5px;top:-5px;cursor:nwse-resize}.objbox .oh.se{right:-5px;bottom:-5px;cursor:nwse-resize}
+.objbox .oh.ne{right:-5px;top:-5px;cursor:nesw-resize}.objbox .oh.sw{left:-5px;bottom:-5px;cursor:nesw-resize}
+.objbar{position:absolute;left:0;top:-30px;display:flex;align-items:center;gap:2px;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);padding:2px 4px;font-size:11.5px;white-space:nowrap;cursor:default}
+.objbar span{padding:0 4px;color:var(--brand)}
+.objbar button{border:0;background:none;border-radius:4px;padding:3px;display:flex;cursor:pointer;color:var(--text)}
+.objbar button:hover{background:var(--hover)}
+.cropdraw{border:2px dashed #cf222e;background:rgba(207,34,46,.06)}
+.cropgrid{display:grid;grid-template-columns:auto 80px auto 80px auto;gap:6px 6px;align-items:center;margin:4px 0 10px}
+.cropgrid input{width:76px}
+.hfgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.hfgrid label{display:flex;flex-direction:column;gap:3px;font-size:12px}
+.hfgrid input{width:100%}
+.mklist{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow:auto}
+.mkrow{display:flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:6px;padding:6px 8px}
+.mkrow>div{flex:1;min-width:0}
+.fontlist{border:1px solid var(--line-2);border-radius:6px;max-height:320px;overflow:auto;font-size:12.5px}
+.fontlist .fhead,.fontlist .frow2{display:grid;grid-template-columns:2fr 0.8fr 0.8fr 1.6fr;gap:8px;padding:5px 8px;align-items:center}
+.fontlist .fhead{background:var(--hover);font-weight:600;position:sticky;top:0}
+.fontlist .frow2{border-top:1px solid var(--line-2)}
+.fontlist .frow2>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fontlist small.warn{color:#9a6700}
+[data-rpanel="organize"] .rbig{max-width:98px}
+[data-rpanel="organize"] #selInfo{max-width:190px;white-space:normal;line-height:1.25}
+@media (max-width:1960px){
+  .rsmall.cmp2{width:28px;justify-content:center;padding:0}
+  .rsmall.cmp2 .t{display:none}
+}
 
 </style>
 </head>
 <body>
 <div id="app">
   <header class="titlebar">
-    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v1.9</small></div>
+    <div class="brand"><span id="logo"></span>Éditeur PDF <small>v2.0</small></div>
     <div class="qa">
       <button data-cmd="open" title="Ouvrir (Ctrl+O)" data-icon="FolderOpen" data-icon-size="17"></button>
       <button data-cmd="save" title="Enregistrer (Ctrl+S)" data-icon="Save" data-icon-size="17"></button>
@@ -551,9 +594,9 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
         <button class="rbig tool" data-tool="hand" data-icon="Hand" data-icon-size="26">Main</button>
         <button class="rbig tool" data-tool="select" data-icon="TextCursor" data-icon-size="26">Sélectionner<br>du texte</button>
         <div class="rcol">
-          <button class="rsmall tool" data-tool="snapshot" data-icon="Camera" data-icon-size="16" title="Tracez un rectangle : la zone est copiée en image">Instantané</button>
-          <button class="rsmall" data-cmd="paste" data-icon="ClipboardPaste" data-icon-size="16" title="Coller une image ou un texte sur la page (Ctrl+V)">Coller sur la page</button>
-          <button class="rsmall" data-cmd="pasteNewDoc" data-icon="FilePlus2" data-icon-size="16" title="Créer un PDF à partir du presse-papiers">PDF depuis le presse-papiers</button>
+          <button class="rsmall cmp2 tool" data-tool="snapshot" data-icon="Camera" data-icon-size="16" title="Tracez un rectangle : la zone est copiée en image"><span class="t">Instantané</span></button>
+          <button class="rsmall cmp2" data-cmd="paste" data-icon="ClipboardPaste" data-icon-size="16" title="Coller une image ou un texte sur la page (Ctrl+V)"><span class="t">Coller sur la page</span></button>
+          <button class="rsmall cmp2" data-cmd="pasteNewDoc" data-icon="FilePlus2" data-icon-size="16" title="Créer un PDF à partir du presse-papiers"><span class="t">PDF depuis le presse-papiers</span></button>
         </div>
       </div><div class="rlabel">Outils</div></div>
       <div class="rgroup"><div class="rbody">
@@ -582,29 +625,30 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
       </div><div class="rlabel">Affichage</div></div>
       <div class="rgroup"><div class="rbody">
         <button class="rbig tool" data-tool="edittext" data-icon="FilePenLine" data-icon-size="26">Éditer<br>un texte</button>
+        <button class="rbig tool" data-tool="objedit" data-icon="BoxSelect" data-icon-size="26">Éditer des<br>objets</button>
         <button class="rbig tool" data-tool="addtext" data-icon="Type" data-icon-size="26">Ajouter<br>du texte</button>
         <button class="rbig" data-cmd="addImage" data-icon="ImagePlus" data-icon-size="26">Ajouter<br>une image</button>
         <button class="rbig tool" data-tool="cover" data-icon="Eraser" data-icon-size="26">Masquer<br>une zone</button>
       </div><div class="rlabel">Éléments</div></div>
       <div class="rgroup"><div class="rbody">
         <div class="rcol">
-          <button class="rsmall tool" data-tool="freetext" data-icon="TypeOutline" data-icon-size="16">Machine à écrire</button>
-          <button class="rsmall tool" data-tool="highlight" data-icon="Highlighter" data-icon-size="16">Surlignage de texte</button>
-          <button class="rsmall tool" data-tool="underline" data-icon="Underline" data-icon-size="16">Souligner</button>
+          <button class="rsmall cmp2 tool" data-tool="freetext" data-icon="TypeOutline" data-icon-size="16"><span class="t">Machine à écrire</span></button>
+          <button class="rsmall cmp2 tool" data-tool="highlight" data-icon="Highlighter" data-icon-size="16"><span class="t">Surlignage de texte</span></button>
+          <button class="rsmall cmp2 tool" data-tool="underline" data-icon="Underline" data-icon-size="16"><span class="t">Souligner</span></button>
         </div>
         <div class="rcol">
-          <button class="rsmall tool" data-tool="note" data-icon="StickyNote" data-icon-size="16">Note</button>
-          <button class="rsmall tool" data-tool="arrow" data-icon="MoveUpRight" data-icon-size="16">Flèche</button>
-          <button class="rsmall tool" data-tool="rect" data-icon="Square" data-icon-size="16">Rectangle</button>
+          <button class="rsmall cmp2 tool" data-tool="note" data-icon="StickyNote" data-icon-size="16"><span class="t">Note</span></button>
+          <button class="rsmall cmp2 tool" data-tool="arrow" data-icon="MoveUpRight" data-icon-size="16"><span class="t">Flèche</span></button>
+          <button class="rsmall cmp2 tool" data-tool="rect" data-icon="Square" data-icon-size="16"><span class="t">Rectangle</span></button>
         </div>
         <button class="rbig tool stampbtn" data-tool="stamp" data-cmd="stampMenu" data-icon="Stamp" data-icon-size="26">Tampon<span class="dd">▾</span></button>
       </div><div class="rlabel">Commentaire</div></div>
       <div class="rgroup"><div class="rbody">
         <button class="rbig tool" data-tool="link" data-icon="Link" data-icon-size="26">Ajouter/modifier<br>les liens</button>
         <div class="rcol">
-          <button class="rsmall" data-cmd="linkFromUrls" data-icon="Globe" data-icon-size="16">Ajouter des liens à partir des URL</button>
-          <button class="rsmall" data-cmd="removeWebLinks" data-icon="Link2Off" data-icon-size="16">Supprimer tous les liens web</button>
-          <button class="rsmall" data-cmd="linksFromBarcodes" data-icon="QrCode" data-icon-size="16">Ajouter des liens à partir des QR codes</button>
+          <button class="rsmall cmp2" data-cmd="linkFromUrls" data-icon="Globe" data-icon-size="16"><span class="t">Ajouter des liens à partir des URL</span></button>
+          <button class="rsmall cmp2" data-cmd="removeWebLinks" data-icon="Link2Off" data-icon-size="16"><span class="t">Supprimer tous les liens web</span></button>
+          <button class="rsmall cmp2" data-cmd="linksFromBarcodes" data-icon="QrCode" data-icon-size="16"><span class="t">Ajouter des liens à partir des QR codes</span></button>
         </div>
         <button class="rbig" data-cmd="batchLink" data-icon="Link2" data-icon-size="26">Lien par<br>lots</button>
       </div><div class="rlabel">Liens</div></div>
@@ -612,9 +656,9 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
         <button class="rbig" data-cmd="combine" data-icon="Merge" data-icon-size="26">Combiner<br>des fichiers</button>
         <button class="rbig" data-cmd="split" data-icon="Split" data-icon-size="26">Scinder</button>
         <div class="rcol">
-          <button class="rsmall" data-cmd="insertFile" data-icon="FilePlus2" data-icon-size="16">Insérer des pages</button>
-          <button class="rsmall" data-cmd="extract" data-icon="FileOutput" data-icon-size="16">Extraire des pages</button>
-          <button class="rsmall" data-cmd="deletePages" data-icon="Trash2" data-icon-size="16">Supprimer des pages</button>
+          <button class="rsmall cmp2" data-cmd="insertFile" data-icon="FilePlus2" data-icon-size="16"><span class="t">Insérer des pages</span></button>
+          <button class="rsmall cmp2" data-cmd="extract" data-icon="FileOutput" data-icon-size="16"><span class="t">Extraire des pages</span></button>
+          <button class="rsmall cmp2" data-cmd="deletePages" data-icon="Trash2" data-icon-size="16"><span class="t">Supprimer des pages</span></button>
         </div>
       </div><div class="rlabel">Document</div></div>
       <div class="rgroup"><div class="rbody">
@@ -802,27 +846,49 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
     <!-- ORGANISER -->
     <div class="rpanel" data-rpanel="organize">
       <div class="rgroup"><div class="rbody">
-        <button class="rbig" data-cmd="rotateLeft" data-icon="RotateCcw" data-icon-size="26">Pivoter<br>à gauche</button>
-        <button class="rbig" data-cmd="rotateRight" data-icon="RotateCw" data-icon-size="26">Pivoter<br>à droite</button>
-        <button class="rbig" data-cmd="deletePages" data-icon="Trash2" data-icon-size="26">Supprimer</button>
         <div class="rcol">
-          <button class="rsmall" data-cmd="duplicatePages" data-icon="Copy" data-icon-size="16">Dupliquer</button>
-          <button class="rsmall" data-cmd="reversePages" data-icon="ArrowDownUp" data-icon-size="16">Inverser l'ordre</button>
-          <button class="rsmall" data-cmd="deleteBlank" data-icon="FileX" data-icon-size="16">Supprimer les pages vides</button>
+          <button class="rsmall cmp tool" data-tool="hand" data-icon="Hand" data-icon-size="16" title="Main"><span class="t">Main</span></button>
+          <button class="rsmall cmp tool" data-tool="select" data-icon="TextCursor" data-icon-size="16" title="Sélectionner du texte"><span class="t">Sélectionner du texte</span></button>
+          <button class="rsmall cmp" data-cmd="otherTools" data-icon="Wrench" data-icon-size="16" title="Autres outils"><span class="t">Autres outils<span class="dd">▾</span></span></button>
+        </div>
+      </div><div class="rlabel">Outils</div></div>
+      <div class="rgroup"><div class="rbody">
+        <button class="rbig" data-cmd="insertMenu" data-icon="FilePlus2" data-icon-size="26">Insérer<span class="dd">▾</span></button>
+        <button class="rbig" data-cmd="deleteMenu" data-icon="FileX2" data-icon-size="26">Supprimer<span class="dd">▾</span></button>
+        <button class="rbig" data-cmd="extract" data-icon="FileOutput" data-icon-size="26">Extraire des<br>pages</button>
+        <button class="rbig" data-cmd="movePages" data-icon="MoveVertical" data-icon-size="26">Déplacer<br>des pages</button>
+        <div class="rcol">
+          <button class="rsmall" data-cmd="mergePages" data-icon="LayoutGrid" data-icon-size="16">Fusionner les pages</button>
+          <button class="rsmall" data-cmd="splitMenu" data-icon="Split" data-icon-size="16">Diviser<span class="dd">▾</span></button>
+          <button class="rsmall" data-cmd="duplicatePages" data-icon="Copy" data-icon-size="16">Dupliquer des pages</button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall" data-cmd="replacePages" data-icon="Replace" data-icon-size="16">Remplacer des pages</button>
+          <button class="rsmall" data-cmd="swapPages" data-icon="ArrowLeftRight" data-icon-size="16">Échanger les pages</button>
+          <button class="rsmall" data-cmd="overlay" data-icon="Layers2" data-icon-size="16">Superposition</button>
+        </div>
+        <div class="rcol">
+          <button class="rsmall ico" data-cmd="reversePages" data-icon="ArrowDownUp" data-icon-size="17"></button>
+          <button class="rsmall ico" data-cmd="deleteBlank" data-icon="FileMinus" data-icon-size="17"></button>
+          <button class="rsmall ico" data-cmd="pageLabels" data-icon="ListOrdered" data-icon-size="17"></button>
         </div>
       </div><div class="rlabel">Pages</div></div>
       <div class="rgroup"><div class="rbody">
-        <button class="rbig" data-cmd="insertFile" data-icon="FilePlus2" data-icon-size="26">Depuis un<br>fichier</button>
-        <button class="rbig" data-cmd="insertBlank" data-icon="File" data-icon-size="26">Page<br>vierge</button>
-      </div><div class="rlabel">Insérer</div></div>
+        <button class="rbig" data-cmd="rotateDlg" data-icon="RotateCw" data-icon-size="26">Rotation</button>
+        <button class="rbig" data-cmd="cropMenu" data-icon="Crop" data-icon-size="26">Recadrer<span class="dd">▾</span></button>
+        <button class="rbig" data-cmd="resizePages" data-icon="Scaling" data-icon-size="26">Redimen-<br>sionner</button>
+        <button class="rbig" data-cmd="margins" data-icon="Frame" data-icon-size="26">Marges</button>
+      </div><div class="rlabel">Transformer les pages</div></div>
       <div class="rgroup"><div class="rbody">
-        <button class="rbig" data-cmd="extract" data-icon="FileOutput" data-icon-size="26">Extraire</button>
-        <button class="rbig" data-cmd="split" data-icon="Split" data-icon-size="26">Scinder</button>
-        <button class="rbig" data-cmd="combine" data-icon="Merge" data-icon-size="26">Combiner</button>
-      </div><div class="rlabel">Fractionner et regrouper</div></div>
+        <button class="rbig" data-cmd="wmMenu" data-icon="Droplet" data-icon-size="26">Filigranes<span class="dd">▾</span></button>
+        <button class="rbig" data-cmd="bgMenu" data-icon="PaintBucket" data-icon-size="26">Arrière-<br><span style="white-space:nowrap">plan<span class="dd">▾</span></span></button>
+        <button class="rbig" data-cmd="hfMenu" data-icon="PanelTop" data-icon-size="26">En-tête et pied<br><span style="white-space:nowrap">de page<span class="dd">▾</span></span></button>
+        <button class="rbig" data-cmd="batesMenu" data-icon="Hash" data-icon-size="26">Numérotation<br><span style="white-space:nowrap">Bates<span class="dd">▾</span></span></button>
+        <button class="rbig" data-cmd="numberPages" data-icon="ListOrdered" data-icon-size="26">Numéroter<br>les pages</button>
+      </div><div class="rlabel">Marques de page</div></div>
       <div class="rgroup"><div class="rbody">
         <div class="rcol">
-          <button class="rsmall" data-cmd="selectAllPages" data-icon="Check" data-icon-size="16">Sélectionner toutes les pages</button>
+          <button class="rsmall" data-cmd="selectAllPages" data-icon="Check" data-icon-size="16">Tout sélectionner</button>
           <button class="rsmall" data-cmd="selectNone" data-icon="Square" data-icon-size="16">Désélectionner</button>
           <span class="hint" id="selInfo" style="padding:4px 6px"></span>
         </div>
@@ -1012,12 +1078,12 @@ li.open>.bmrow .bmtog{transform:rotate(90deg)}
 <input type="file" id="fileFallback" accept="application/pdf,.pdf,image/*,.docx,.docm,.dotx,.xlsx,.xlsm,.xls,.ods,.csv,.pptx,.pptm,.ppsx,.txt,.md" multiple hidden>
 
 <script>
-const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/>","X":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","Plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","FolderOpen":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\"/>","Merge":"<path d=\"m8 6 4-4 4 4\"/><path d=\"M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22\"/><path d=\"m20 22-5-5\"/>","Folder":"<path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","RefreshCw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M8 16H3v5\"/>","Check":"<path d=\"M20 6 9 17l-5-5\"/>","FileX":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"m14.5 12.5-5 5\"/><path d=\"m9.5 12.5 5 5\"/>","Move":"<path d=\"M12 2v20\"/><path d=\"m15 19-3 3-3-3\"/><path d=\"m19 9 3 3-3 3\"/><path d=\"M2 12h20\"/><path d=\"m5 9-3 3 3 3\"/><path d=\"m9 5 3-3 3 3\"/>","FilePlus2":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M3 15h6\"/><path d=\"M6 12v6\"/>","FolderPlus":"<path d=\"M12 10v6\"/><path d=\"M9 13h6\"/><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Files":"<path d=\"M20 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z\"/><path d=\"M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8\"/>","ArrowDownAZ":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"M20 8h-5\"/><path d=\"M15 10V6.5a2.5 2.5 0 0 1 5 0V10\"/><path d=\"M15 14h5l-5 6h5\"/>","Trash2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","GripVertical":"<circle cx=\"9\" cy=\"12\" r=\"1\"/><circle cx=\"9\" cy=\"5\" r=\"1\"/><circle cx=\"9\" cy=\"19\" r=\"1\"/><circle cx=\"15\" cy=\"12\" r=\"1\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><circle cx=\"15\" cy=\"19\" r=\"1\"/>","ArrowUp":"<path d=\"m5 12 7-7 7 7\"/><path d=\"M12 19V5\"/>","ArrowDown":"<path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/>","ChevronRight":"<path d=\"m9 18 6-6-6-6\"/>","Download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\"/>","Info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","Search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","Type":"<polyline points=\"4 7 4 4 20 4 20 7\"/><line x1=\"9\" x2=\"15\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"12\" y1=\"4\" y2=\"20\"/>","Image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","ListChecks":"<path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/>","Layers":"<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\"/><path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\"/><path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\"/>","Palette":"<circle cx=\"13.5\" cy=\"6.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\" fill=\"currentColor\"/><path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z\"/>","BookmarkPlus":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/><line x1=\"12\" x2=\"12\" y1=\"7\" y2=\"13\"/><line x1=\"15\" x2=\"9\" y1=\"10\" y2=\"10\"/>","ListTree":"<path d=\"M21 12h-8\"/><path d=\"M21 6H8\"/><path d=\"M21 18h-8\"/><path d=\"M3 6v4c0 1.1.9 2 2 2h3\"/><path d=\"M3 10v6c0 1.1.9 2 2 2h3\"/>","Pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/><path d=\"m15 5 4 4\"/>","IndentDecrease":"<path d=\"M21 12H11\"/><path d=\"M21 18H11\"/><path d=\"M21 6H11\"/><path d=\"m7 8-4 4 4 4\"/>","IndentIncrease":"<path d=\"M21 12H11\"/><path d=\"M21 18H11\"/><path d=\"M21 6H11\"/><path d=\"m3 8 4 4-4 4\"/>","Mic":"<path d=\"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z\"/><path d=\"M19 10v2a7 7 0 0 1-14 0v-2\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"22\"/>","Square":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>","Calculator":"<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\"/><line x1=\"8\" x2=\"16\" y1=\"6\" y2=\"6\"/><line x1=\"16\" x2=\"16\" y1=\"14\" y2=\"18\"/><path d=\"M16 10h.01\"/><path d=\"M12 10h.01\"/><path d=\"M8 10h.01\"/><path d=\"M12 14h.01\"/><path d=\"M8 14h.01\"/><path d=\"M12 18h.01\"/><path d=\"M8 18h.01\"/>","Copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","TypeOutline":"<path d=\"M14 16.5a.5.5 0 0 0 .5.5h.5a2 2 0 0 1 0 4H9a2 2 0 0 1 0-4h.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5V8a2 2 0 0 1-4 0V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-4 0v-.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z\"/>","Eraser":"<path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/>","Eye":"<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","EyeOff":"<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\"/><path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\"/><path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\"/><path d=\"m2 2 20 20\"/>","MessageSquareText":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/><path d=\"M13 8H7\"/><path d=\"M17 12H7\"/>","MessageSquare":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>","PanelLeft":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>","Scan":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/>","Link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>","Ruler":"<path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/>","Sheet":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><line x1=\"3\" x2=\"21\" y1=\"9\" y2=\"9\"/><line x1=\"3\" x2=\"21\" y1=\"15\" y2=\"15\"/><line x1=\"9\" x2=\"9\" y1=\"9\" y2=\"21\"/><line x1=\"15\" x2=\"15\" y1=\"9\" y2=\"21\"/>","Presentation":"<path d=\"M2 3h20\"/><path d=\"M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3\"/><path d=\"m7 21 5-5 5 5\"/>","ClipboardPaste":"<path d=\"M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z\"/><path d=\"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10\"/><path d=\"m17 10 4 4-4 4\"/>","Ban":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m4.9 4.9 14.2 14.2\"/>","ClipboardCopy":"<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\"/><path d=\"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v4\"/><path d=\"M21 14H11\"/><path d=\"m15 10-4 4 4 4\"/>","Star":"<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/>","RotateCcw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","Settings2":"<path d=\"M20 7h-9\"/><path d=\"M14 17H5\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/>","RotateCw":"<path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/>","FileOutput":"<path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M4 7V4a2 2 0 0 1 2-2 2 2 0 0 0-2 2\"/><path d=\"M4.063 20.999a2 2 0 0 0 2 1L18 22a2 2 0 0 0 2-2V7l-5-5H6\"/><path d=\"m5 11-3 3\"/><path d=\"m5 17-3-3h10\"/>","File":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/>","Save":"<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7\"/><path d=\"M7 3v4a1 1 0 0 0 1 1h7\"/>","Undo2":"<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\"/>","Redo2":"<path d=\"m15 14 5-5-5-5\"/><path d=\"M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13\"/>","ChevronUp":"<path d=\"m18 15-6-6-6 6\"/>","ChevronDown":"<path d=\"m6 9 6 6 6-6\"/>","FolderSearch":"<path d=\"M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1\"/><path d=\"m21 21-1.9-1.9\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/>","MonitorDown":"<path d=\"M12 13V7\"/><path d=\"m15 10-3 3-3-3\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><path d=\"M12 17v4\"/><path d=\"M8 21h8\"/>","CircleHelp":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>","Hand":"<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"/><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>","TextCursor":"<path d=\"M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1\"/><path d=\"M7 22h1a4 4 0 0 0 4-4v-1\"/><path d=\"M7 2h1a4 4 0 0 1 4 4v1\"/>","Camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","ZoomOut":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","ZoomIn":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"11\" x2=\"11\" y1=\"8\" y2=\"14\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","Expand":"<path d=\"m21 21-6-6m6 6v-4.8m0 4.8h-4.8\"/><path d=\"M3 16.2V21m0 0h4.8M3 21l6-6\"/><path d=\"M21 7.8V3m0 0h-4.8M21 3l-6 6\"/><path d=\"M3 7.8V3m0 0h4.8M3 3l6 6\"/>","ArrowLeftRight":"<path d=\"M8 3 4 7l4 4\"/><path d=\"M4 7h16\"/><path d=\"m16 21 4-4-4-4\"/><path d=\"M20 17H4\"/>","RotateCcwSquare":"<path d=\"M20 9V7a2 2 0 0 0-2-2h-6\"/><path d=\"m15 2-3 3 3 3\"/><path d=\"M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2\"/>","RotateCwSquare":"<path d=\"M12 5H6a2 2 0 0 0-2 2v3\"/><path d=\"m9 8 3-3-3-3\"/><path d=\"M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2\"/>","Bookmark":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/>","Paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","SlidersHorizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","FilePenLine":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","ImagePlus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","Highlighter":"<path d=\"m9 11-6 6v3h9l3-3\"/><path d=\"m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4\"/>","Underline":"<path d=\"M6 4v6a6 6 0 0 0 12 0V4\"/><line x1=\"4\" x2=\"20\" y1=\"20\" y2=\"20\"/>","StickyNote":"<path d=\"M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z\"/><path d=\"M15 3v4a2 2 0 0 0 2 2h4\"/>","MoveUpRight":"<path d=\"M13 5H19V11\"/><path d=\"M19 5L5 19\"/>","Stamp":"<path d=\"M5 22h14\"/><path d=\"M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z\"/><path d=\"M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13\"/>","Globe":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>","Link2Off":"<path d=\"M9 17H7A5 5 0 0 1 7 7\"/><path d=\"M15 7h2a5 5 0 0 1 4 8\"/><line x1=\"8\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"2\" x2=\"22\" y1=\"2\" y2=\"22\"/>","QrCode":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/><path d=\"M21 16h-3a2 2 0 0 0-2 2v3\"/><path d=\"M21 21v.01\"/><path d=\"M12 7v3a2 2 0 0 1-2 2H7\"/><path d=\"M3 12h.01\"/><path d=\"M12 3h.01\"/><path d=\"M12 16v.01\"/><path d=\"M16 12h1\"/><path d=\"M21 12v.01\"/><path d=\"M12 21v-1\"/>","Link2":"<path d=\"M9 17H7A5 5 0 0 1 7 7h2\"/><path d=\"M15 7h2a5 5 0 1 1 0 10h-2\"/><line x1=\"8\" x2=\"16\" y1=\"12\" y2=\"12\"/>","Split":"<path d=\"M16 3h5v5\"/><path d=\"M8 3H3v5\"/><path d=\"M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3\"/><path d=\"m15 9 6-6\"/>","FileSignature":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","Wrench":"<path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z\"/>","MousePointer2":"<path d=\"M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z\"/>","SquarePen":"<path d=\"M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/><path d=\"M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z\"/>","MessageSquareQuote":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/><path d=\"M8 12a2 2 0 0 0 2-2V8H8\"/><path d=\"M14 12a2 2 0 0 0 2-2V8h-2\"/>","Volume2":"<path d=\"M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z\"/><path d=\"M16 9a5 5 0 0 1 0 6\"/><path d=\"M19.364 18.364a9 9 0 0 0 0-12.728\"/>","RectangleHorizontal":"<rect width=\"20\" height=\"12\" x=\"2\" y=\"6\" rx=\"2\"/>","Waves":"<path d=\"M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/>","Strikethrough":"<path d=\"M16 4H9a3 3 0 0 0-2.83 4\"/><path d=\"M14 12a4 4 0 0 1 0 8H6\"/><line x1=\"4\" x2=\"20\" y1=\"12\" y2=\"12\"/>","TextCursorInput":"<path d=\"M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1\"/><path d=\"M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5\"/><path d=\"M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1\"/><path d=\"M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7\"/><path d=\"M9 7v10\"/>","Replace":"<path d=\"M14 4a2 2 0 0 1 2-2\"/><path d=\"M16 10a2 2 0 0 1-2-2\"/><path d=\"M20 2a2 2 0 0 1 2 2\"/><path d=\"M22 8a2 2 0 0 1-2 2\"/><path d=\"m3 7 3 3 3-3\"/><path d=\"M6 10V5a3 3 0 0 1 3-3h1\"/><rect x=\"2\" y=\"14\" width=\"8\" height=\"8\" rx=\"2\"/>","Slash":"<path d=\"M22 2 2 22\"/>","Circle":"<circle cx=\"12\" cy=\"12\" r=\"10\"/>","Pentagon":"<path d=\"M10.83 2.38a2 2 0 0 1 2.34 0l8 5.74a2 2 0 0 1 .73 2.25l-3.04 9.26a2 2 0 0 1-1.9 1.37H7.04a2 2 0 0 1-1.9-1.37L2.1 10.37a2 2 0 0 1 .73-2.25z\"/>","Spline":"<circle cx=\"19\" cy=\"5\" r=\"2\"/><circle cx=\"5\" cy=\"19\" r=\"2\"/><path d=\"M5 17A12 12 0 0 1 17 5\"/>","Cloud":"<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/>","PenLine":"<path d=\"M12 20h9\"/><path d=\"M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z\"/>","Waypoints":"<circle cx=\"12\" cy=\"4.5\" r=\"2.5\"/><path d=\"m10.2 6.3-3.9 3.9\"/><circle cx=\"4.5\" cy=\"12\" r=\"2.5\"/><path d=\"M7 12h10\"/><circle cx=\"19.5\" cy=\"12\" r=\"2.5\"/><path d=\"m13.8 17.7 3.9-3.9\"/><circle cx=\"12\" cy=\"19.5\" r=\"2.5\"/>","LandPlot":"<path d=\"m12 8 6-3-6-3v10\"/><path d=\"m8 11.99-5.5 3.14a1 1 0 0 0 0 1.74l8.5 4.86a2 2 0 0 0 2 0l8.5-4.86a1 1 0 0 0 0-1.74L16 12\"/><path d=\"m6.49 12.85 11.02 6.3\"/><path d=\"M17.51 12.85 6.5 19.15\"/>","Clapperboard":"<path d=\"M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z\"/><path d=\"m6.2 5.3 3.1 3.9\"/><path d=\"m12.4 3.4 3.1 4\"/><path d=\"M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z\"/>","Music":"<path d=\"M9 18V5l12-2v13\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><circle cx=\"18\" cy=\"16\" r=\"3\"/>","Box":"<path d=\"M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z\"/><path d=\"m3.3 7 8.7 5 8.7-5\"/><path d=\"M12 22V12\"/>","FileInput":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M2 15h10\"/><path d=\"m9 18 3-3-3-3\"/>","Blend":"<circle cx=\"9\" cy=\"9\" r=\"7\"/><circle cx=\"15\" cy=\"15\" r=\"7\"/>","Brush":"<path d=\"m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08\"/><path d=\"M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z\"/>","ALargeSmall":"<path d=\"M21 14h-5\"/><path d=\"M16 16v-3.5a2.5 2.5 0 0 1 5 0V16\"/><path d=\"M4.5 13h6\"/><path d=\"m3 16 4.5-9 4.5 9\"/>","UserRound":"<circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/>","ScanLine":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/><path d=\"M7 12h10\"/>","Images":"<path d=\"M18 22H4a2 2 0 0 1-2-2V6\"/><path d=\"m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18\"/><circle cx=\"12\" cy=\"8\" r=\"2\"/><rect width=\"16\" height=\"16\" x=\"6\" y=\"2\" rx=\"2\"/>","Shrink":"<path d=\"m15 15 6 6m-6-6v4.8m0-4.8h4.8\"/><path d=\"M9 19.8V15m0 0H4.2M9 15l-6 6\"/><path d=\"M15 4.2V9m0 0h4.8M15 9l6-6\"/><path d=\"M9 4.2V9m0 0H4.2M9 9 3 3\"/>","ImageDown":"<path d=\"M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L6 21\"/><path d=\"m14 19 3 3v-5.5\"/><path d=\"m17 22 3-3\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","ScanText":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/><path d=\"M7 8h8\"/><path d=\"M7 12h10\"/><path d=\"M7 16h6\"/>","Sparkles":"<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/><path d=\"M20 3v4\"/><path d=\"M22 5h-4\"/><path d=\"M4 17v2\"/><path d=\"M5 18H3\"/>","ScanEye":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><path d=\"M18.944 12.33a1 1 0 0 0 0-.66 7.5 7.5 0 0 0-13.888 0 1 1 0 0 0 0 .66 7.5 7.5 0 0 0 13.888 0\"/>","Contrast":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 18a6 6 0 0 0 0-12v12z\"/>","Paintbrush":"<path d=\"m14.622 17.897-10.68-2.913\"/><path d=\"M18.376 2.622a1 1 0 1 1 3.002 3.002L17.36 9.643a.5.5 0 0 0 0 .707l.944.944a2.41 2.41 0 0 1 0 3.408l-.944.944a.5.5 0 0 1-.707 0L8.354 7.348a.5.5 0 0 1 0-.707l.944-.944a2.41 2.41 0 0 1 3.408 0l.944.944a.5.5 0 0 0 .707 0z\"/><path d=\"M9 8c-1.804 2.71-3.97 3.46-6.583 3.948a.507.507 0 0 0-.302.819l7.32 8.883a1 1 0 0 0 1.185.204C12.735 20.405 16 16.792 16 15\"/>","ArrowDownUp":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"m21 8-4-4-4 4\"/><path d=\"M17 4v16\"/>","BookmarkMinus":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/><line x1=\"15\" x2=\"9\" y1=\"10\" y2=\"10\"/>","ChevronsUpDown":"<path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-5 5 5\"/>","ChevronsDownUp":"<path d=\"m7 20 5-5 5 5\"/><path d=\"m7 4 5 5 5-5\"/>","Heading":"<path d=\"M6 12h12\"/><path d=\"M6 20V4\"/><path d=\"M18 20V4\"/>","FileStack":"<path d=\"M21 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M21 6v6.5c0 .8-.7 1.5-1.5 1.5h-7c-.8 0-1.5-.7-1.5-1.5v-9c0-.8.7-1.5 1.5-1.5H17Z\"/><path d=\"M7 8v8.8c0 .3.2.6.4.8.2.2.5.4.8.4H15\"/><path d=\"M3 12v8.8c0 .3.2.6.4.8.2.2.5.4.8.4H11\"/>","MessageSquareOff":"<path d=\"M21 15V5a2 2 0 0 0-2-2H9\"/><path d=\"m2 2 20 20\"/><path d=\"M3.6 3.6c-.4.3-.6.8-.6 1.4v16l4-4h10\"/>","Crown":"<path d=\"M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z\"/><path d=\"M5 21h14\"/>","Bold":"<path d=\"M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8\"/>","Italic":"<line x1=\"19\" x2=\"10\" y1=\"4\" y2=\"4\"/><line x1=\"14\" x2=\"5\" y1=\"20\" y2=\"20\"/><line x1=\"15\" x2=\"9\" y1=\"4\" y2=\"20\"/>","AlignLeft":"<path d=\"M15 12H3\"/><path d=\"M17 18H3\"/><path d=\"M21 6H3\"/>","AlignRight":"<path d=\"M21 12H9\"/><path d=\"M21 18H7\"/><path d=\"M21 6H3\"/>","CornerLeftUp":"<polyline points=\"14 9 9 4 4 9\"/><path d=\"M20 20h-7a4 4 0 0 1-4-4V4\"/>","FileDown":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M12 18v-6\"/><path d=\"m9 15 3 3 3-3\"/>"};
+const ICONS = {"FileText":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/>","X":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","Plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","FolderOpen":"<path d=\"m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2\"/>","Merge":"<path d=\"m8 6 4-4 4 4\"/><path d=\"M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22\"/><path d=\"m20 22-5-5\"/>","Folder":"<path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>","RefreshCw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M8 16H3v5\"/>","Check":"<path d=\"M20 6 9 17l-5-5\"/>","FileX":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"m14.5 12.5-5 5\"/><path d=\"m9.5 12.5 5 5\"/>","Move":"<path d=\"M12 2v20\"/><path d=\"m15 19-3 3-3-3\"/><path d=\"m19 9 3 3-3 3\"/><path d=\"M2 12h20\"/><path d=\"m5 9-3 3 3 3\"/><path d=\"m9 5 3-3 3 3\"/>","FilePlus2":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M3 15h6\"/><path d=\"M6 12v6\"/>","FolderPlus":"<path d=\"M12 10v6\"/><path d=\"M9 13h6\"/><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>","Files":"<path d=\"M20 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z\"/><path d=\"M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8\"/>","ArrowDownAZ":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"M20 8h-5\"/><path d=\"M15 10V6.5a2.5 2.5 0 0 1 5 0V10\"/><path d=\"M15 14h5l-5 6h5\"/>","Trash2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","GripVertical":"<circle cx=\"9\" cy=\"12\" r=\"1\"/><circle cx=\"9\" cy=\"5\" r=\"1\"/><circle cx=\"9\" cy=\"19\" r=\"1\"/><circle cx=\"15\" cy=\"12\" r=\"1\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><circle cx=\"15\" cy=\"19\" r=\"1\"/>","ArrowUp":"<path d=\"m5 12 7-7 7 7\"/><path d=\"M12 19V5\"/>","ArrowDown":"<path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/>","ChevronRight":"<path d=\"m9 18 6-6-6-6\"/>","Download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\"/>","Info":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>","Search":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>","Type":"<polyline points=\"4 7 4 4 20 4 20 7\"/><line x1=\"9\" x2=\"15\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"12\" y1=\"4\" y2=\"20\"/>","Image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","ListChecks":"<path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/>","Layers":"<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\"/><path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\"/><path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\"/>","Palette":"<circle cx=\"13.5\" cy=\"6.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\" fill=\"currentColor\"/><path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z\"/>","BookmarkPlus":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/><line x1=\"12\" x2=\"12\" y1=\"7\" y2=\"13\"/><line x1=\"15\" x2=\"9\" y1=\"10\" y2=\"10\"/>","ListTree":"<path d=\"M21 12h-8\"/><path d=\"M21 6H8\"/><path d=\"M21 18h-8\"/><path d=\"M3 6v4c0 1.1.9 2 2 2h3\"/><path d=\"M3 10v6c0 1.1.9 2 2 2h3\"/>","Pencil":"<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/><path d=\"m15 5 4 4\"/>","IndentDecrease":"<path d=\"M21 12H11\"/><path d=\"M21 18H11\"/><path d=\"M21 6H11\"/><path d=\"m7 8-4 4 4 4\"/>","IndentIncrease":"<path d=\"M21 12H11\"/><path d=\"M21 18H11\"/><path d=\"M21 6H11\"/><path d=\"m3 8 4 4-4 4\"/>","Mic":"<path d=\"M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z\"/><path d=\"M19 10v2a7 7 0 0 1-14 0v-2\"/><line x1=\"12\" x2=\"12\" y1=\"19\" y2=\"22\"/>","Square":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>","Calculator":"<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\"/><line x1=\"8\" x2=\"16\" y1=\"6\" y2=\"6\"/><line x1=\"16\" x2=\"16\" y1=\"14\" y2=\"18\"/><path d=\"M16 10h.01\"/><path d=\"M12 10h.01\"/><path d=\"M8 10h.01\"/><path d=\"M12 14h.01\"/><path d=\"M8 14h.01\"/><path d=\"M12 18h.01\"/><path d=\"M8 18h.01\"/>","Copy":"<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/>","TypeOutline":"<path d=\"M14 16.5a.5.5 0 0 0 .5.5h.5a2 2 0 0 1 0 4H9a2 2 0 0 1 0-4h.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5V8a2 2 0 0 1-4 0V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-4 0v-.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z\"/>","Eraser":"<path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/>","Eye":"<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","EyeOff":"<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\"/><path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\"/><path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\"/><path d=\"m2 2 20 20\"/>","MessageSquareText":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/><path d=\"M13 8H7\"/><path d=\"M17 12H7\"/>","MessageSquare":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>","PanelLeft":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/>","Scan":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/>","Link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>","Ruler":"<path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/>","Sheet":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><line x1=\"3\" x2=\"21\" y1=\"9\" y2=\"9\"/><line x1=\"3\" x2=\"21\" y1=\"15\" y2=\"15\"/><line x1=\"9\" x2=\"9\" y1=\"9\" y2=\"21\"/><line x1=\"15\" x2=\"15\" y1=\"9\" y2=\"21\"/>","Presentation":"<path d=\"M2 3h20\"/><path d=\"M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3\"/><path d=\"m7 21 5-5 5 5\"/>","ClipboardPaste":"<path d=\"M15 2H9a1 1 0 0 0-1 1v2c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1Z\"/><path d=\"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M16 4h2a2 2 0 0 1 2 2v2M11 14h10\"/><path d=\"m17 10 4 4-4 4\"/>","Ban":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m4.9 4.9 14.2 14.2\"/>","ClipboardCopy":"<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\"/><path d=\"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v4\"/><path d=\"M21 14H11\"/><path d=\"m15 10-4 4 4 4\"/>","Star":"<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/>","RotateCcw":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>","Settings2":"<path d=\"M20 7h-9\"/><path d=\"M14 17H5\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/>","File":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/>","ScanLine":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/><path d=\"M7 12h10\"/>","Split":"<path d=\"M16 3h5v5\"/><path d=\"M8 3H3v5\"/><path d=\"M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3\"/><path d=\"m15 9 6-6\"/>","Columns2":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M12 3v18\"/>","Crop":"<path d=\"M6 2v14a2 2 0 0 0 2 2h14\"/><path d=\"M18 22V8a2 2 0 0 0-2-2H2\"/>","SquareDashedMousePointer":"<path d=\"M12.034 12.681a.498.498 0 0 1 .647-.647l9 3.5a.5.5 0 0 1-.033.943l-3.444 1.068a1 1 0 0 0-.66.66l-1.067 3.443a.5.5 0 0 1-.943.033z\"/><path d=\"M5 3a2 2 0 0 0-2 2\"/><path d=\"M19 3a2 2 0 0 1 2 2\"/><path d=\"M5 21a2 2 0 0 1-2-2\"/><path d=\"M9 3h1\"/><path d=\"M9 21h2\"/><path d=\"M14 3h1\"/><path d=\"M3 9v1\"/><path d=\"M21 9v2\"/><path d=\"M3 14v1\"/>","Scissors":"<circle cx=\"6\" cy=\"6\" r=\"3\"/><path d=\"M8.12 8.12 12 12\"/><path d=\"M20 4 8.12 15.88\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><path d=\"M14.8 14.8 20 20\"/>","Maximize":"<path d=\"M8 3H5a2 2 0 0 0-2 2v3\"/><path d=\"M21 8V5a2 2 0 0 0-2-2h-3\"/><path d=\"M3 16v3a2 2 0 0 0 2 2h3\"/><path d=\"M16 21h3a2 2 0 0 0 2-2v-3\"/>","Maximize2":"<polyline points=\"15 3 21 3 21 9\"/><polyline points=\"9 21 3 21 3 15\"/><line x1=\"21\" x2=\"14\" y1=\"3\" y2=\"10\"/><line x1=\"3\" x2=\"10\" y1=\"21\" y2=\"14\"/>","MoveVertical":"<path d=\"M12 2v20\"/><path d=\"m8 18 4 4 4-4\"/><path d=\"m8 6 4-4 4 4\"/>","ArrowLeftRight":"<path d=\"M8 3 4 7l4 4\"/><path d=\"M4 7h16\"/><path d=\"m16 21 4-4-4-4\"/><path d=\"M20 17H4\"/>","LayoutGrid":"<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\"/>","Layers2":"<path d=\"m16.02 12 5.48 3.13a1 1 0 0 1 0 1.74L13 21.74a2 2 0 0 1-2 0l-8.5-4.87a1 1 0 0 1 0-1.74L7.98 12\"/><path d=\"M13 13.74a2 2 0 0 1-2 0L2.5 8.87a1 1 0 0 1 0-1.74L11 2.26a2 2 0 0 1 2 0l8.5 4.87a1 1 0 0 1 0 1.74Z\"/>","ListOrdered":"<path d=\"M10 12h11\"/><path d=\"M10 18h11\"/><path d=\"M10 6h11\"/><path d=\"M4 10h2\"/><path d=\"M4 6h1v4\"/><path d=\"M6 18H4c0-1 2-2 2-3s-1-1.5-2-1\"/>","RotateCw":"<path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/>","Scaling":"<path d=\"M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/><path d=\"M14 15H9v-5\"/><path d=\"M16 3h5v5\"/><path d=\"M21 3 9 15\"/>","Frame":"<line x1=\"22\" x2=\"2\" y1=\"6\" y2=\"6\"/><line x1=\"22\" x2=\"2\" y1=\"18\" y2=\"18\"/><line x1=\"6\" x2=\"6\" y1=\"2\" y2=\"22\"/><line x1=\"18\" x2=\"18\" y1=\"2\" y2=\"22\"/>","Droplet":"<path d=\"M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z\"/>","PaintBucket":"<path d=\"m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z\"/><path d=\"m5 2 5 5\"/><path d=\"M2 13h15\"/><path d=\"M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z\"/>","Hash":"<line x1=\"4\" x2=\"20\" y1=\"9\" y2=\"9\"/><line x1=\"4\" x2=\"20\" y1=\"15\" y2=\"15\"/><line x1=\"10\" x2=\"8\" y1=\"3\" y2=\"21\"/><line x1=\"16\" x2=\"14\" y1=\"3\" y2=\"21\"/>","PanelTop":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M3 9h18\"/>","ImageUp":"<path d=\"M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L6 21\"/><path d=\"m14 19.5 3-3 3 3\"/><path d=\"M17 22v-5.5\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","BoxSelect":"<path d=\"M5 3a2 2 0 0 0-2 2\"/><path d=\"M19 3a2 2 0 0 1 2 2\"/><path d=\"M21 19a2 2 0 0 1-2 2\"/><path d=\"M5 21a2 2 0 0 1-2-2\"/><path d=\"M9 3h1\"/><path d=\"M9 21h1\"/><path d=\"M14 3h1\"/><path d=\"M14 21h1\"/><path d=\"M3 9v1\"/><path d=\"M21 9v1\"/><path d=\"M3 14v1\"/><path d=\"M21 14v1\"/>","ReplaceAll":"<path d=\"M14 14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2\"/><path d=\"M14 4a2 2 0 0 1 2-2\"/><path d=\"M16 10a2 2 0 0 1-2-2\"/><path d=\"M20 14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2\"/><path d=\"M20 2a2 2 0 0 1 2 2\"/><path d=\"M22 8a2 2 0 0 1-2 2\"/><path d=\"m3 7 3 3 3-3\"/><path d=\"M6 10V5a 3 3 0 0 1 3-3h1\"/><rect x=\"2\" y=\"14\" width=\"8\" height=\"8\" rx=\"2\"/>","MousePointer2":"<path d=\"M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z\"/>","ClipboardList":"<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/><path d=\"M12 11h4\"/><path d=\"M12 16h4\"/><path d=\"M8 11h.01\"/><path d=\"M8 16h.01\"/>","FolderSearch":"<path d=\"M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1\"/><path d=\"m21 21-1.9-1.9\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/>","Expand":"<path d=\"m21 21-6-6m6 6v-4.8m0 4.8h-4.8\"/><path d=\"M3 16.2V21m0 0h4.8M3 21l6-6\"/><path d=\"M21 7.8V3m0 0h-4.8M21 3l-6 6\"/><path d=\"M3 7.8V3m0 0h4.8M3 3l6 6\"/>","MoveHorizontal":"<path d=\"m18 8 4 4-4 4\"/><path d=\"M2 12h20\"/><path d=\"m6 8-4 4 4 4\"/>","ScanEye":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><path d=\"M18.944 12.33a1 1 0 0 0 0-.66 7.5 7.5 0 0 0-13.888 0 1 1 0 0 0 0 .66 7.5 7.5 0 0 0 13.888 0\"/>","ZoomIn":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"11\" x2=\"11\" y1=\"8\" y2=\"14\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","FileOutput":"<path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M4 7V4a2 2 0 0 1 2-2 2 2 0 0 0-2 2\"/><path d=\"M4.063 20.999a2 2 0 0 0 2 1L18 22a2 2 0 0 0 2-2V7l-5-5H6\"/><path d=\"m5 11-3 3\"/><path d=\"m5 17-3-3h10\"/>","Save":"<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7\"/><path d=\"M7 3v4a1 1 0 0 0 1 1h7\"/>","Undo2":"<path d=\"M9 14 4 9l5-5\"/><path d=\"M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11\"/>","Redo2":"<path d=\"m15 14 5-5-5-5\"/><path d=\"M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13\"/>","ChevronUp":"<path d=\"m18 15-6-6-6 6\"/>","ChevronDown":"<path d=\"m6 9 6 6 6-6\"/>","MonitorDown":"<path d=\"M12 13V7\"/><path d=\"m15 10-3 3-3-3\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><path d=\"M12 17v4\"/><path d=\"M8 21h8\"/>","CircleHelp":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>","Hand":"<path d=\"M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2\"/><path d=\"M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2\"/><path d=\"M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8\"/><path d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15\"/>","TextCursor":"<path d=\"M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1\"/><path d=\"M7 22h1a4 4 0 0 0 4-4v-1\"/><path d=\"M7 2h1a4 4 0 0 1 4 4v1\"/>","Camera":"<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>","ZoomOut":"<circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/><line x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","RotateCcwSquare":"<path d=\"M20 9V7a2 2 0 0 0-2-2h-6\"/><path d=\"m15 2-3 3 3 3\"/><path d=\"M20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2\"/>","RotateCwSquare":"<path d=\"M12 5H6a2 2 0 0 0-2 2v3\"/><path d=\"m9 8 3-3-3-3\"/><path d=\"M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2\"/>","Bookmark":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/>","Paperclip":"<path d=\"m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48\"/>","SlidersHorizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","FilePenLine":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","ImagePlus":"<path d=\"M16 5h6\"/><path d=\"M19 2v6\"/><path d=\"M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","Highlighter":"<path d=\"m9 11-6 6v3h9l3-3\"/><path d=\"m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4\"/>","Underline":"<path d=\"M6 4v6a6 6 0 0 0 12 0V4\"/><line x1=\"4\" x2=\"20\" y1=\"20\" y2=\"20\"/>","StickyNote":"<path d=\"M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z\"/><path d=\"M15 3v4a2 2 0 0 0 2 2h4\"/>","MoveUpRight":"<path d=\"M13 5H19V11\"/><path d=\"M19 5L5 19\"/>","Stamp":"<path d=\"M5 22h14\"/><path d=\"M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z\"/><path d=\"M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13\"/>","Globe":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>","Link2Off":"<path d=\"M9 17H7A5 5 0 0 1 7 7\"/><path d=\"M15 7h2a5 5 0 0 1 4 8\"/><line x1=\"8\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"2\" x2=\"22\" y1=\"2\" y2=\"22\"/>","QrCode":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/><path d=\"M21 16h-3a2 2 0 0 0-2 2v3\"/><path d=\"M21 21v.01\"/><path d=\"M12 7v3a2 2 0 0 1-2 2H7\"/><path d=\"M3 12h.01\"/><path d=\"M12 3h.01\"/><path d=\"M12 16v.01\"/><path d=\"M16 12h1\"/><path d=\"M21 12v.01\"/><path d=\"M12 21v-1\"/>","Link2":"<path d=\"M9 17H7A5 5 0 0 1 7 7h2\"/><path d=\"M15 7h2a5 5 0 1 1 0 10h-2\"/><line x1=\"8\" x2=\"16\" y1=\"12\" y2=\"12\"/>","FileSignature":"<path d=\"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2\"/><path d=\"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/><path d=\"M8 18h1\"/>","Wrench":"<path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z\"/>","SquarePen":"<path d=\"M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/><path d=\"M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z\"/>","MessageSquareQuote":"<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/><path d=\"M8 12a2 2 0 0 0 2-2V8H8\"/><path d=\"M14 12a2 2 0 0 0 2-2V8h-2\"/>","Volume2":"<path d=\"M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z\"/><path d=\"M16 9a5 5 0 0 1 0 6\"/><path d=\"M19.364 18.364a9 9 0 0 0 0-12.728\"/>","RectangleHorizontal":"<rect width=\"20\" height=\"12\" x=\"2\" y=\"6\" rx=\"2\"/>","Waves":"<path d=\"M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/><path d=\"M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/>","Strikethrough":"<path d=\"M16 4H9a3 3 0 0 0-2.83 4\"/><path d=\"M14 12a4 4 0 0 1 0 8H6\"/><line x1=\"4\" x2=\"20\" y1=\"12\" y2=\"12\"/>","TextCursorInput":"<path d=\"M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1\"/><path d=\"M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5\"/><path d=\"M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1\"/><path d=\"M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7\"/><path d=\"M9 7v10\"/>","Replace":"<path d=\"M14 4a2 2 0 0 1 2-2\"/><path d=\"M16 10a2 2 0 0 1-2-2\"/><path d=\"M20 2a2 2 0 0 1 2 2\"/><path d=\"M22 8a2 2 0 0 1-2 2\"/><path d=\"m3 7 3 3 3-3\"/><path d=\"M6 10V5a3 3 0 0 1 3-3h1\"/><rect x=\"2\" y=\"14\" width=\"8\" height=\"8\" rx=\"2\"/>","Slash":"<path d=\"M22 2 2 22\"/>","Circle":"<circle cx=\"12\" cy=\"12\" r=\"10\"/>","Pentagon":"<path d=\"M10.83 2.38a2 2 0 0 1 2.34 0l8 5.74a2 2 0 0 1 .73 2.25l-3.04 9.26a2 2 0 0 1-1.9 1.37H7.04a2 2 0 0 1-1.9-1.37L2.1 10.37a2 2 0 0 1 .73-2.25z\"/>","Spline":"<circle cx=\"19\" cy=\"5\" r=\"2\"/><circle cx=\"5\" cy=\"19\" r=\"2\"/><path d=\"M5 17A12 12 0 0 1 17 5\"/>","Cloud":"<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/>","PenLine":"<path d=\"M12 20h9\"/><path d=\"M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z\"/>","Waypoints":"<circle cx=\"12\" cy=\"4.5\" r=\"2.5\"/><path d=\"m10.2 6.3-3.9 3.9\"/><circle cx=\"4.5\" cy=\"12\" r=\"2.5\"/><path d=\"M7 12h10\"/><circle cx=\"19.5\" cy=\"12\" r=\"2.5\"/><path d=\"m13.8 17.7 3.9-3.9\"/><circle cx=\"12\" cy=\"19.5\" r=\"2.5\"/>","LandPlot":"<path d=\"m12 8 6-3-6-3v10\"/><path d=\"m8 11.99-5.5 3.14a1 1 0 0 0 0 1.74l8.5 4.86a2 2 0 0 0 2 0l8.5-4.86a1 1 0 0 0 0-1.74L16 12\"/><path d=\"m6.49 12.85 11.02 6.3\"/><path d=\"M17.51 12.85 6.5 19.15\"/>","Clapperboard":"<path d=\"M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z\"/><path d=\"m6.2 5.3 3.1 3.9\"/><path d=\"m12.4 3.4 3.1 4\"/><path d=\"M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z\"/>","Music":"<path d=\"M9 18V5l12-2v13\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><circle cx=\"18\" cy=\"16\" r=\"3\"/>","Box":"<path d=\"M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z\"/><path d=\"m3.3 7 8.7 5 8.7-5\"/><path d=\"M12 22V12\"/>","FileInput":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M2 15h10\"/><path d=\"m9 18 3-3-3-3\"/>","Blend":"<circle cx=\"9\" cy=\"9\" r=\"7\"/><circle cx=\"15\" cy=\"15\" r=\"7\"/>","Brush":"<path d=\"m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08\"/><path d=\"M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z\"/>","ALargeSmall":"<path d=\"M21 14h-5\"/><path d=\"M16 16v-3.5a2.5 2.5 0 0 1 5 0V16\"/><path d=\"M4.5 13h6\"/><path d=\"m3 16 4.5-9 4.5 9\"/>","UserRound":"<circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/>","Images":"<path d=\"M18 22H4a2 2 0 0 1-2-2V6\"/><path d=\"m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18\"/><circle cx=\"12\" cy=\"8\" r=\"2\"/><rect width=\"16\" height=\"16\" x=\"6\" y=\"2\" rx=\"2\"/>","Shrink":"<path d=\"m15 15 6 6m-6-6v4.8m0-4.8h4.8\"/><path d=\"M9 19.8V15m0 0H4.2M9 15l-6 6\"/><path d=\"M15 4.2V9m0 0h4.8M15 9l6-6\"/><path d=\"M9 4.2V9m0 0H4.2M9 9 3 3\"/>","ImageDown":"<path d=\"M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L6 21\"/><path d=\"m14 19 3 3v-5.5\"/><path d=\"m17 22 3-3\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/>","ScanText":"<path d=\"M3 7V5a2 2 0 0 1 2-2h2\"/><path d=\"M17 3h2a2 2 0 0 1 2 2v2\"/><path d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/><path d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/><path d=\"M7 8h8\"/><path d=\"M7 12h10\"/><path d=\"M7 16h6\"/>","Sparkles":"<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/><path d=\"M20 3v4\"/><path d=\"M22 5h-4\"/><path d=\"M4 17v2\"/><path d=\"M5 18H3\"/>","Contrast":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 18a6 6 0 0 0 0-12v12z\"/>","Paintbrush":"<path d=\"m14.622 17.897-10.68-2.913\"/><path d=\"M18.376 2.622a1 1 0 1 1 3.002 3.002L17.36 9.643a.5.5 0 0 0 0 .707l.944.944a2.41 2.41 0 0 1 0 3.408l-.944.944a.5.5 0 0 1-.707 0L8.354 7.348a.5.5 0 0 1 0-.707l.944-.944a2.41 2.41 0 0 1 3.408 0l.944.944a.5.5 0 0 0 .707 0z\"/><path d=\"M9 8c-1.804 2.71-3.97 3.46-6.583 3.948a.507.507 0 0 0-.302.819l7.32 8.883a1 1 0 0 0 1.185.204C12.735 20.405 16 16.792 16 15\"/>","FileX2":"<path d=\"M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"m8 12.5-5 5\"/><path d=\"m3 12.5 5 5\"/>","ArrowDownUp":"<path d=\"m3 16 4 4 4-4\"/><path d=\"M7 20V4\"/><path d=\"m21 8-4-4-4 4\"/><path d=\"M17 4v16\"/>","FileMinus":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M9 15h6\"/>","BookmarkMinus":"<path d=\"m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z\"/><line x1=\"15\" x2=\"9\" y1=\"10\" y2=\"10\"/>","ChevronsUpDown":"<path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-5 5 5\"/>","ChevronsDownUp":"<path d=\"m7 20 5-5 5 5\"/><path d=\"m7 4 5 5 5-5\"/>","Heading":"<path d=\"M6 12h12\"/><path d=\"M6 20V4\"/><path d=\"M18 20V4\"/>","FileStack":"<path d=\"M21 7h-3a2 2 0 0 1-2-2V2\"/><path d=\"M21 6v6.5c0 .8-.7 1.5-1.5 1.5h-7c-.8 0-1.5-.7-1.5-1.5v-9c0-.8.7-1.5 1.5-1.5H17Z\"/><path d=\"M7 8v8.8c0 .3.2.6.4.8.2.2.5.4.8.4H15\"/><path d=\"M3 12v8.8c0 .3.2.6.4.8.2.2.5.4.8.4H11\"/>","MessageSquareOff":"<path d=\"M21 15V5a2 2 0 0 0-2-2H9\"/><path d=\"m2 2 20 20\"/><path d=\"M3.6 3.6c-.4.3-.6.8-.6 1.4v16l4-4h10\"/>","Crown":"<path d=\"M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z\"/><path d=\"M5 21h14\"/>","Bold":"<path d=\"M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8\"/>","Italic":"<line x1=\"19\" x2=\"10\" y1=\"4\" y2=\"4\"/><line x1=\"14\" x2=\"5\" y1=\"20\" y2=\"20\"/><line x1=\"15\" x2=\"9\" y1=\"4\" y2=\"20\"/>","AlignLeft":"<path d=\"M15 12H3\"/><path d=\"M17 18H3\"/><path d=\"M21 6H3\"/>","AlignRight":"<path d=\"M21 12H9\"/><path d=\"M21 18H7\"/><path d=\"M21 6H3\"/>","CornerLeftUp":"<polyline points=\"14 9 9 4 4 9\"/><path d=\"M20 20h-7a4 4 0 0 1-4-4V4\"/>","FileDown":"<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M12 18v-6\"/><path d=\"m9 15 3 3 3-3\"/>"};
 /* =====================================================================
    Éditeur PDF — éditeur PDF monofichier (pdf.js + pdf-lib)
    ===================================================================== */
 'use strict';
-const APP_VERSION = '1.9';
+const APP_VERSION = '2.0';
 const { PDFDocument, StandardFonts, rgb, degrees, PDFName, PDFHexString } = PDFLib;
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -3028,6 +3094,7 @@ function cmdHelp() {
         <li>Glisser des fichiers depuis l'Explorateur sur les miniatures les insère à cet endroit ; sur la page affichée, ils s'ouvrent dans un nouvel onglet.</li>
         <li><b>v1.5</b> — Ruban Accueil : instantané (zone copiée en image), coller une image ou un texte sur la page (<span class="kbd">Ctrl+V</span>), PDF depuis le presse-papiers, ajout d'image (déplacer, redimensionner), taille réelle, rotation de l'affichage, volets Signets, Commentaires, Pièces jointes et Propriétés, <b>recherche avancée</b> dans tous les PDF d'un dossier (<span class="kbd">Ctrl+Maj+F</span>).</li>
         <li><b>v1.6</b> — Commentaires en vraies annotations PDF : machine à écrire, note, surligner / souligner / barrer (sélectionnez le texte), flèche, ligne, rectangle, ovale, crayon, tampons (dont datés : PAYÉ, REÇU, COMPTABILISÉ, VU), tampon personnalisé ou image. Couleur, épaisseur, opacité, auteur. Volet Commentaires : sélection, double-clic pour modifier, suppression (y compris commentaires déjà présents), résumé PDF, aplatissement.</li>
+        <li><b>v2.0</b> — Bulles d'explication au survol de tous les boutons (titre, raccourci, rôle). Onglet Organiser complet : Insérer ▾ (pages, pages vides, presse-papiers, images, numérisations, texte), Supprimer ▾, Déplacer, Fusionner (2 à 9 pages par feuille), Diviser ▾ (document ou pages coupées en 2 / 4), Remplacer, Échanger, Superposition, étiquettes de pages, Rotation, Recadrer ▾ (marges, outil, marges blanches, suppression hors cadre), Redimensionner, Marges, Filigranes, Arrière-plan, En-tête et pied de page, Numérotation Bates (aussi sur plusieurs fichiers), Numéroter les pages — chacun avec Ajouter / Supprimer tout / Gérer. Éditer des objets (déplacer, redimensionner, supprimer, remplacer une image). Remplacer les polices. Autres outils ▾ complet, outil Zoom, Ctrl+0/1/2/3, Ctrl+Maj+I/D/T/R.</li>
         <li><b>v1.9</b> — Ouverture et combinaison des fichiers Word (.docx), Excel (.xlsx, .xls, .ods, .csv), PowerPoint (.pptx), texte et images : conversion en PDF sur votre PC. Onglet Convertir : numérisation, à partir de fichiers, rasteriser, recompresser les images, exporter en images / vers Word / Excel / PowerPoint, OCR français, améliorer / redresser / corriger les numérisations, niveaux de gris et recoloration. Onglet Format contextuel : styles de forme, remplissage, trait, bordure (tirets, nuage), opacité, mode de rendu, fins de ligne, outils de style, pop-up, propriétés (verrouillage) ; options de l'outil Main.</li>
         <li><b>v1.8</b> — Onglet Commentaires complet : boîte de texte, légende avec flèche, fichier joint, son enregistré au micro, souligné ondulé, insérer / remplacer du texte, zone surlignée, polygone, polyligne, nuage, gomme, mesures (distance, périmètre, surface, échelle au clic droit), calculatrice comptable (cliquez sur des montants pour les additionner), vidéo / son / objet 3D joints, import / export des commentaires (XFDF), afficher / masquer les commentaires.</li>
         <li><b>v1.7</b> — Liens : cliquables avec l'outil Main ; outil « Ajouter/modifier les liens » (rectangle ou clic sur une ligne, vers une adresse web, un e-mail ou une page), liens à partir des URL du texte et des QR codes, suppression des liens web, lien par lots. Signets : ajout (<span class="kbd">Ctrl+B</span>), renommage (double-clic / <span class="kbd">F2</span>), suppression, glisser-déposer, niveaux, génération à partir des titres ou une par page. Notes avec fenêtre reliée, machine à écrire directe, couleurs au clic droit.</li>
@@ -8171,6 +8238,1557 @@ document.addEventListener('DOMContentLoaded', bindFormatTab);
 setTimeout(bindFormatTab, 0);
 // icônes des menus : svgIcon('Ban') svgIcon('ClipboardCopy') svgIcon('ClipboardPaste') svgIcon('Star') svgIcon('RotateCcw') svgIcon('Settings2')
 window.PRELE_FX = { applyFx, fxContext, setHandOpt };
+
+/* =====================================================================
+   v2.0 — Onglet Organiser complet
+   Pages · Transformer les pages · Marques de page (filigranes, arrière-
+   plans, en-têtes et pieds de page, numérotation Bates, numéros de page)
+   ===================================================================== */
+const MM = 72 / 25.4;
+const mm2pt = v => (parseFloat(String(v).replace(',', '.')) || 0) * MM;
+function pickDocPages(doc, el, id = 'pg') { return pagesFromField(el, doc, id); }
+function pagesFieldSel(doc, id = 'pg') {   // champ « Pages » avec la sélection cochée par défaut si elle existe
+  const h = pagesFieldHTML(doc, id);
+  return doc.selected && doc.selected.size > 1 ? h.replace('value="all" checked', 'value="all"').replace(`value="sel">`, `value="sel" checked>`) : h;
+}
+const parityHTML = (id = 'par') => `<div class="field inline"><label>Appliquer à</label><select id="${id}"><option value="all">toutes ces pages</option><option value="odd">pages impaires seulement</option><option value="even">pages paires seulement</option><option value="portrait">pages en portrait</option><option value="landscape">pages en paysage</option></select></div>`;
+function filterParity(doc, idx, v) {
+  return idx.filter(i => v === 'odd' ? i % 2 === 0 : v === 'even' ? i % 2 === 1 : v === 'portrait' ? doc.sizes[i].h >= doc.sizes[i].w : v === 'landscape' ? doc.sizes[i].w > doc.sizes[i].h : true);
+}
+async function pickPdfFile(title) {
+  const [h] = await showOpenFilePicker({ id: 'prele-open', types: OPEN_TYPES });
+  const f = await h.getFile(); let b = new Uint8Array(await f.arrayBuffer());
+  if (!isPdfBytes(b)) b = isImgName(f.name) ? await combineEngine([{ name: f.name, kind: 'image', range: '', getBytes: async () => b }], {}) : await convertNamed(f.name, b);
+  return { name: f.name, bytes: b };
+}
+
+/* =====================================================================
+   Pages
+   ===================================================================== */
+function cmdInsertMenu() {
+  popMenu(anchorOf('insertMenu'), [
+    ['FilePlus2', 'Insérer des pages…  (Ctrl+Maj+I)', () => runCmd('insertFile')],
+    ['File', 'Insérer des pages vides…', cmdInsertBlankDlg],
+    ['ClipboardPaste', 'Insérer des pages du presse-papiers…', cmdInsertClipboard],
+    ['Image', 'Insérer des images…', cmdInsertImages],
+    ['ScanLine', 'Insérer des pages numérisées…', cmdInsertImages],
+    ['Type', 'Insérer du texte…', cmdInsertText],
+  ]);
+}
+function cmdDeleteMenu() {
+  popMenu(anchorOf('deleteMenu'), [
+    ['Trash2', 'Supprimer des pages…  (Ctrl+Maj+D)', cmdDeletePagesDlg],
+    ['FileX', 'Supprimer les pages vides…', () => runCmd('deleteBlank')],
+  ]);
+}
+async function insertBytesAt(doc, bytes, at, label) {
+  const add = await PDFDocument.load(bytes, { ignoreEncryption: true });
+  const n = add.getPageCount();
+  const ok = await mutate(doc, async (pdf, pages) => {
+    const cp = await pdf.copyPages(add, [...Array(n).keys()]);
+    cp.forEach((p, k) => pdf.insertPage(at + k, p));
+    pages.splice(at, 0, ...cp.map(() => ({ uid: uid(), edits: [] })));
+    return pages;
+  }, { current: at, select: [...Array(n).keys()].map(k => at + k) });
+  if (ok) toast(`${n} page${n > 1 ? 's' : ''} ${label || 'insérée'}${n > 1 ? 's' : ''} à la position ${at + 1}.`);
+}
+function positionFieldHTML(doc) {
+  return `<div class="field inline"><label>Position</label><select id="insWhere"><option value="after">après la page</option><option value="before">avant la page</option><option value="start">au début</option><option value="end">à la fin</option></select>
+    <input type="number" id="insPage" min="1" max="${doc.sizes.length}" value="${doc.current + 1}" style="width:70px"></div>`;
+}
+function positionFrom(el, doc) {
+  const w = el.querySelector('#insWhere').value, p = Math.max(1, Math.min(doc.sizes.length, +el.querySelector('#insPage').value || 1));
+  return w === 'start' ? 0 : w === 'end' ? doc.sizes.length : w === 'before' ? p - 1 : p;
+}
+async function cmdInsertBlankDlg() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({
+    title: 'Insérer des pages vides', icon: 'File', ok: 'Insérer',
+    body: `<div class="field inline"><label>Nombre</label><input type="number" id="ibN" min="1" max="500" value="1" style="width:70px"></div>
+      <div class="field inline"><label>Format</label><select id="ibFmt"><option value="same">identique à la page courante</option><option value="a4p">A4 portrait</option><option value="a4l">A4 paysage</option><option value="a3p">A3 portrait</option><option value="letter">Lettre US</option></select></div>
+      ${positionFieldHTML(doc)}`,
+  });
+  if (!el) return;
+  const n = Math.max(1, Math.min(500, +el.querySelector('#ibN').value || 1)), at = positionFrom(el, doc);
+  const fmt = el.querySelector('#ibFmt').value;
+  const raw = doc.pageObjs[doc.current].getViewport({ scale: 1, rotation: 0 });
+  const size = { same: [raw.width, raw.height], a4p: [595.28, 841.89], a4l: [841.89, 595.28], a3p: [841.89, 1190.55], letter: [612, 792] }[fmt];
+  const ok = await mutate(doc, (pdf, pages) => { for (let k = 0; k < n; k++) { pdf.insertPage(at + k, size); pages.splice(at + k, 0, { uid: uid(), edits: [] }); } return pages; }, { current: at });
+  if (ok) toast(`${n} page${n > 1 ? 's' : ''} vide${n > 1 ? 's' : ''} insérée${n > 1 ? 's' : ''}.`);
+}
+async function cmdInsertClipboard() {
+  const doc = S.active; if (!doc) return;
+  const data = await readClipboardOrAsk(); if (!data) return;
+  let bytes = null;
+  if (data.kind === 'image') { const im = await normalizeImage(data.bytes, 'presse-papiers.png', data.mime); bytes = await combineEngine([{ name: 'presse-papiers.' + im.kind, kind: 'image', range: '', getBytes: async () => im.bytes }], {}); }
+  else if (data.text) bytes = await textToPdf(new TextEncoder().encode(data.text), 'presse-papiers.txt');
+  if (!bytes) { toast('Le presse-papiers ne contient ni image ni texte.'); return; }
+  await insertBytesAt(doc, bytes, doc.current + 1);
+}
+async function cmdInsertImages() {
+  const doc = S.active; if (!doc) return;
+  try {
+    const hs = await showOpenFilePicker({ multiple: true, id: 'prele-scan', types: [{ description: 'Images et numérisations', accept: { 'image/*': IMG_EXT.map(e => '.' + e), 'application/pdf': ['.pdf'] } }] });
+    const bytes = await combineEngine(hs.map(h => ({ name: h.name, range: '', kind: isImgName(h.name) ? 'image' : 'pdf', getBytes: async () => new Uint8Array(await (await h.getFile()).arrayBuffer()) })), {});
+    await insertBytesAt(doc, bytes, doc.current + 1);
+  } catch (e) { handleErr(e); }
+}
+async function cmdInsertText() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({ title: 'Insérer du texte', icon: 'Type', ok: 'Insérer', width: 560, body: `<div class="field"><label>Texte (une ou plusieurs pages selon la longueur)</label><textarea id="itT" rows="10" style="width:100%"></textarea></div>${positionFieldHTML(doc)}` });
+  if (!el) return;
+  const t = el.querySelector('#itT').value; if (!t.trim()) return;
+  await insertBytesAt(doc, await textToPdf(new TextEncoder().encode(t), 'texte.txt'), positionFrom(el, doc));
+}
+async function cmdDeletePagesDlg() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({ title: 'Supprimer des pages', icon: 'Trash2', ok: 'Supprimer', body: pagesFieldSel(doc) + parityHTML() });
+  if (!el) return;
+  let idx = pickDocPages(doc, el); if (!idx) return;
+  idx = filterParity(doc, idx, el.querySelector('#par').value);
+  if (!idx.length) return toast('Aucune page ne correspond.');
+  if (idx.length >= doc.sizes.length) return toast('Impossible de supprimer toutes les pages du document.', 'err');
+  const ok = await mutate(doc, (pdf, pages) => { [...idx].sort((a, b) => b - a).forEach(i => { pdf.removePage(i); pages.splice(i, 1); }); return pages; });
+  if (ok) toast(`${idx.length} page${idx.length > 1 ? 's' : ''} supprimée${idx.length > 1 ? 's' : ''}.`);
+}
+async function cmdMovePages() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({ title: 'Déplacer des pages', icon: 'MoveVertical', ok: 'Déplacer', body: pagesFieldSel(doc) + positionFieldHTML(doc).replace('<label>Position</label>', '<label>Destination</label>') });
+  if (!el) return;
+  const idx = pickDocPages(doc, el); if (!idx) return;
+  const at = positionFrom(el, doc);
+  const rest = [...doc.sizes.keys()].filter(i => !idx.includes(i));
+  const ins = rest.filter(i => i < at).length;
+  const order = [...rest.slice(0, ins), ...idx, ...rest.slice(ins)];
+  if (order.every((v, k) => v === k)) return toast('Les pages sont déjà à cet endroit.');
+  if (await reorderPages(doc, order, { select: idx.map((_, k) => ins + k), current: ins })) toast(`${idx.length} page${idx.length > 1 ? 's' : ''} déplacée${idx.length > 1 ? 's' : ''}.`);
+}
+async function cmdSwapPages() {
+  const doc = S.active; if (!doc) return;
+  let a, b;
+  const sel = [...doc.selected].sort((x, y) => x - y);
+  if (sel.length === 2) [a, b] = sel;
+  else {
+    const el = await optionsDialog({ title: 'Échanger deux pages', icon: 'ArrowLeftRight', ok: 'Échanger', body: `<div class="field inline"><label>Page</label><input type="number" id="swA" min="1" max="${doc.sizes.length}" value="${doc.current + 1}" style="width:70px"><label style="margin-left:10px">avec la page</label><input type="number" id="swB" min="1" max="${doc.sizes.length}" value="${Math.min(doc.sizes.length, doc.current + 2)}" style="width:70px"></div><p class="hint">Astuce : sélectionnez deux miniatures (Ctrl+clic) pour échanger directement.</p>` });
+    if (!el) return;
+    a = +el.querySelector('#swA').value - 1; b = +el.querySelector('#swB').value - 1;
+  }
+  if (!(a >= 0 && b >= 0 && a < doc.sizes.length && b < doc.sizes.length) || a === b) return toast('Numéros de pages invalides.', 'err');
+  const order = [...doc.sizes.keys()]; [order[a], order[b]] = [order[b], order[a]];
+  if (await reorderPages(doc, order, { select: [a, b] })) toast(`Pages ${a + 1} et ${b + 1} échangées.`);
+}
+/* fusionner plusieurs pages sur une même feuille (2, 4, 6… par page) */
+async function cmdMergePages() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({
+    title: 'Fusionner les pages', icon: 'LayoutGrid', ok: 'Fusionner', width: 500,
+    body: `<p class="hint" style="margin-top:0">Réunit plusieurs pages sur une même feuille (impression économique, planches).</p>${pagesFieldSel(doc)}
+      <div class="field inline"><label>Disposition</label><select id="nuL"><option value="2h">2 pages côte à côte</option><option value="2v">2 pages l'une sous l'autre</option><option value="4">4 pages (2 × 2)</option><option value="6">6 pages (2 × 3)</option><option value="8">8 pages (2 × 4)</option><option value="9">9 pages (3 × 3)</option></select></div>
+      <div class="field inline"><label>Feuille</label><select id="nuS"><option value="auto">A4, orientation automatique</option><option value="a4p">A4 portrait</option><option value="a4l">A4 paysage</option><option value="a3l">A3 paysage</option></select>
+      <label style="margin-left:10px">Marge</label><input type="number" id="nuM" value="5" min="0" max="40" style="width:56px"> mm</div>
+      <label class="check"><input type="checkbox" id="nuB"> Encadrer chaque page</label>
+      <label class="check"><input type="checkbox" id="nuNew" checked> Créer un nouveau document (le document actuel reste inchangé)</label>`,
+  });
+  if (!el) return;
+  const idx = pickDocPages(doc, el); if (!idx) return;
+  const L = el.querySelector('#nuL').value, [cols, rows] = { '2h': [2, 1], '2v': [1, 2], 4: [2, 2], 6: [2, 3], 8: [2, 4], 9: [3, 3] }[L];
+  const per = cols * rows, m = mm2pt(el.querySelector('#nuM').value), border = el.querySelector('#nuB').checked, asNew = el.querySelector('#nuNew').checked;
+  const sv = el.querySelector('#nuS').value;
+  const r0 = doc.sizes[idx[0]], cellLand = r0.w > r0.h;
+  let land = sv === 'a4l' || sv === 'a3l' || (sv === 'auto' && ((cols > rows) !== cellLand ? true : false));
+  if (sv === 'auto') land = (cols * (cellLand ? 1.414 : 1)) > (rows * (cellLand ? 1 : 1.414));
+  const base = sv === 'a3l' ? [1190.55, 841.89] : [841.89, 595.28];
+  const [SW, SH] = land ? base : [base[1], base[0]];
+  busy(true);
+  try {
+    const src = await PDFDocument.load(await buildOutputBytes(doc), { ignoreEncryption: true });
+    const out = await PDFDocument.create();
+    const emb = await out.embedPages(idx.map(i => src.getPage(i)));
+    for (let s = 0; s < emb.length; s += per) {
+      const sheet = out.addPage([SW, SH]);
+      const cw = (SW - m * (cols + 1)) / cols, ch = (SH - m * (rows + 1)) / rows;
+      for (let k = 0; k < per && s + k < emb.length; k++) {
+        const e = emb[s + k], pg = src.getPage(idx[s + k]), rot = pg.getRotation().angle % 360;
+        const w = rot % 180 ? e.height : e.width, h = rot % 180 ? e.width : e.height;
+        const sc = Math.min(cw / w, ch / h), c = k % cols, r = Math.floor(k / cols);
+        const x = m + c * (cw + m) + (cw - w * sc) / 2, y = SH - m - (r + 1) * ch - r * m + (ch - h * sc) / 2;
+        const opt = { x, y, width: e.width * sc, height: e.height * sc };
+        if (rot === 90) Object.assign(opt, { x: x, y: y + h * sc, rotate: degrees(-90) });
+        if (rot === 180) Object.assign(opt, { x: x + w * sc, y: y + h * sc, rotate: degrees(180) });
+        if (rot === 270) Object.assign(opt, { x: x + w * sc, y: y, rotate: degrees(90) });
+        sheet.drawPage(e, opt);
+        if (border) sheet.drawRectangle({ x, y, width: w * sc, height: h * sc, borderColor: rgb(0.6, 0.6, 0.6), borderWidth: 0.5 });
+      }
+    }
+    const bytes = await out.save();
+    busy(false);
+    if (asNew) { await openBytes(`${stripExt(doc.name)} (${per} par page).pdf`, bytes, null, { dirty: true }); return; }
+    const at = idx[0];
+    await mutate(doc, async (pdf, pages) => {
+      const add = await PDFDocument.load(bytes); const cp = await pdf.copyPages(add, add.getPageIndices());
+      [...idx].sort((a, b) => b - a).forEach(i => { pdf.removePage(i); pages.splice(i, 1); });
+      cp.forEach((p, k) => pdf.insertPage(at + k, p)); pages.splice(at, 0, ...cp.map(() => ({ uid: uid(), edits: [] })));
+      return pages;
+    }, { current: at });
+  } catch (e) { handleErr(e); } finally { busy(false); }
+}
+function cmdSplitMenu() {
+  popMenu(anchorOf('splitMenu'), [
+    ['Split', 'Diviser le document…', () => runCmd('split')],
+    ['Columns2', 'Diviser les pages (couper une page en plusieurs)…', cmdSplitPages],
+  ]);
+}
+async function cmdSplitPages() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({
+    title: 'Diviser les pages', icon: 'Columns2', ok: 'Diviser',
+    body: `<p class="hint" style="margin-top:0">Coupe chaque page en plusieurs pages (ex. scan de deux pages d'un livre ouvert). Sans perte : le contenu n'est pas transformé en image.</p>${pagesFieldSel(doc)}
+      <div class="field inline"><label>Découpe</label><select id="spL"><option value="2v">en 2, verticalement (gauche | droite)</option><option value="2h">en 2, horizontalement (haut / bas)</option><option value="4">en 4 (2 × 2)</option></select></div>
+      <label class="check"><input type="checkbox" id="spRtl"> Ordre de droite à gauche</label>`,
+  });
+  if (!el) return;
+  const idx = pickDocPages(doc, el); if (!idx) return;
+  const L = el.querySelector('#spL').value, rtl = el.querySelector('#spRtl').checked;
+  const [cols, rows] = L === '2v' ? [2, 1] : L === '2h' ? [1, 2] : [2, 2];
+  let added = 0;
+  const ok = await mutate(doc, async (pdf, pages) => {
+    for (const i of [...idx].sort((a, b) => b - a)) {
+      const pg = pdf.getPage(i), cb = pg.getCropBox(), rot = pg.getRotation().angle % 360;
+      const tiles = [];
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) tiles.push([rtl ? cols - 1 - c : c, r]);
+      const copies = await pdf.copyPages(pdf, tiles.map(() => i));
+      // découpe dans le sens d'affichage (tient compte de la rotation de la page)
+      const dispW = rot % 180 ? cb.height : cb.width, dispH = rot % 180 ? cb.width : cb.height;
+      copies.forEach((p, k) => {
+        const [c, r] = tiles[k], tw = dispW / cols, th = dispH / rows;
+        let x0 = c * tw, y0 = dispH - (r + 1) * th;   // en coordonnées affichées
+        let box;
+        if (rot === 0) box = [cb.x + x0, cb.y + y0, tw, th];
+        else if (rot === 90) box = [cb.x + cb.width - (y0 + th), cb.y + x0, th, tw];
+        else if (rot === 180) box = [cb.x + cb.width - (x0 + tw), cb.y + cb.height - (y0 + th), tw, th];
+        else box = [cb.x + y0, cb.y + cb.height - (x0 + tw), th, tw];
+        p.setMediaBox(...box); p.setCropBox(...box);
+        pdf.insertPage(i + 1 + k, p);
+      });
+      pdf.removePage(i);
+      pages.splice(i, 1, ...copies.map(() => ({ uid: uid(), edits: [] })));
+      added += copies.length - 1;
+    }
+    return pages;
+  });
+  if (ok) toast(`${idx.length} page${idx.length > 1 ? 's' : ''} divisée${idx.length > 1 ? 's' : ''} (${added} page${added > 1 ? 's' : ''} ajoutée${added > 1 ? 's' : ''}).`);
+}
+async function cmdReplacePages() {
+  const doc = S.active; if (!doc) return;
+  let src;
+  try { src = await pickPdfFile(); } catch (e) { if (e.name !== 'AbortError') handleErr(e); return; }
+  const sp = await PDFDocument.load(src.bytes, { ignoreEncryption: true }), sn = sp.getPageCount();
+  const el = await optionsDialog({
+    title: 'Remplacer des pages', icon: 'Replace', ok: 'Remplacer',
+    body: `<p style="margin-top:0">Source : <b>${esc(src.name)}</b> (${sn} page${sn > 1 ? 's' : ''})</p>${pagesFieldSel(doc)}
+      <div class="field inline"><label>Par les pages de la source à partir de la page</label><input type="number" id="rpS" min="1" max="${sn}" value="1" style="width:70px"></div>`,
+  });
+  if (!el) return;
+  const idx = pickDocPages(doc, el); if (!idx) return;
+  const s0 = Math.max(1, +el.querySelector('#rpS').value || 1) - 1;
+  const pairs = idx.map((i, k) => [i, s0 + k]).filter(([, j]) => j < sn);
+  const ok = await mutate(doc, async (pdf, pages) => {
+    const cp = await pdf.copyPages(sp, pairs.map(p => p[1]));
+    pairs.forEach(([i], k) => { pdf.removePage(i); pdf.insertPage(i, cp[k]); pages[i] = { uid: uid(), edits: [] }; });
+    return pages;
+  });
+  if (ok) toast(`${pairs.length} page${pairs.length > 1 ? 's' : ''} remplacée${pairs.length > 1 ? 's' : ''}.${pairs.length < idx.length ? ' (source trop courte pour les autres)' : ''}`);
+}
+async function cmdOverlay() {
+  const doc = S.active; if (!doc) return;
+  let src;
+  try { src = await pickPdfFile(); } catch (e) { if (e.name !== 'AbortError') handleErr(e); return; }
+  const sp = await PDFDocument.load(src.bytes, { ignoreEncryption: true }), sn = sp.getPageCount();
+  const el = await optionsDialog({
+    title: 'Superposition', icon: 'Layers2', ok: 'Superposer',
+    body: `<p style="margin-top:0">Calque : <b>${esc(src.name)}</b> (${sn} page${sn > 1 ? 's' : ''}) — ex. papier à en-tête, cachet, fond de formulaire.</p>${pagesFieldSel(doc)}
+      <div class="field inline"><label>Page du calque</label><select id="ovP"><option value="1">toujours la page 1</option><option value="match">page correspondante (1→1, 2→2…)</option><option value="cycle">en boucle</option></select></div>
+      <div class="field inline"><label>Placement</label><select id="ovZ"><option value="under">sous le contenu (arrière-plan)</option><option value="over">par-dessus le contenu</option></select>
+        <label style="margin-left:10px">Opacité</label><select id="ovO"><option value="1">100 %</option><option value="0.7">70 %</option><option value="0.5">50 %</option><option value="0.3">30 %</option></select></div>
+      <label class="check"><input type="checkbox" id="ovFit" checked> Adapter à la taille de chaque page</label>`,
+  });
+  if (!el) return;
+  const idx = pickDocPages(doc, el); if (!idx) return;
+  const mode = el.querySelector('#ovP').value, under = el.querySelector('#ovZ').value === 'under', op = +el.querySelector('#ovO').value, fit = el.querySelector('#ovFit').checked;
+  const ok = await mutate(doc, async pdf => {
+    const embs = await pdf.embedPages(sp.getPages());
+    idx.forEach((i, k) => {
+      const j = mode === '1' ? 0 : mode === 'match' ? k : k % sn; if (j >= sn) return;
+      const e = embs[j], page = pdf.getPage(i), cb = page.getCropBox();
+      const sc = fit ? Math.min(cb.width / e.width, cb.height / e.height) : 1;
+      const x = cb.x + (cb.width - e.width * sc) / 2, y = cb.y + (cb.height - e.height * sc) / 2;
+      if (!under) { page.drawPage(e, { x, y, xScale: sc, yScale: sc, opacity: op }); return; }
+      const name = page.node.newXObject('Ovl', e.ref);
+      let gsn = ''; if (op < 1) gsn = page.node.newExtGState('GSo', pdf.context.obj({ Type: 'ExtGState', ca: op, CA: op })).toString() + ' gs ';
+      markStream(pdf, page, `q ${gsn}${fmtNum(sc)} 0 0 ${fmtNum(sc)} ${fmtNum(x)} ${fmtNum(y)} cm ${name.toString()} Do Q`, null, true);
+    });
+  });
+  if (ok) toast(`Superposition appliquée sur ${idx.length} page${idx.length > 1 ? 's' : ''}.`);
+}
+/* étiquettes de pages (i, ii, iii… 1, 2, 3…) */
+async function cmdPageLabels() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({
+    title: 'Numérotation des pages (étiquettes)', icon: 'ListOrdered', ok: 'Appliquer', width: 520,
+    body: `<p class="hint" style="margin-top:0">Change les numéros affichés par les lecteurs PDF (ex. pages de garde en i, ii, iii puis 1, 2, 3), sans rien écrire sur les pages.</p>
+      <div class="field inline"><label>À partir de la page</label><input type="number" id="plFrom" min="1" max="${doc.sizes.length}" value="${doc.current + 1}" style="width:70px"></div>
+      <div class="field inline"><label>Style</label><select id="plStyle"><option value="D">1, 2, 3</option><option value="r">i, ii, iii</option><option value="R">I, II, III</option><option value="a">a, b, c</option><option value="A">A, B, C</option><option value="">aucun (préfixe seul)</option></select>
+        <label style="margin-left:10px">Préfixe</label><input type="text" id="plPre" style="width:80px" placeholder="ex. A-">
+        <label style="margin-left:10px">Début</label><input type="number" id="plStart" min="1" value="1" style="width:60px"></div>
+      <label class="check"><input type="checkbox" id="plReset"> Effacer toutes les étiquettes existantes</label>`,
+  });
+  if (!el) return;
+  const from = +el.querySelector('#plFrom').value - 1, st = el.querySelector('#plStyle').value, pre = el.querySelector('#plPre').value, start = Math.max(1, +el.querySelector('#plStart').value || 1), reset = el.querySelector('#plReset').checked;
+  await mutate(doc, pdf => {
+    const cat = pdf.catalog, ctx = pdf.context;
+    if (reset) { cat.delete(PDFName.of('PageLabels')); return; }
+    let nums = [];
+    const old = cat.lookup(PDFName.of('PageLabels'));
+    if (old instanceof PDFLib.PDFDict) { const a = old.lookup(PDFName.of('Nums')); if (a instanceof PDFLib.PDFArray) for (let k = 0; k + 1 < a.size(); k += 2) nums.push([a.lookup(k).asNumber(), a.get(k + 1)]); }
+    nums = nums.filter(n => n[0] !== from);
+    const d = {}; if (st) d.S = st; if (pre) d.P = PDFHexString.fromText(pre); if (start !== 1) d.St = start;
+    nums.push([from, ctx.obj(d)]);
+    if (!nums.some(n => n[0] === 0)) nums.push([0, ctx.obj({ S: 'D' })]);
+    nums.sort((a, b) => a[0] - b[0]);
+    cat.set(PDFName.of('PageLabels'), ctx.obj({ Nums: ctx.obj(nums.flatMap(n => [n[0], n[1]])) }));
+  });
+  toast('Étiquettes de pages enregistrées.');
+}
+
+/* =====================================================================
+   Transformer les pages
+   ===================================================================== */
+async function cmdRotateDlg() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({
+    title: 'Faire pivoter les pages', icon: 'RotateCw', ok: 'Pivoter',
+    body: `${pagesFieldSel(doc)}<div class="field inline"><label>Rotation</label><select id="rtA"><option value="90">90° dans le sens horaire</option><option value="-90">90° dans le sens antihoraire</option><option value="180">180°</option></select></div>${parityHTML()}`,
+  });
+  if (!el) return;
+  let idx = pickDocPages(doc, el); if (!idx) return;
+  idx = filterParity(doc, idx, el.querySelector('#par').value);
+  const a = +el.querySelector('#rtA').value;
+  if (await mutate(doc, pdf => { idx.forEach(i => { const p = pdf.getPage(i); p.setRotation(degrees(((p.getRotation().angle + a) % 360 + 360) % 360)); }); })) toast(`${idx.length} page${idx.length > 1 ? 's' : ''} pivotée${idx.length > 1 ? 's' : ''}.`);
+}
+function cmdCropMenu() {
+  popMenu(anchorOf('cropMenu'), [
+    ['Crop', 'Recadrer les pages…  (Ctrl+Maj+T)', () => cmdCropDlg()],
+    ['SquareDashedMousePointer', 'Outil recadrage de page', () => setTool('crop')],
+    ['Scissors', 'Supprimer le contenu hors cadre…', cmdRemoveOutside],
+    '-',
+    ['Maximize', 'Recadrer aux marges blanches — page courante', () => cmdAutoCrop(false)],
+    ['Maximize2', 'Recadrer aux marges blanches — toutes les pages', () => cmdAutoCrop(true)],
+  ]);
+}
+/* conversion « marges affichées » → boîte en espace utilisateur (rotation prise en compte) */
+function boxFromMargins(page, base, mg) {
+  const rot = page.getRotation().angle % 360, b = base;
+  let [L, R, T, B] = [mg.l, mg.r, mg.t, mg.b];
+  if (rot === 90) [L, R, T, B] = [mg.b, mg.t, mg.l, mg.r];
+  if (rot === 180) [L, R, T, B] = [mg.r, mg.l, mg.b, mg.t];
+  if (rot === 270) [L, R, T, B] = [mg.t, mg.b, mg.r, mg.l];
+  return [b.x + L, b.y + B, Math.max(10, b.width - L - R), Math.max(10, b.height - T - B)];
+}
+async function cmdCropDlg(preset) {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({
+    title: 'Recadrer les pages', icon: 'Crop', ok: 'Recadrer', width: 500,
+    body: `<p class="hint" style="margin-top:0">Masque les bords des pages (le contenu n'est pas supprimé : voir « Supprimer le contenu hors cadre »).</p>
+      <div class="cropgrid"><label>Haut</label><input type="number" id="cT" value="${preset ? fmtNum(preset.t / MM) : 0}" step="0.5"> mm
+      <label>Gauche</label><input type="number" id="cL" value="${preset ? fmtNum(preset.l / MM) : 0}" step="0.5"> mm <label>Droite</label><input type="number" id="cR" value="${preset ? fmtNum(preset.r / MM) : 0}" step="0.5"> mm
+      <label>Bas</label><input type="number" id="cB" value="${preset ? fmtNum(preset.b / MM) : 0}" step="0.5"> mm</div>
+      <label class="check"><input type="checkbox" id="cFrom"> Repartir de la page entière (annule les recadrages précédents)</label>
+      ${pagesFieldSel(doc)}${parityHTML()}`,
+  });
+  if (!el) return;
+  let idx = pickDocPages(doc, el); if (!idx) return;
+  idx = filterParity(doc, idx, el.querySelector('#par').value);
+  const mg = { t: mm2pt(el.querySelector('#cT').value), l: mm2pt(el.querySelector('#cL').value), r: mm2pt(el.querySelector('#cR').value), b: mm2pt(el.querySelector('#cB').value) };
+  const fromFull = el.querySelector('#cFrom').checked;
+  if (await mutate(doc, pdf => { idx.forEach(i => { const p = pdf.getPage(i); p.setCropBox(...boxFromMargins(p, fromFull ? p.getMediaBox() : p.getCropBox(), mg)); }); })) toast(`${idx.length} page${idx.length > 1 ? 's' : ''} recadrée${idx.length > 1 ? 's' : ''}.`);
+}
+/* outil de recadrage : rectangle tracé sur la page */
+function startCropDraw(ev, P) {
+  const d = S.active, vp = P.vp, pr = P.pel.getBoundingClientRect();
+  const rb = document.createElement('div'); rb.className = 'rubber cropdraw'; P.pel.appendChild(rb);
+  let x1 = P.x, y1 = P.y;
+  const mm = m => { x1 = Math.max(0, Math.min(pr.width, m.clientX - pr.left)); y1 = Math.max(0, Math.min(pr.height, m.clientY - pr.top)); Object.assign(rb.style, { left: Math.min(P.x, x1) + 'px', top: Math.min(P.y, y1) + 'px', width: Math.abs(x1 - P.x) + 'px', height: Math.abs(y1 - P.y) + 'px' }); };
+  const mu = async () => {
+    window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu);
+    if (Math.abs(x1 - P.x) < 10 || Math.abs(y1 - P.y) < 10) { rb.remove(); return; }
+    // marges affichées en points
+    const s = vp.scale, L = Math.min(P.x, x1) / s, T = Math.min(P.y, y1) / s, R = (vp.width - Math.max(P.x, x1)) / s, B = (vp.height - Math.max(P.y, y1)) / s;
+    rb.remove();
+    await cmdCropDlg({ l: L, t: T, r: R, b: B });
+  };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+async function cmdAutoCrop(all) {
+  const doc = S.active; if (!doc) return;
+  const idx = all ? [...doc.sizes.keys()] : [doc.current];
+  const pr = progressBox('Recherche des marges blanches…'); busy(true);
+  const res = [];
+  try {
+    const pjs = await pdfjsOf(doc);
+    for (const i of idx) {
+      if (pr.stop) break;
+      const { c, vp } = await renderToCanvas(pjs, i, 50, true);
+      const g = c.getContext('2d', { willReadFrequently: true }), W = c.width, H = c.height, px = g.getImageData(0, 0, W, H).data;
+      let t = H, b = -1, l = W, r = -1;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const k = (y * W + x) * 4; if (px[k] < 245 || px[k + 1] < 245 || px[k + 2] < 245) { if (y < t) t = y; if (y > b) b = y; if (x < l) l = x; if (x > r) r = x; } }
+      if (b < 0) continue;
+      const s = 50 / 72, pad = 8;
+      res.push({ i, mg: { t: Math.max(0, t / s - pad), l: Math.max(0, l / s - pad), b: Math.max(0, (H - 1 - b) / s - pad), r: Math.max(0, (W - 1 - r) / s - pad) } });
+    }
+    pjs.destroy();
+  } catch (e) { handleErr(e); } finally { busy(false); pr.done(); }
+  if (!res.length) return toast('Aucun contenu trouvé.');
+  if (await mutate(doc, pdf => { res.forEach(({ i, mg }) => { const p = pdf.getPage(i); p.setCropBox(...boxFromMargins(p, p.getCropBox(), mg)); }); })) toast(`Recadrage aux marges blanches : ${res.length} page${res.length > 1 ? 's' : ''}.`);
+}
+async function cmdRemoveOutside() {
+  const doc = S.active; if (!doc) return;
+  if (!confirm('Supprimer définitivement tout ce qui dépasse du cadre visible des pages recadrées ?\n(Les objets entièrement hors cadre sont effacés et la page est réduite à son cadre.)')) return;
+  let n = 0, pagesDone = 0;
+  const ok = await mutate(doc, async pdf => {
+    for (let i = 0; i < pdf.getPageCount(); i++) {
+      const p = pdf.getPage(i), cb = p.getCropBox(), mb = p.getMediaBox();
+      if (Math.abs(cb.x - mb.x) < 0.5 && Math.abs(cb.y - mb.y) < 0.5 && Math.abs(cb.width - mb.width) < 0.5 && Math.abs(cb.height - mb.height) < 0.5) continue;
+      pagesDone++;
+      try { n += await deleteObjectsOutside(pdf, i, doc, [cb.x, cb.y, cb.x + cb.width, cb.y + cb.height]); } catch (e) { console.warn(e); }
+      p.setMediaBox(cb.x, cb.y, cb.width, cb.height);
+    }
+  });
+  if (ok) toast(pagesDone ? `${pagesDone} page${pagesDone > 1 ? 's' : ''} : ${n} objet${n > 1 ? 's' : ''} hors cadre supprimé${n > 1 ? 's' : ''}.` : 'Aucune page recadrée dans ce document.');
+}
+async function cmdResize() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({
+    title: 'Redimensionner les pages', icon: 'Scaling', ok: 'Redimensionner', width: 500,
+    body: `<div class="field inline"><label>Nouveau format</label><select id="rzF"><option value="a4">A4 (210 × 297 mm)</option><option value="a3">A3 (297 × 420 mm)</option><option value="a5">A5 (148 × 210 mm)</option><option value="letter">Lettre US</option><option value="legal">Légal US</option><option value="custom">Personnalisé…</option></select>
+      <span id="rzC" hidden><input type="number" id="rzW" value="210" style="width:64px"> × <input type="number" id="rzH" value="297" style="width:64px"> mm</span></div>
+      <div class="field inline"><label>Orientation</label><select id="rzO"><option value="auto">comme chaque page</option><option value="p">portrait</option><option value="l">paysage</option></select></div>
+      <div class="field"><label>Contenu</label>
+        <label class="check"><input type="radio" name="rzM" value="fit" checked> Mettre le contenu à l'échelle (agrandir / réduire)</label>
+        <label class="check"><input type="radio" name="rzM" value="center"> Garder la taille du contenu, centré sur la nouvelle feuille</label></div>
+      ${pagesFieldSel(doc)}`,
+    });
+  if (!el) return;
+  const idx = pickDocPages(doc, el); if (!idx) return;
+  const F = el.querySelector('#rzF').value;
+  let [w, h] = { a4: [595.28, 841.89], a3: [841.89, 1190.55], a5: [419.53, 595.28], letter: [612, 792], legal: [612, 1008] }[F] || [mm2pt(el.querySelector('#rzW').value), mm2pt(el.querySelector('#rzH').value)];
+  const O = el.querySelector('#rzO').value, fit = el.querySelector('input[name=rzM]:checked').value === 'fit';
+  const ok = await mutate(doc, async pdf => {
+    for (const i of idx) {
+      const p = pdf.getPage(i), cb = p.getCropBox(), rot = p.getRotation().angle % 180 !== 0;
+      const dispLand = rot ? cb.height > cb.width : cb.width > cb.height;
+      let tw = w, th = h; const wantLand = O === 'l' || (O === 'auto' && dispLand);
+      if ((tw > th) !== wantLand) [tw, th] = [th, tw];
+      if (rot) [tw, th] = [th, tw];   // dimensions en espace utilisateur
+      const sc = fit ? Math.min(tw / cb.width, th / cb.height) : 1;
+      const ox = (tw - cb.width * sc) / 2 - cb.x * sc, oy = (th - cb.height * sc) / 2 - cb.y * sc;
+      await prependOps(pdf, p, `q ${fmtNum(sc)} 0 0 ${fmtNum(sc)} ${fmtNum(ox)} ${fmtNum(oy)} cm`);
+      p.setMediaBox(0, 0, tw, th); p.setCropBox(0, 0, tw, th);
+      const arr = p.node.Annots();
+      if (arr) for (let k = 0; k < arr.size(); k++) { const a = pdf.context.lookup(arr.get(k)); const r = a && a.lookup && a.lookup(PDFName.of('Rect')); if (r instanceof PDFLib.PDFArray) { const v = r.asArray().map(x => x.asNumber()); a.set(PDFName.of('Rect'), pdf.context.obj([v[0] * sc + ox, v[1] * sc + oy, v[2] * sc + ox, v[3] * sc + oy])); } }
+    }
+  });
+  if (ok) toast(`${idx.length} page${idx.length > 1 ? 's' : ''} redimensionnée${idx.length > 1 ? 's' : ''}.`);
+}
+async function cmdMargins() {
+  const doc = S.active; if (!doc) return;
+  const el = await optionsDialog({
+    title: 'Ajouter des marges', icon: 'Frame', ok: 'Appliquer', width: 480,
+    body: `<p class="hint" style="margin-top:0">Agrandit la feuille autour du contenu (ex. marge de reliure, place pour annoter). Valeur négative = réduire.</p>
+      <div class="cropgrid"><label>Haut</label><input type="number" id="mT" value="10" step="1"> mm
+      <label>Gauche</label><input type="number" id="mL" value="10" step="1"> mm <label>Droite</label><input type="number" id="mR" value="10" step="1"> mm
+      <label>Bas</label><input type="number" id="mB" value="10" step="1"> mm</div>${pagesFieldSel(doc)}${parityHTML()}`,
+  });
+  if (!el) return;
+  let idx = pickDocPages(doc, el); if (!idx) return;
+  idx = filterParity(doc, idx, el.querySelector('#par').value);
+  const mg = { t: -mm2pt(el.querySelector('#mT').value), l: -mm2pt(el.querySelector('#mL').value), r: -mm2pt(el.querySelector('#mR').value), b: -mm2pt(el.querySelector('#mB').value) };
+  if (await mutate(doc, async pdf => {
+    for (const i of idx) {
+      const p = pdf.getPage(i), box = boxFromMargins(p, p.getCropBox(), mg);
+      await prependOps(pdf, p, `q 1 1 1 rg ${box.map(fmtNum).join(' ')} re f Q q`);
+      p.setMediaBox(...box); p.setCropBox(...box);
+    }
+  })) toast(`Marges ajoutées sur ${idx.length} page${idx.length > 1 ? 's' : ''}.`);
+}
+
+/* =====================================================================
+   Marques de page : filigranes, arrière-plans, en-têtes / pieds, Bates
+   Chaque marque est un flux de contenu séparé, étiqueté /PreleMark, pour
+   pouvoir la retrouver, la modifier ou la supprimer ensuite.
+   ===================================================================== */
+const MARK_LABEL = { watermark: 'Filigrane', background: 'Arrière-plan', header: 'En-tête et pied de page', bates: 'Numérotation Bates' };
+function markStream(pdf, page, ops, tag, under) {
+  const ctx = pdf.context, dict = { };
+  if (tag) dict.PreleMark = ctx.obj({ Type: PDFName.of(tag.type), Id: PDFLib.PDFString.of(tag.id), Data: PDFHexString.fromText(JSON.stringify(tag.data || {})) });
+  const ref = ctx.register(ctx.flateStream('q\n' + ops + '\nQ\n', dict));
+  const c = page.node.get(PDFName.of('Contents')), cur = c ? ctx.lookup(c) : null;
+  const arr = cur instanceof PDFLib.PDFArray ? cur.asArray() : c ? [c] : [];
+  if (under) {
+    // sous le contenu : le contenu existant est isolé pour ne pas hériter d'un état graphique
+    page.node.set(PDFName.of('Contents'), ctx.obj([ref, ...arr]));
+  } else {
+    const pre = ctx.register(ctx.flateStream('q\n')), post = ctx.register(ctx.flateStream('\nQ\n'));
+    page.node.set(PDFName.of('Contents'), ctx.obj([pre, ...arr, post, ref]));
+  }
+}
+function listMarks(pdf) {
+  const out = new Map();
+  pdf.getPages().forEach((page, i) => {
+    const c = page.node.get(PDFName.of('Contents')); if (!c) return;
+    const cur = pdf.context.lookup(c), arr = cur instanceof PDFLib.PDFArray ? cur.asArray() : [c];
+    for (const r of arr) {
+      const s = pdf.context.lookup(r); const t = s && s.dict && s.dict.lookup(PDFName.of('PreleMark'));
+      if (!(t instanceof PDFLib.PDFDict)) continue;
+      const id = t.lookup(PDFName.of('Id')).decodeText(), type = pdfNameStr(t.lookup(PDFName.of('Type')));
+      let data = {}; try { data = JSON.parse(t.lookup(PDFName.of('Data')).decodeText()); } catch { }
+      if (!out.has(id)) out.set(id, { id, type, data, pages: [] });
+      out.get(id).pages.push(i);
+    }
+  });
+  return [...out.values()];
+}
+function removeMarks(pdf, pred) {
+  let n = 0;
+  pdf.getPages().forEach(page => {
+    const c = page.node.get(PDFName.of('Contents')); if (!c) return;
+    const cur = pdf.context.lookup(c); if (!(cur instanceof PDFLib.PDFArray)) return;
+    const keep = cur.asArray().filter(r => {
+      const s = pdf.context.lookup(r); const t = s && s.dict && s.dict.lookup(PDFName.of('PreleMark'));
+      if (!(t instanceof PDFLib.PDFDict)) return true;
+      const ok = pred(pdfNameStr(t.lookup(PDFName.of('Type'))), t.lookup(PDFName.of('Id')).decodeText());
+      if (!ok) n++;
+      return ok;
+    });
+    page.node.set(PDFName.of('Contents'), pdf.context.obj(keep));
+  });
+  return n;
+}
+/* repère d'affichage : origine en bas à gauche de la page telle qu'elle est vue */
+function dispFrame(page) {
+  const cb = page.getCropBox(), rot = page.getRotation().angle % 360;
+  const W = rot % 180 ? cb.height : cb.width, H = rot % 180 ? cb.width : cb.height;
+  const m = rot === 90 ? [0, 1, -1, 0, cb.x + cb.width, cb.y] : rot === 180 ? [-1, 0, 0, -1, cb.x + cb.width, cb.y + cb.height] : rot === 270 ? [0, -1, 1, 0, cb.x, cb.y + cb.height] : [1, 0, 0, 1, cb.x, cb.y];
+  return { W, H, cm: m.map(fmtNum).join(' ') + ' cm' };
+}
+const FONT_CHOICES = [['Helvetica', 'Helvetica / Arial'], ['HelveticaBold', 'Helvetica gras'], ['TimesRoman', 'Times'], ['TimesRomanBold', 'Times gras'], ['Courier', 'Courier'], ['CourierBold', 'Courier gras']];
+const fontSel = (id, v = 'Helvetica') => `<select id="${id}">${FONT_CHOICES.map(([k, l]) => `<option value="${k}" ${k === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+async function textOps(pdf, page, font, txt, size, color) {
+  const key = page.node.newFontDictionary('PM', font.ref);
+  return `BT ${key.toString()} ${fmtNum(size)} Tf ${color.map(fmtNum).join(' ')} rg ${font.encodeText(fontSafe(font, txt)).toString()} Tj ET`;
+}
+function tokens(s, ctx) {
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  return s.replace(/<<page>>|\{page\}/gi, ctx.n).replace(/<<pages>>|\{pages\}/gi, ctx.N).replace(/<<date>>|\{date\}/gi, `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`)
+    .replace(/<<fichier>>|\{fichier\}/gi, ctx.file).replace(/<<bates>>|\{bates\}/gi, ctx.bates || '');
+}
+/* ---------- filigrane / arrière-plan ---------- */
+async function markDialog(type, data = {}) {
+  const doc = S.active; if (!doc) return null;
+  const isWm = type === 'watermark';
+  const el = await optionsDialog({
+    title: (data.id ? 'Modifier : ' : 'Ajouter : ') + MARK_LABEL[type], icon: isWm ? 'Droplet' : 'PaintBucket', ok: data.id ? 'Modifier' : 'Ajouter', width: 560,
+    body: `<div class="field"><label>Source</label>
+        <label class="check"><input type="radio" name="mkS" value="text" ${data.src !== 'image' && data.src !== 'color' ? 'checked' : ''}> Texte <input type="text" id="mkT" value="${esc(data.text || (isWm ? 'CONFIDENTIEL' : ''))}" style="width:240px;margin-left:6px"></label>
+        ${isWm ? '' : `<label class="check"><input type="radio" name="mkS" value="color" ${data.src === 'color' ? 'checked' : ''}> Couleur unie <input type="color" id="mkBg" value="${data.bg || '#fff8dc'}" style="margin-left:6px"></label>`}
+        <label class="check"><input type="radio" name="mkS" value="image" ${data.src === 'image' ? 'checked' : ''}> Image ou PDF (première page) <button class="btn" id="mkPick" style="height:24px;margin-left:6px">Choisir…</button> <span id="mkFile" class="hint">${esc(data.fileName || '')}</span></label></div>
+      <div class="field inline"><label>Police</label>${fontSel('mkF', data.font)}<label style="margin-left:8px">Taille</label><select id="mkSz"><option value="auto">automatique</option>${[24, 36, 48, 72, 96, 120].map(v => `<option ${+data.size === v ? 'selected' : ''}>${v}</option>`).join('')}</select>
+        <label style="margin-left:8px">Couleur</label><input type="color" id="mkC" value="${data.color || '#d1242f'}"></div>
+      <div class="field inline"><label>Opacité</label><select id="mkO">${[100, 75, 50, 35, 25, 15].map(v => `<option value="${v / 100}" ${Math.round((data.opacity ?? (isWm ? 0.35 : 1)) * 100) === v ? 'selected' : ''}>${v} %</option>`).join('')}</select>
+        <label style="margin-left:8px">Rotation</label><select id="mkR">${[[45, '45° (diagonale)'], [0, '0° (horizontal)'], [-45, '-45°'], [90, '90°']].map(([v, l]) => `<option value="${v}" ${(data.rot ?? (isWm ? 45 : 0)) == v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        <label style="margin-left:8px">Échelle</label><select id="mkSc">${[[100, 'pleine page'], [75, '75 %'], [50, '50 %'], [30, '30 %']].map(([v, l]) => `<option value="${v}" ${(data.scale ?? (isWm ? 75 : 100)) == v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="field inline"><label>Position</label><select id="mkP">${[['c', 'centre'], ['t', 'haut'], ['b', 'bas']].map(([v, l]) => `<option value="${v}" ${data.pos === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        <label style="margin-left:8px">Plan</label><select id="mkZ"><option value="over" ${(data.z || (isWm ? 'over' : 'under')) === 'over' ? 'selected' : ''}>devant le contenu</option><option value="under" ${(data.z || (isWm ? 'over' : 'under')) === 'under' ? 'selected' : ''}>derrière le contenu</option></select></div>
+      ${pagesFieldSel(doc)}${parityHTML()}`,
+    });
+  return el;
+}
+async function cmdAddMark(type, prev) {
+  const doc = S.active; if (!doc) return;
+  let imgFile = null;
+  const p = markDialog(type, prev || {});
+  setTimeout(() => {
+    const b = document.querySelector('dialog[open] #mkPick');
+    if (b) b.onclick = async e => { e.preventDefault(); try { imgFile = await pickPdfFileOrImage(); document.querySelector('dialog[open] #mkFile').textContent = imgFile.name; document.querySelector('dialog[open] input[name=mkS][value=image]').checked = true; } catch (er) { if (er.name !== 'AbortError') handleErr(er); } };
+  }, 60);
+  const el = await p; if (!el) return;
+  let idx = pickDocPages(doc, el); if (!idx) return;
+  idx = filterParity(doc, idx, el.querySelector('#par').value);
+  const q = s => el.querySelector(s);
+  const data = { src: q('input[name=mkS]:checked').value, text: q('#mkT').value, font: q('#mkF').value, size: q('#mkSz').value, color: q('#mkC').value, opacity: +q('#mkO').value, rot: +q('#mkR').value, scale: +q('#mkSc').value, pos: q('#mkP').value, z: q('#mkZ').value, bg: q('#mkBg') ? q('#mkBg').value : null, fileName: imgFile ? imgFile.name : (prev && prev.fileName) };
+  if (data.src === 'image' && !imgFile) { if (prev && prev.id) { toast('Choisissez à nouveau l\'image.', 'err'); } else { toast('Choisissez une image.', 'err'); } return; }
+  if (data.src === 'text' && !data.text.trim()) return;
+  const id = uid();
+  const ok = await mutate(doc, async pdf => {
+    if (prev && prev.id) removeMarks(pdf, (t, i) => i !== prev.id);
+    const font = await pdf.embedFont(StandardFonts[data.font] || StandardFonts.Helvetica);
+    let emb = null;
+    if (data.src === 'image') {
+      if (imgFile.pdf) { const sp = await PDFDocument.load(imgFile.bytes, { ignoreEncryption: true }); [emb] = await pdf.embedPages([sp.getPage(0)]); }
+      else emb = /png$/i.test(imgFile.name) ? await pdf.embedPng(imgFile.bytes) : await pdf.embedJpg(imgFile.bytes);
+    }
+    const N = pdf.getPageCount();
+    for (const i of idx) {
+      const page = pdf.getPage(i), F = dispFrame(page);
+      const gs = page.node.newExtGState('GSm', pdf.context.obj({ Type: 'ExtGState', ca: data.opacity, CA: data.opacity })).toString();
+      let ops = `${F.cm} ${gs} gs `;
+      if (data.src === 'color') ops += `${hexToRgb(data.bg).map(fmtNum).join(' ')} rg 0 0 ${fmtNum(F.W)} ${fmtNum(F.H)} re f`;
+      else {
+        let w, h, inner;
+        if (data.src === 'text') {
+          const txt = tokens(data.text, { n: i + 1, N, file: stripExt(doc.name) });
+          const diag = Math.abs(data.rot) === 45 ? Math.hypot(F.W, F.H) : Math.abs(data.rot) === 90 ? F.H : F.W;
+          let size = data.size === 'auto' ? diag * data.scale / 100 * 0.8 / Math.max(1, font.widthOfTextAtSize(txt, 1)) : +data.size;
+          size = Math.min(size, 300);
+          w = font.widthOfTextAtSize(txt, size); h = size * 0.72;
+          inner = (await textOps(pdf, page, font, txt, size, hexToRgb(data.color))).replace('BT ', 'BT 0 0 Td ');
+        } else {
+          const name = page.node.newXObject('PMi', emb.ref).toString();
+          const k = Math.min(F.W / emb.width, F.H / emb.height) * data.scale / 100;
+          w = emb.width * k; h = emb.height * k;
+          inner = imgFile.pdf ? `${fmtNum(k)} 0 0 ${fmtNum(k)} 0 0 cm ${name} Do` : `${fmtNum(w)} 0 0 ${fmtNum(h)} 0 0 cm ${name} Do`;
+        }
+        const cx = F.W / 2, cy = data.pos === 't' ? F.H - (Math.abs(Math.sin(data.rot * Math.PI / 180)) * w / 2 + h / 2 + 36) : data.pos === 'b' ? Math.abs(Math.sin(data.rot * Math.PI / 180)) * w / 2 + h / 2 + 36 : F.H / 2;
+        const r = data.rot * Math.PI / 180, ca = Math.cos(r), sa = Math.sin(r);
+        // centre de l'objet placé en (cx, cy), puis rotation autour de ce centre
+        const tx = cx - (ca * w / 2 - sa * h / 2), ty = cy - (sa * w / 2 + ca * h / 2);
+        ops += `${fmtNum(ca)} ${fmtNum(sa)} ${fmtNum(-sa)} ${fmtNum(ca)} ${fmtNum(tx)} ${fmtNum(ty)} cm ${inner}`;
+      }
+      markStream(pdf, page, ops, { type, id, data }, data.z === 'under');
+    }
+  });
+  if (ok) toast(`${MARK_LABEL[type]} ${prev && prev.id ? 'modifié' : 'ajouté'} sur ${idx.length} page${idx.length > 1 ? 's' : ''}.`);
+}
+async function pickPdfFileOrImage() {
+  const [h] = await showOpenFilePicker({ id: 'prele-img', types: [{ description: 'Images ou PDF', accept: { 'image/*': ['.png', '.jpg', '.jpeg'], 'application/pdf': ['.pdf'] } }] });
+  const f = await h.getFile(), b = new Uint8Array(await f.arrayBuffer());
+  return { name: f.name, bytes: b, pdf: isPdfBytes(b) };
+}
+/* ---------- en-tête et pied de page, numéros de page, Bates ---------- */
+const ZONES = [['tl', 'En-tête gauche'], ['tc', 'En-tête centre'], ['tr', 'En-tête droite'], ['bl', 'Pied gauche'], ['bc', 'Pied centre'], ['br', 'Pied droite']];
+async function cmdAddHeader(prev, quick) {
+  const doc = S.active; if (!doc) return;
+  const d = prev || {};
+  const z = d.zones || (quick ? { br: 'Page <<page>> sur <<pages>>' } : {});
+  const el = await optionsDialog({
+    title: quick ? 'Numéroter les pages' : (d.id ? 'Modifier l\'en-tête et le pied de page' : 'Ajouter un en-tête et un pied de page'), icon: quick ? 'Hash' : 'PanelTop', ok: d.id ? 'Modifier' : 'Ajouter', width: 620,
+    body: `${quick ? `<div class="field inline"><label>Format</label><select id="hfQ"><option value="Page <<page>> sur <<pages>>">Page 1 sur 10</option><option value="<<page>>">1</option><option value="Page <<page>>">Page 1</option><option value="<<page>>/<<pages>>">1/10</option><option value="- <<page>> -">- 1 -</option></select>
+        <label style="margin-left:8px">Position</label><select id="hfQP">${ZONES.map(([k, l]) => `<option value="${k}" ${k === 'br' ? 'selected' : ''}>${l}</option>`).join('')}</select></div>`
+      : `<div class="hfgrid">${ZONES.map(([k, l]) => `<label>${l}<input type="text" data-z="${k}" value="${esc(z[k] || '')}"></label>`).join('')}</div>
+        <p class="hint">Codes : <code>&lt;&lt;page&gt;&gt;</code> numéro de page · <code>&lt;&lt;pages&gt;&gt;</code> nombre de pages · <code>&lt;&lt;date&gt;&gt;</code> date du jour · <code>&lt;&lt;fichier&gt;&gt;</code> nom du fichier</p>`}
+      <div class="field inline"><label>Police</label>${fontSel('hfF', d.font)}<label style="margin-left:8px">Taille</label><input type="number" id="hfS" value="${d.size || 9}" min="5" max="48" style="width:56px">
+        <label style="margin-left:8px">Couleur</label><input type="color" id="hfC" value="${d.color || '#333333'}"></div>
+      <div class="field inline"><label>Marge haut/bas</label><input type="number" id="hfMV" value="${d.mv ?? 10}" style="width:56px"> mm <label style="margin-left:8px">gauche/droite</label><input type="number" id="hfMH" value="${d.mh ?? 15}" style="width:56px"> mm
+        <label style="margin-left:8px">Premier numéro</label><input type="number" id="hfN0" value="${d.n0 || 1}" style="width:60px"></div>
+      ${pagesFieldSel(doc)}${parityHTML()}`,
+  });
+  if (!el) return;
+  let idx = pickDocPages(doc, el); if (!idx) return;
+  idx = filterParity(doc, idx, el.querySelector('#par').value);
+  const q = s => el.querySelector(s);
+  const zones = {};
+  if (quick) zones[q('#hfQP').value] = q('#hfQ').value; else el.querySelectorAll('[data-z]').forEach(i => { if (i.value.trim()) zones[i.dataset.z] = i.value; });
+  if (!Object.keys(zones).length) return toast('Saisissez au moins un texte.');
+  const data = { zones, font: q('#hfF').value, size: +q('#hfS').value || 9, color: q('#hfC').value, mv: +q('#hfMV').value, mh: +q('#hfMH').value, n0: +q('#hfN0').value || 1 };
+  await applyTextMark(doc, 'header', idx, data, d.id);
+}
+async function applyTextMark(doc, type, idx, data, replaceId, pdfIn) {
+  const id = uid();
+  const run = async pdf => {
+    if (replaceId) removeMarks(pdf, (t, i) => i !== replaceId);
+    const font = await pdf.embedFont(StandardFonts[data.font] || StandardFonts.Helvetica), N = pdf.getPageCount(), col = hexToRgb(data.color);
+    for (const [k, i] of idx.entries()) {
+      const page = pdf.getPage(i), F = dispFrame(page), mv = mm2pt(data.mv), mh = mm2pt(data.mh);
+      let ops = F.cm + ' ';
+      for (const [z, raw] of Object.entries(data.zones)) {
+        const bates = data.bates ? data.bates.prefix + String(data.bates.start + k).padStart(data.bates.digits, '0') + data.bates.suffix : '';
+        const txt = tokens(raw, { n: data.n0 + i, N: data.n0 + N - 1, file: stripExt(doc.name || ''), bates });
+        const w = font.widthOfTextAtSize(fontSafe(font, txt), data.size);
+        const x = z[1] === 'l' ? mh : z[1] === 'r' ? F.W - mh - w : (F.W - w) / 2;
+        const y = z[0] === 't' ? F.H - mv - data.size * 0.8 : mv;
+        ops += `q 1 0 0 1 ${fmtNum(x)} ${fmtNum(y)} cm ${await textOps(pdf, page, font, txt, data.size, col)} Q `;
+      }
+      markStream(pdf, page, ops, { type, id, data }, false);
+    }
+  };
+  if (pdfIn) { await run(pdfIn); return true; }
+  const ok = await mutate(doc, run);
+  if (ok) toast(`${MARK_LABEL[type]} ${replaceId ? 'modifié' : 'ajouté'} sur ${idx.length} page${idx.length > 1 ? 's' : ''}.`);
+  return ok;
+}
+function batesFields(d = {}) {
+  return `<div class="field inline"><label>Préfixe</label><input type="text" id="bPre" value="${esc(d.prefix ?? 'SCI-')}" style="width:90px"><label style="margin-left:8px">Premier numéro</label><input type="number" id="bSt" value="${d.start || 1}" min="0" style="width:80px">
+      <label style="margin-left:8px">Chiffres</label><input type="number" id="bDg" value="${d.digits || 6}" min="1" max="12" style="width:56px"><label style="margin-left:8px">Suffixe</label><input type="text" id="bSu" value="${esc(d.suffix || '')}" style="width:70px"></div>
+    <div class="field inline"><label>Position</label><select id="bPos">${ZONES.map(([k, l]) => `<option value="${k}" ${k === (d.pos || 'br') ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <label style="margin-left:8px">Police</label>${fontSel('hfF', d.font || 'HelveticaBold')}<label style="margin-left:8px">Taille</label><input type="number" id="hfS" value="${d.size || 9}" style="width:56px"><input type="color" id="hfC" value="${d.color || '#000000'}" style="margin-left:6px"></div>
+    <p class="hint">Exemple : <span id="bEx"></span></p>`;
+}
+function batesFrom(el) {
+  const q = s => el.querySelector(s);
+  const bates = { prefix: q('#bPre').value, start: +q('#bSt').value || 0, digits: +q('#bDg').value || 6, suffix: q('#bSu').value };
+  return { zones: { [q('#bPos').value]: '<<bates>>' }, font: q('#hfF').value, size: +q('#hfS').value || 9, color: q('#hfC').value, mv: 8, mh: 12, n0: 1, bates, pos: q('#bPos').value, ...bates };
+}
+function liveBatesExample() { setTimeout(() => { const d = document.querySelector('dialog[open]'); if (!d) return; const upd = () => { const b = batesFrom(d).bates; d.querySelector('#bEx').textContent = b.prefix + String(b.start).padStart(b.digits, '0') + b.suffix; }; d.addEventListener('input', upd); upd(); }, 60); }
+async function cmdAddBates(prev) {
+  const doc = S.active; if (!doc) return;
+  const p = optionsDialog({ title: prev ? 'Modifier la numérotation Bates' : 'Ajouter une numérotation Bates', icon: 'Hash', ok: prev ? 'Modifier' : 'Ajouter', width: 600, body: `<p class="hint" style="margin-top:0">Numéro unique sur chaque page (pièces d'un dossier, d'un procès, d'un audit).</p>${batesFields(prev || {})}${pagesFieldHTML(doc)}` });
+  liveBatesExample();
+  const el = await p; if (!el) return;
+  const idx = pickDocPages(doc, el); if (!idx) return;
+  await applyTextMark(doc, 'bates', idx, batesFrom(el), prev && prev.id);
+}
+async function cmdBatesMulti() {
+  let hs;
+  try { hs = await showOpenFilePicker({ multiple: true, id: 'prele-open', types: OPEN_TYPES }); } catch (e) { if (e.name !== 'AbortError') handleErr(e); return; }
+  const p = optionsDialog({ title: `Numérotation Bates de ${hs.length} fichier${hs.length > 1 ? 's' : ''}`, icon: 'Hash', ok: 'Numéroter', width: 600, body: `<p style="margin-top:0">${hs.map(h => esc(h.name)).join(', ')}</p>${batesFields()}<p class="hint">La numérotation continue d'un fichier à l'autre, dans l'ordre ci-dessus. Les fichiers numérotés sont enregistrés dans le dossier de votre choix, avec « _Bates » ajouté au nom (les originaux ne sont pas modifiés).</p>` });
+  liveBatesExample();
+  const el = await p; if (!el) return;
+  const data = batesFrom(el);
+  let dir = null;
+  try { if (window.showDirectoryPicker) dir = await showDirectoryPicker({ id: 'prele-bates', mode: 'readwrite' }); } catch (e) { if (e.name === 'AbortError') return; }
+  const pr = progressBox('Numérotation Bates…'); busy(true);
+  let next = data.bates.start, done = 0;
+  try {
+    for (const h of hs) {
+      if (pr.stop) break; pr.set(`Bates : ${h.name}`);
+      const f = await h.getFile(); let b = new Uint8Array(await f.arrayBuffer());
+      if (!isPdfBytes(b)) b = isImgName(f.name) ? await combineEngine([{ name: f.name, kind: 'image', range: '', getBytes: async () => b }], {}) : await officeToPdf(f.name, b);
+      const pdf = await loadPdfLibUnlocked(b, f.name);
+      const n = pdf.getPageCount();
+      await applyTextMark({ name: f.name }, 'bates', [...Array(n).keys()], { ...data, bates: { ...data.bates, start: next } }, null, pdf);
+      next += n;
+      const out = await pdf.save(), name = safeFileName(stripExt(f.name)) + '_Bates.pdf';
+      if (dir) { const fh = await dir.getFileHandle(name, { create: true }); await writeHandle(fh, out); }
+      else await saveOutput(name, out, 'application/pdf', 'pdf', 'Document PDF');
+      done++;
+    }
+    toast(`${done} fichier${done > 1 ? 's' : ''} numéroté${done > 1 ? 's' : ''} (${data.bates.prefix}${String(data.bates.start).padStart(data.bates.digits, '0')} à ${data.bates.prefix}${String(next - 1).padStart(data.bates.digits, '0')}).`, '', 7000);
+  } catch (e) { handleErr(e); } finally { busy(false); pr.done(); }
+}
+async function cmdRemoveMarks(type) {
+  const doc = S.active; if (!doc) return;
+  const pdf = await PDFDocument.load(doc.bytes, { updateMetadata: false });
+  const n = listMarks(pdf).filter(m => m.type === type).length;
+  if (!n) return toast(`Aucun élément « ${MARK_LABEL[type]} » ajouté avec cet outil dans ce document.`);
+  if (!confirm(`Supprimer ${n > 1 ? 'les ' + n + ' éléments' : 'l\'élément'} « ${MARK_LABEL[type]} » du document ?`)) return;
+  if (await mutate(doc, p => { removeMarks(p, t => t !== type); })) toast(`${MARK_LABEL[type]} supprimé.`);
+}
+async function cmdManageMarks(type) {
+  const doc = S.active; if (!doc) return;
+  const pdf = await PDFDocument.load(doc.bytes, { updateMetadata: false });
+  const list = listMarks(pdf).filter(m => m.type === type);
+  const desc = m => type === 'watermark' || type === 'background' ? (m.data.src === 'text' ? `« ${m.data.text} »` : m.data.src === 'color' ? `couleur ${m.data.bg}` : `image ${m.data.fileName || ''}`) : type === 'bates' ? `${m.data.prefix || ''}${String(m.data.start ?? 1).padStart(m.data.digits || 6, '0')}…` : Object.values(m.data.zones || {}).join(' · ');
+  const d = dialog({
+    title: 'Gérer : ' + MARK_LABEL[type], icon: 'Settings2', width: 560,
+    body: list.length ? `<div class="mklist">${list.map((m, k) => `<div class="mkrow"><div><b>${esc(desc(m))}</b><div class="hint">${m.pages.length} page${m.pages.length > 1 ? 's' : ''} (${esc(compactRanges(m.pages))})</div></div><button class="btn" data-ed="${k}">Modifier…</button><button class="btn" data-rm="${k}">Supprimer</button></div>`).join('')}</div>`
+      : `<p>Aucun élément « ${MARK_LABEL[type]} » ajouté avec cet outil dans ce document.</p>`,
+    buttons: [{ label: 'Ajouter…', value: 'add' }, { spacer: true }, { label: 'Fermer', primary: true, value: null }],
+    onClose: v => { if (v === 'add') runCmd({ watermark: 'wmAdd', background: 'bgAdd', header: 'hfAdd', bates: 'batesAdd' }[type]); },
+  });
+  d.el.addEventListener('click', async ev => {
+    const ed = ev.target.closest('[data-ed]'), rm = ev.target.closest('[data-rm]');
+    if (!ed && !rm) return;
+    const m = list[+(ed || rm).dataset[ed ? 'ed' : 'rm']]; d.close(null);
+    if (rm) { if (await mutate(doc, p => { removeMarks(p, (t, i) => i !== m.id); })) toast('Élément supprimé.'); return; }
+    const prev = { ...m.data, id: m.id };
+    if (type === 'watermark' || type === 'background') cmdAddMark(type, prev);
+    else if (type === 'bates') cmdAddBates(prev);
+    else cmdAddHeader(prev);
+  });
+}
+function markMenu(type, cmd) {
+  const items = [['Plus', 'Ajouter…', () => runCmd({ watermark: 'wmAdd', background: 'bgAdd', header: 'hfAdd', bates: 'batesAdd' }[type])]];
+  if (type === 'bates') items.push(['Files', 'Ajouter à plusieurs fichiers…', cmdBatesMulti]);
+  items.push(['Trash2', 'Supprimer tout…', () => cmdRemoveMarks(type)], '-', ['Settings2', 'Gérer…', () => cmdManageMarks(type)]);
+  popMenu(anchorOf(cmd), items);
+}
+
+/* ---------- outil de recadrage dans la page ---------- */
+Object.assign(ANN_TOOL_NAMES, { crop: 'Recadrer — tracez le cadre à conserver', objedit: 'Éditer des objets — cliquez sur une image, une forme ou un texte' });
+{
+  const base = annotMouseDown;
+  annotMouseDown = function (ev) {
+    if (S.tool === 'crop') { const P = pagePoint(ev); if (!P) return true; ev.preventDefault(); startCropDraw(ev, P); return true; }
+    return base(ev);
+  };
+}
+
+Object.assign(EXTRA_CMDS, {
+  insertMenu: cmdInsertMenu, deleteMenu: cmdDeleteMenu, insertBlankDlg: cmdInsertBlankDlg, deletePagesDlg: cmdDeletePagesDlg,
+  movePages: cmdMovePages, mergePages: cmdMergePages, splitMenu: cmdSplitMenu, splitPages: cmdSplitPages, replacePages: cmdReplacePages, swapPages: cmdSwapPages,
+  overlay: cmdOverlay, pageLabels: cmdPageLabels, rotateDlg: cmdRotateDlg, cropMenu: cmdCropMenu, cropDlg: () => cmdCropDlg(), resizePages: cmdResize, margins: cmdMargins,
+  wmMenu: () => markMenu('watermark', 'wmMenu'), bgMenu: () => markMenu('background', 'bgMenu'), hfMenu: () => markMenu('header', 'hfMenu'), batesMenu: () => markMenu('bates', 'batesMenu'),
+  wmAdd: () => cmdAddMark('watermark'), bgAdd: () => cmdAddMark('background'), hfAdd: () => cmdAddHeader(), batesAdd: () => cmdAddBates(), numberPages: () => cmdAddHeader(null, true),
+});
+EXTRA_NEEDDOC.push('insertMenu', 'deleteMenu', 'movePages', 'mergePages', 'splitMenu', 'replacePages', 'swapPages', 'overlay', 'pageLabels', 'rotateDlg', 'cropMenu', 'resizePages', 'margins', 'wmMenu', 'bgMenu', 'hfMenu', 'batesMenu', 'numberPages');
+// icônes des menus : svgIcon('FilePlus2') svgIcon('File') svgIcon('ClipboardPaste') svgIcon('Image') svgIcon('ScanLine') svgIcon('Type') svgIcon('Trash2') svgIcon('FileX') svgIcon('Split') svgIcon('Columns2') svgIcon('Crop') svgIcon('SquareDashedMousePointer') svgIcon('Scissors') svgIcon('Maximize') svgIcon('Maximize2') svgIcon('Plus') svgIcon('Files') svgIcon('Settings2') svgIcon('MoveVertical') svgIcon('ArrowLeftRight') svgIcon('LayoutGrid') svgIcon('Layers2') svgIcon('ListOrdered') svgIcon('RotateCw') svgIcon('Scaling') svgIcon('Frame') svgIcon('Droplet') svgIcon('PaintBucket') svgIcon('Hash') svgIcon('PanelTop')
+window.PRELE_ORG = { listMarks, removeMarks, applyTextMark, boxFromMargins, dispFrame };
+
+/* =====================================================================
+   v2.0 — Éditer des objets (images, formes, blocs de texte existants)
+   et Remplacer les polices
+   ---------------------------------------------------------------------
+   Le flux de contenu de la page est relu (même analyseur que la
+   suppression réelle du texte) : chaque image, chaque forme tracée et
+   chaque bloc de texte devient un objet avec sa boîte englobante.
+   Déplacer / redimensionner = encadrer l'objet par « q … cm … Q » ;
+   supprimer = retirer ses opérateurs (pour le texte, seuls les
+   opérateurs d'affichage sont retirés : l'état du texte est conservé).
+   ===================================================================== */
+const minv = m => { const d = m[0] * m[3] - m[1] * m[2] || 1e-9; return [m[3] / d, -m[1] / d, -m[2] / d, m[0] / d, (m[2] * m[5] - m[3] * m[4]) / d, (m[1] * m[4] - m[0] * m[5]) / d]; };
+const PATH_CONS = new Set(['m', 'l', 'c', 'v', 'y', 're', 'h']);
+const PATH_PAINT = new Set(['S', 's', 'f', 'F', 'f*', 'B', 'B*', 'b', 'b*', 'n']);
+const COLOR_FILL = new Set(['rg', 'g', 'k', 'sc', 'scn', 'cs']), COLOR_STROKE = new Set(['RG', 'G', 'K', 'SC', 'SCN', 'CS']);
+
+async function analyzePage(pdfDoc, pageIndex, pjsPage) {
+  const page = pdfDoc.getPage(pageIndex);
+  const content = await decodedPageContent(page);
+  if (!content) return { content: new Uint8Array(0), objects: [] };
+  const ol = await pjsPage.getOperatorList({ annotationMode: pdfjsLib.AnnotationMode.DISABLE });
+  const OPS = pdfjsLib.OPS, shows = []; let depth = 0;
+  for (let k = 0; k < ol.fnArray.length; k++) {
+    const fn = ol.fnArray[k];
+    if (fn === OPS.paintFormXObjectBegin) depth++; else if (fn === OPS.paintFormXObjectEnd) depth--;
+    else if (fn === OPS.showText && depth === 0) shows.push(ol.argsArray[k][0]);
+  }
+  const res = page.node.Resources(), xobjs = res && res.lookup(PDFName.of('XObject'));
+  const objects = []; const raw = (a, b) => latin1(content.subarray(a, b));
+  let gs = { ctm: [1, 0, 0, 1, 0, 0], font: null, fs: 0, Tc: 0, Tw: 0, Th: 1, TL: 0, rise: 0, Tr: 0, fill: [], stroke: [], ext: null, lw: 1 };
+  const gstack = []; let Tm = [1, 0, 0, 1, 0, 0], Tlm = Tm.slice();
+  let path = null, clip = false, text = null, showIdx = 0;
+  const num = (ops, k) => (ops[k] && ops[k].t === 'num' ? ops[k].v : 0);
+  const nextLine = (tx, ty) => { Tlm = mmul([1, 0, 0, 1, tx, ty], Tlm); Tm = Tlm.slice(); };
+  const grow = (b, x, y) => { b[0] = Math.min(b[0], x); b[1] = Math.min(b[1], y); b[2] = Math.max(b[2], x); b[3] = Math.max(b[3], y); };
+  const ptm = (x, y) => mapPt(gs.ctm, x, y);
+  function show(op, ops, start, end) {
+    const glyphs = shows[showIdx++] || [];
+    const M = mmul(Tm, gs.ctm), fs = gs.fs, Th = gs.Th;
+    let tx = 0, any = false;
+    for (const g of glyphs) {
+      if (typeof g === 'number') { tx -= g / 1000 * fs * Th; continue; }
+      const isSp = g.originalCharCode === 32 && !g.isSpace === false;
+      const w = (g.width || 0) / 1000;
+      if (g.unicode && g.unicode.trim()) any = true;
+      tx += (w * fs + gs.Tc + (g.unicode === ' ' ? gs.Tw : 0)) * Th;
+    }
+    if (text && any && fs) {
+      for (const [x, y] of [[0, gs.rise - 0.22 * fs], [tx, gs.rise - 0.22 * fs], [0, gs.rise + 0.85 * fs], [tx, gs.rise + 0.85 * fs]]) { const p = mapPt(M, x, y); grow(text.bbox, p[0], p[1]); }
+      text.chars += glyphs.filter(g => typeof g !== 'number').map(g => g.unicode || '').join('');
+    }
+    if (text) text.shows.push({ op, start, end, ops });
+    Tm = mmul([1, 0, 0, 1, tx, 0], Tm);
+  }
+  parseContentStream(content, (op, ops, start, end) => {
+    if (PATH_CONS.has(op)) {
+      if (!path) path = { start, bbox: [Infinity, Infinity, -Infinity, -Infinity] };
+      const v = ops.map(o => o.v || 0);
+      if (op === 're') { const [x, y, w, h] = v; [[x, y], [x + w, y], [x, y + h], [x + w, y + h]].forEach(([a, b]) => { const p = ptm(a, b); grow(path.bbox, p[0], p[1]); }); }
+      else for (let k = 0; k + 1 < v.length; k += 2) { const p = ptm(v[k], v[k + 1]); grow(path.bbox, p[0], p[1]); }
+      return;
+    }
+    if (op === 'W' || op === 'W*') { clip = true; return; }
+    if (PATH_PAINT.has(op)) {
+      if (path && op !== 'n' && !clip && isFinite(path.bbox[0])) {
+        const lw = gs.lw * Math.hypot(gs.ctm[0], gs.ctm[1]) / 2, b = path.bbox;
+        objects.push({ kind: 'path', start: path.start, end, bbox: [b[0] - lw, b[1] - lw, b[2] + lw, b[3] + lw], ctm: gs.ctm.slice(), paint: op });
+      }
+      path = null; clip = false; return;
+    }
+    switch (op) {
+      case 'q': gstack.push({ ...gs, ctm: gs.ctm.slice(), fill: gs.fill.slice(), stroke: gs.stroke.slice() }); break;
+      case 'Q': if (gstack.length) gs = gstack.pop(); break;
+      case 'cm': if (ops.length >= 6) gs.ctm = mmul(ops.slice(-6).map(o => o.v || 0), gs.ctm); break;
+      case 'w': gs.lw = num(ops, 0); break;
+      case 'gs': gs.ext = raw(start, end); break;
+      case 'BT': Tm = [1, 0, 0, 1, 0, 0]; Tlm = Tm.slice(); text = { kind: 'text', start, bbox: [Infinity, Infinity, -Infinity, -Infinity], ctm: gs.ctm.slice(), shows: [], chars: '' }; break;
+      case 'ET':
+        if (text) {
+          if (isFinite(text.bbox[0])) { text.end = end; text.endState = { font: gs.font, fs: gs.fs, Tc: gs.Tc, Tw: gs.Tw, Th: gs.Th, TL: gs.TL, rise: gs.rise, Tr: gs.Tr, fill: gs.fill.slice(), stroke: gs.stroke.slice(), ext: gs.ext }; objects.push(text); }
+          text = null;
+        }
+        break;
+      case 'Tf': if (ops.length >= 2 && ops[0].t === 'name') { gs.font = ops[0].v; gs.fs = num(ops, 1); } break;
+      case 'Tc': gs.Tc = num(ops, 0); break;
+      case 'Tw': gs.Tw = num(ops, 0); break;
+      case 'Tz': gs.Th = num(ops, 0) / 100; break;
+      case 'TL': gs.TL = num(ops, 0); break;
+      case 'Ts': gs.rise = num(ops, 0); break;
+      case 'Tr': gs.Tr = num(ops, 0); break;
+      case 'Td': nextLine(num(ops, 0), num(ops, 1)); break;
+      case 'TD': gs.TL = -num(ops, 1); nextLine(num(ops, 0), num(ops, 1)); break;
+      case 'Tm': if (ops.length >= 6) { Tm = ops.slice(-6).map(o => o.v || 0); Tlm = Tm.slice(); } break;
+      case 'T*': nextLine(0, -gs.TL); break;
+      case 'Tj': case 'TJ': show(op, ops, start, end); break;
+      case "'": nextLine(0, -gs.TL); show(op, ops, start, end); break;
+      case '"': gs.Tw = num(ops, 0); gs.Tc = num(ops, 1); nextLine(0, -gs.TL); show(op, ops, start, end); break;
+      case 'Do': {
+        const nm = ops[0] && ops[0].t === 'name' ? ops[0].v : null; if (!nm || !xobjs) break;
+        const xo = xobjs.lookup(PDFName.of(nm)); const d = xo && xo.dict; if (!d) break;
+        const st = pdfNameStr(d.lookup(PDFName.of('Subtype')));
+        const b = [Infinity, Infinity, -Infinity, -Infinity];
+        if (st === 'Image') { [[0, 0], [1, 0], [0, 1], [1, 1]].forEach(([x, y]) => { const p = ptm(x, y); grow(b, p[0], p[1]); }); objects.push({ kind: 'image', start, end, bbox: b, ctm: gs.ctm.slice(), name: nm, w: d.lookup(PDFName.of('Width')).asNumber(), h: d.lookup(PDFName.of('Height')).asNumber() }); }
+        else if (st === 'Form') {
+          const bb = d.lookup(PDFName.of('BBox')), mx = d.lookup(PDFName.of('Matrix'));
+          const B = bb ? bb.asArray().map(x => x.asNumber()) : [0, 0, 1, 1], Mx = mx ? mx.asArray().map(x => x.asNumber()) : [1, 0, 0, 1, 0, 0];
+          const T = mmul(Mx, gs.ctm);
+          [[B[0], B[1]], [B[2], B[1]], [B[0], B[3]], [B[2], B[3]]].forEach(([x, y]) => { const p = mapPt(T, x, y); grow(b, p[0], p[1]); });
+          objects.push({ kind: 'form', start, end, bbox: b, ctm: gs.ctm.slice(), name: nm });
+        }
+        break;
+      }
+      default:
+        if (COLOR_FILL.has(op)) { if (op === 'cs' || op === 'rg' || op === 'g' || op === 'k') gs.fill = [raw(start, end)]; else gs.fill = [...gs.fill.filter(s => /\bcs$/.test(s.trim())), raw(start, end)]; }
+        else if (COLOR_STROKE.has(op)) { if (op === 'CS' || op === 'RG' || op === 'G' || op === 'K') gs.stroke = [raw(start, end)]; else gs.stroke = [...gs.stroke.filter(s => /\bCS$/.test(s.trim())), raw(start, end)]; }
+    }
+  });
+  objects.forEach((o, k) => { o.key = k; o.area = Math.max(1, (o.bbox[2] - o.bbox[0]) * (o.bbox[3] - o.bbox[1])); });
+  return { content, objects };
+}
+/* réécriture du flux : edits = [{ obj, action:'delete'|'transform'|'replaceImage', T, newName }] */
+function rewriteContent(content, edits) {
+  const repl = [];
+  const textState = st => [st.font ? `/${st.font} ${fmtNum(st.fs)} Tf` : '', `${fmtNum(st.Tc)} Tc ${fmtNum(st.Tw)} Tw ${fmtNum(st.Th * 100)} Tz ${fmtNum(st.TL)} TL ${fmtNum(st.rise)} Ts ${fmtNum(st.Tr)} Tr`, ...st.fill, ...st.stroke, st.ext || ''].filter(Boolean).join('\n');
+  for (const e of edits) {
+    const o = e.obj;
+    if (e.action === 'delete') {
+      if (o.kind === 'text') for (const s of o.shows) {
+        const n = k => (s.ops[k] && s.ops[k].t === 'num' ? s.ops[k].v : 0);
+        repl.push({ start: s.start, end: s.end, text: s.op === "'" ? 'T*' : s.op === '"' ? `${fmtNum(n(0))} Tw ${fmtNum(n(1))} Tc T*` : '' });
+      } else repl.push({ start: o.start, end: o.end, text: '' });
+      continue;
+    }
+    const m = mmul(mmul(o.ctm, e.T), minv(o.ctm));
+    const cm = `${m.map(fmtNum).join(' ')} cm`;
+    const orig = latin1(content.subarray(o.start, o.end));
+    if (e.action === 'replaceImage') { repl.push({ start: o.start, end: o.end, text: `q ${cm} /${e.newName} Do Q` }); continue; }
+    if (o.kind === 'text') repl.push({ start: o.start, end: o.end, text: `q ${cm}\n${orig}\nQ\n${textState(o.endState)}\n` });
+    else repl.push({ start: o.start, end: o.end, text: `q ${cm}\n${orig}\nQ\n` });
+  }
+  repl.sort((a, b) => a.start - b.start);
+  const enc = new TextEncoder(), chunks = []; let pos = 0;
+  for (const r of repl) { if (r.start < pos) continue; chunks.push(content.subarray(pos, r.start)); chunks.push(Uint8Array.from(r.text, c => c.charCodeAt(0) & 255)); pos = r.end; }
+  chunks.push(content.subarray(pos));
+  const out = new Uint8Array(chunks.reduce((a, c) => a + c.length, 0)); let o = 0;
+  for (const c of chunks) { out.set(c, o); o += c.length; }
+  return out;
+}
+function setPageContent(pdf, pageIndex, bytes) {
+  const page = pdf.getPage(pageIndex);
+  page.node.set(PDFName.of('Contents'), pdf.context.register(pdf.context.flateStream(bytes)));
+}
+async function deleteObjectsOutside(pdf, i, doc, box) {
+  const pj = doc.pageObjs[i]; if (!pj) return 0;
+  const { content, objects } = await analyzePage(pdf, i, pj);
+  const out = objects.filter(o => o.bbox[2] < box[0] || o.bbox[0] > box[2] || o.bbox[3] < box[1] || o.bbox[1] > box[3]);
+  if (!out.length) return 0;
+  setPageContent(pdf, i, rewriteContent(content, out.map(obj => ({ obj, action: 'delete' }))));
+  return out.length;
+}
+
+/* ---------- outil « Éditer des objets » ---------- */
+S.obj = { sel: null, hover: null };
+async function pageObjects(doc, i) {
+  doc.objCache = doc.objCache || {};
+  const c = doc.objCache[i];
+  if (c && c.gen === doc.gen) return c.p;
+  const p = (async () => {
+    if (!doc._objPdf || doc._objPdf.gen !== doc.gen) doc._objPdf = { gen: doc.gen, pdf: await PDFDocument.load(doc.bytes, { updateMetadata: false }) };
+    return (await analyzePage(doc._objPdf.pdf, i, doc.pageObjs[i])).objects;
+  })();
+  doc.objCache[i] = { gen: doc.gen, p };
+  return p;
+}
+function objLayer(i) {
+  const el = pageEl(i); if (!el) return null;
+  let L = el.querySelector('.layer.objl'); if (!L) { L = document.createElement('div'); L.className = 'layer objl'; el.appendChild(L); }
+  return L;
+}
+function objRectVp(doc, i, b) { return rectToVp(doc.vps[i], b[0], b[1], b[2] - b[0], b[3] - b[1]); }
+function pickObject(objs, x, y, pageArea) {
+  const hits = objs.filter(o => x >= o.bbox[0] - 1 && x <= o.bbox[2] + 1 && y >= o.bbox[1] - 1 && y <= o.bbox[3] + 1);
+  if (!hits.length) return null;
+  hits.sort((a, b) => (a.area > pageArea * 0.85) - (b.area > pageArea * 0.85) || (a.kind === 'path') - (b.kind === 'path') || a.area - b.area);
+  return hits[0];
+}
+const OBJ_LABEL = { text: 'Texte', image: 'Image', path: 'Forme', form: 'Groupe d\'objets' };
+function renderObjSel(doc) {
+  $$('.layer.objl').forEach(L => L.innerHTML = '');
+  if (S.tool !== 'objedit' || !doc) return;
+  const H = S.obj.hover, Sl = S.obj.sel;
+  if (H && (!Sl || H.o.key !== Sl.o.key || H.i !== Sl.i) && doc.vps[H.i]) {
+    const r = objRectVp(doc, H.i, H.o.bbox), L = objLayer(H.i);
+    const d = document.createElement('div'); d.className = 'objbox hover'; Object.assign(d.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+    L.appendChild(d);
+  }
+  if (Sl && doc.vps[Sl.i]) {
+    const r = objRectVp(doc, Sl.i, Sl.o.bbox), L = objLayer(Sl.i);
+    const d = document.createElement('div'); d.className = 'objbox sel'; Object.assign(d.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+    d.innerHTML = ['nw', 'ne', 'sw', 'se'].map(c => `<span class="oh ${c}" data-h="${c}"></span>`).join('') +
+      `<div class="objbar"><span>${OBJ_LABEL[Sl.o.kind]}${Sl.o.kind === 'text' && Sl.o.chars ? ' « ' + esc(Sl.o.chars.trim().slice(0, 24)) + (Sl.o.chars.trim().length > 24 ? '…' : '') + ' »' : Sl.o.kind === 'image' ? ` ${Sl.o.w}×${Sl.o.h} px` : ''}</span>${Sl.o.kind === 'image' ? `<button data-oa="replace" title="Remplacer l'image">${svgIcon('ImageUp', 14)}</button><button data-oa="export" title="Enregistrer l'image">${svgIcon('Download', 14)}</button>` : ''}<button data-oa="delete" title="Supprimer (Suppr)">${svgIcon('Trash2', 14)}</button></div>`;
+    L.appendChild(d);
+  }
+}
+async function objHover(ev) {
+  if (S.tool !== 'objedit' || S.obj.dragging) return;
+  const P = pagePoint(ev); const d = S.active;
+  if (!P) { if (S.obj.hover) { S.obj.hover = null; renderObjSel(d); } return; }
+  const objs = await pageObjects(d, P.i);
+  const o = pickObject(objs, P.pdf[0], P.pdf[1], d.sizes[P.i].w * d.sizes[P.i].h);
+  const cur = S.obj.hover;
+  if ((o && (!cur || cur.o !== o)) || (!o && cur)) { S.obj.hover = o ? { i: P.i, o } : null; renderObjSel(d); }
+}
+async function objMouseDown(ev) {
+  const d = S.active, P = pagePoint(ev);
+  const act = ev.target.closest('[data-oa]');
+  if (act) { ev.preventDefault(); ev.stopPropagation(); return objAction(act.dataset.oa); }
+  if (!P) return true;
+  ev.preventDefault();
+  const h = ev.target.closest('[data-h]');
+  const Sl = S.obj.sel;
+  if (Sl && Sl.i === P.i && (h || (P.pdf[0] >= Sl.o.bbox[0] && P.pdf[0] <= Sl.o.bbox[2] && P.pdf[1] >= Sl.o.bbox[1] && P.pdf[1] <= Sl.o.bbox[3]))) return objDrag(ev, P, h ? h.dataset.h : null);
+  const objs = await pageObjects(d, P.i);
+  const o = pickObject(objs, P.pdf[0], P.pdf[1], d.sizes[P.i].w * d.sizes[P.i].h);
+  S.obj.sel = o ? { i: P.i, o } : null; S.obj.hover = null;
+  renderObjSel(d); updateUI();
+  if (o) objDrag(ev, P, null);
+  return true;
+}
+function objDrag(ev, P, handle) {
+  const d = S.active, Sl = S.obj.sel, vp = d.vps[Sl.i], el = pageEl(Sl.i), pr = el.getBoundingClientRect();
+  const b0 = Sl.o.bbox.slice(), p0 = P.pdf;
+  let T = null; S.obj.dragging = true;
+  const box = el.querySelector('.objbox.sel');
+  const mm = m => {
+    const p = vp.convertToPdfPoint(m.clientX - pr.left, m.clientY - pr.top);
+    if (!handle) { const dx = p[0] - p0[0], dy = p[1] - p0[1]; if (Math.hypot(m.clientX - ev.clientX, m.clientY - ev.clientY) < 3 && !T) return; T = [1, 0, 0, 1, dx, dy]; }
+    else {
+      // coin opposé fixe
+      const fx = handle.includes('w') ? b0[2] : b0[0], fy = handle.includes('n') ? b0[1] : b0[3];
+      const ox = handle.includes('w') ? b0[0] : b0[2], oy = handle.includes('n') ? b0[3] : b0[1];
+      let sx = (p[0] - fx) / ((ox - fx) || 1), sy = (p[1] - fy) / ((oy - fy) || 1);
+      if (!m.shiftKey) { const s = Math.max(0.05, (Math.abs(sx) + Math.abs(sy)) / 2); sx = sy = s; }
+      sx = Math.max(0.05, sx); sy = Math.max(0.05, sy);
+      T = [sx, 0, 0, sy, fx - sx * fx, fy - sy * fy];
+    }
+    const nb = [mapPt(T, b0[0], b0[1]), mapPt(T, b0[2], b0[3])];
+    const r = rectToVp(vp, Math.min(nb[0][0], nb[1][0]), Math.min(nb[0][1], nb[1][1]), Math.abs(nb[1][0] - nb[0][0]), Math.abs(nb[1][1] - nb[0][1]));
+    if (box) Object.assign(box.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+  };
+  const mu = async () => {
+    window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); S.obj.dragging = false;
+    if (!T) return;
+    await applyObjEdit({ action: 'transform', T });
+  };
+  window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu);
+}
+async function applyObjEdit(e) {
+  const d = S.active, Sl = S.obj.sel; if (!Sl) return;
+  const i = Sl.i, want = e.T ? (() => { const a = mapPt(e.T, Sl.o.bbox[0], Sl.o.bbox[1]), b = mapPt(e.T, Sl.o.bbox[2], Sl.o.bbox[3]); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])]; })() : null;
+  const kind = Sl.o.kind;
+  const ok = await mutate(d, async pdf => {
+    const { content, objects } = await analyzePage(pdf, i, d.pageObjs[i]);
+    const o = objects.find(x => x.start === Sl.o.start && x.end === Sl.o.end) || objects[Sl.o.key];
+    if (!o) throw new Error('objet introuvable (la page a changé)');
+    let newName = null;
+    if (e.action === 'replaceImage') {
+      const img = e.img.kind === 'jpg' ? await pdf.embedJpg(e.img.bytes) : await pdf.embedPng(e.img.bytes);
+      newName = pdf.getPage(i).node.newXObject('Img', img.ref).toString().slice(1);
+      // garder les proportions de la nouvelle image dans le cadre de l'ancienne
+      const bw = o.bbox[2] - o.bbox[0], bh = o.bbox[3] - o.bbox[1], ar = img.width / img.height;
+      let w = bw, h = bw / ar; if (h > bh) { h = bh; w = bh * ar; }
+      const x = o.bbox[0] + (bw - w) / 2, y = o.bbox[1] + (bh - h) / 2;
+      e.T = mmul(minv(o.ctm), [w, 0, 0, h, x, y]);   // cadre unité de l'image → cadre voulu (espace page)
+    }
+    setPageContent(pdf, i, rewriteContent(content, [{ obj: o, action: e.action, T: e.T, newName }]));
+  }, { current: i });
+  if (!ok) return;
+  S.obj.sel = null;
+  if (want) {
+    const objs = await pageObjects(d, i);
+    const near = objs.filter(o => o.kind === kind).map(o => ({ o, d: Math.abs(o.bbox[0] - want[0]) + Math.abs(o.bbox[1] - want[1]) + Math.abs(o.bbox[2] - want[2]) + Math.abs(o.bbox[3] - want[3]) })).sort((a, b) => a.d - b.d)[0];
+    if (near && near.d < 20) S.obj.sel = { i, o: near.o };
+  }
+  renderObjSel(d); updateUI();
+}
+async function objAction(a) {
+  const d = S.active, Sl = S.obj.sel; if (!Sl) return;
+  if (a === 'delete') { await applyObjEdit({ action: 'delete' }); toast('Objet supprimé (Ctrl+Z pour annuler).'); return; }
+  if (a === 'replace') {
+    try {
+      const [h] = await showOpenFilePicker({ id: 'prele-img', types: [{ description: 'Images', accept: { 'image/*': IMG_EXT.map(x => '.' + x) } }] });
+      const f = await h.getFile(); const img = await normalizeImage(new Uint8Array(await f.arrayBuffer()), f.name, f.type);
+      await applyObjEdit({ action: 'replaceImage', img, T: [1, 0, 0, 1, 0, 0] });
+      toast('Image remplacée.');
+    } catch (e) { if (e.name !== 'AbortError') handleErr(e); }
+    return;
+  }
+  if (a === 'export') {
+    try {
+      const pj = d.pageObjs[Sl.i]; await pj.getOperatorList();
+      const pdf = d._objPdf.pdf, xo = pdf.getPage(Sl.i).node.Resources().lookup(PDFName.of('XObject')).lookup(PDFName.of(Sl.o.name));
+      const f = pdfNameStr(xo.dict.lookup(PDFName.of('Filter')));
+      let bytes, ext = 'png';
+      if (f === 'DCTDecode') { bytes = xo.contents; ext = 'jpg'; }
+      else {   // rendu de la zone de l'image à sa résolution d'origine
+        const sc = Math.max(1, Sl.o.w / ((Sl.o.bbox[2] - Sl.o.bbox[0]) || 1));
+        const vp = pj.getViewport({ scale: sc }), c = document.createElement('canvas');
+        const r = rectToVp(vp, Sl.o.bbox[0], Sl.o.bbox[1], Sl.o.bbox[2] - Sl.o.bbox[0], Sl.o.bbox[3] - Sl.o.bbox[1]);
+        c.width = Math.max(1, Math.round(r.width)); c.height = Math.max(1, Math.round(r.height));
+        await pj.render({ canvasContext: c.getContext('2d'), viewport: vp, transform: [1, 0, 0, 1, -r.left, -r.top] }).promise;
+        bytes = await canvasBytes(c, 'image/png');
+      }
+      const n = await saveOutput(`${safeFileName(stripExt(d.name))} - image page ${Sl.i + 1}.${ext}`, bytes, ext === 'jpg' ? 'image/jpeg' : 'image/png', ext, 'Image');
+      toast('Image enregistrée : ' + n);
+    } catch (e) { if (e.name !== 'AbortError') handleErr(e); }
+  }
+}
+{
+  const base = annotMouseDown;
+  annotMouseDown = function (ev) { if (S.tool === 'objedit') { objMouseDown(ev); return true; } return base(ev); };
+  const st = setTool;
+  setTool = function (t) { if (S.tool === 'objedit' && t !== 'objedit') { S.obj.sel = S.obj.hover = null; $$('.layer.objl').forEach(L => L.innerHTML = ''); } st(t); };
+  const re = renderEdits;
+  renderEdits = function (doc, i) { re(doc, i); if (S.tool === 'objedit' && ((S.obj.sel && S.obj.sel.i === i) || (S.obj.hover && S.obj.hover.i === i))) renderObjSel(doc); };
+}
+document.addEventListener('mousemove', ev => { if (S.tool === 'objedit' && ev.target.closest && ev.target.closest('#viewer')) objHover(ev); });
+document.addEventListener('keydown', ev => {
+  if (S.tool !== 'objedit' || !S.obj.sel || ev.target.closest('input,textarea,[contenteditable]')) return;
+  if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); ev.stopPropagation(); objAction('delete'); }
+  else if (ev.key.startsWith('Arrow')) {
+    ev.preventDefault(); ev.stopPropagation();
+    const s = ev.shiftKey ? 10 : 1, dx = ev.key === 'ArrowLeft' ? -s : ev.key === 'ArrowRight' ? s : 0, dy = ev.key === 'ArrowUp' ? s : ev.key === 'ArrowDown' ? -s : 0;
+    applyObjEdit({ action: 'transform', T: [1, 0, 0, 1, dx, dy] });
+  } else if (ev.key === 'Escape') { S.obj.sel = null; renderObjSel(S.active); }
+}, true);
+function cmdObjEditMenu() {
+  popMenu(anchorOf('objMenu'), [
+    ['BoxSelect', 'Éditer des objets (images, formes, textes)', () => setTool('objedit')],
+    ['Type', 'Éditer le texte (ligne par ligne)', () => setTool('edittext')],
+    ['ReplaceAll', 'Remplacer les polices…', cmdReplaceFonts2],
+  ]);
+}
+
+/* =====================================================================
+   Remplacer les polices
+   ===================================================================== */
+const STD14 = ['Helvetica', 'Helvetica-Bold', 'Helvetica-Oblique', 'Helvetica-BoldOblique', 'Times-Roman', 'Times-Bold', 'Times-Italic', 'Times-BoldItalic', 'Courier', 'Courier-Bold', 'Courier-Oblique', 'Courier-BoldOblique'];
+function suggestStd(name) {
+  const n = name.replace(/^[A-Z]{6}\+/, '').toLowerCase(), b = /bold|black|heavy|semibold|demi/.test(n), it = /italic|oblique/.test(n);
+  if (/courier|mono|consol/.test(n)) return 'Courier' + (b && it ? '-BoldOblique' : b ? '-Bold' : it ? '-Oblique' : '');
+  if (/times|roman|serif|garamond|georgia|cambria|caladea|liberationserif|book|minion|palatino|constantia/.test(n) && !/sans/.test(n)) return b && it ? 'Times-BoldItalic' : b ? 'Times-Bold' : it ? 'Times-Italic' : 'Times-Roman';
+  return 'Helvetica' + (b && it ? '-BoldOblique' : b ? '-Bold' : it ? '-Oblique' : '');
+}
+function collectFonts(pdf) {
+  const found = new Map(), ctx = pdf.context;
+  const scanRes = (res, pageNo, holder) => {
+    const fonts = res && res.lookup(PDFName.of('Font')); if (!(fonts instanceof PDFLib.PDFDict)) return;
+    for (const [k, v] of fonts.entries()) {
+      const d = ctx.lookup(v); if (!(d instanceof PDFLib.PDFDict)) continue;
+      const key = v instanceof PDFLib.PDFRef ? v.toString() : 'direct:' + pageNo + ':' + k.toString();
+      if (!found.has(key)) {
+        const sub = pdfNameStr(d.lookup(PDFName.of('Subtype'))), base = pdfNameStr(d.lookup(PDFName.of('BaseFont'))) || k.toString().slice(1);
+        const fd = d.lookup(PDFName.of('FontDescriptor')), emb = !!(fd && (fd.get(PDFName.of('FontFile')) || fd.get(PDFName.of('FontFile2')) || fd.get(PDFName.of('FontFile3'))));
+        const flags = fd && fd.lookup(PDFName.of('Flags')) ? fd.lookup(PDFName.of('Flags')).asNumber() : 32;
+        const enc = d.lookup(PDFName.of('Encoding'));
+        const okType = ['Type1', 'TrueType', 'MMType1'].includes(sub);
+        const symbolicNoEnc = (flags & 4) && !enc && !d.get(PDFName.of('ToUnicode'));
+        let lost = 0;
+        try { const tu = d.lookup(PDFName.of('ToUnicode')); if (tu && ((flags & 4) || !enc)) for (const u of parseToUnicode(PDFLib.decodePDFRawStream(tu).decode()).values()) if (!glyphNameOf(u)) lost++; } catch { }
+        found.set(key, { lost, key, ref: v instanceof PDFLib.PDFRef ? v : null, dict: d, holder: fonts, resKey: k, name: base, sub, emb, pages: new Set(), can: okType && !symbolicNoEnc && !STD14.includes(base), why: !okType ? (sub === 'Type0' ? 'police composite (CID)' : sub === 'Type3' ? 'police dessinée (Type 3)' : sub) : symbolicNoEnc ? 'police symbolique sans encodage' : STD14.includes(base) ? 'déjà une police standard' : '' });
+      }
+      found.get(key).pages.add(pageNo);
+    }
+    const xo = res && res.lookup(PDFName.of('XObject'));
+    if (xo instanceof PDFLib.PDFDict) for (const [, r] of xo.entries()) { const s = ctx.lookup(r); if (s && s.dict && pdfNameStr(s.dict.lookup(PDFName.of('Subtype'))) === 'Form') scanRes(s.dict.lookup(PDFName.of('Resources')), pageNo, s); }
+  };
+  pdf.getPages().forEach((p, i) => scanRes(p.node.Resources(), i + 1));
+  return [...found.values()];
+}
+async function cmdReplaceFonts2() {
+  const doc = S.active; if (!doc) return;
+  const pdf = await PDFDocument.load(doc.bytes, { updateMetadata: false });
+  const fonts = collectFonts(pdf);
+  if (!fonts.length) return toast('Aucune police dans ce document.');
+  const opts = v => `<option value="">— garder —</option>${STD14.map(s => `<option ${s === v ? 'selected' : ''}>${s}</option>`).join('')}`;
+  const el = await optionsDialog({
+    title: 'Remplacer les polices', icon: 'ReplaceAll', ok: 'Remplacer', width: 680,
+    body: `<p class="hint" style="margin-top:0">Remplace une police du document par une police standard (Helvetica, Times, Courier). Les espacements d'origine sont conservés : la mise en page ne bouge pas. Utile pour alléger un fichier ou corriger une police illisible.</p>
+      <div class="fontlist"><div class="fhead"><span>Police</span><span>Type</span><span>Pages</span><span>Remplacer par</span></div>
+      ${fonts.map((f, k) => `<div class="frow2"><span title="${esc(f.name)}">${esc(f.name.replace(/^[A-Z]{6}\+/, ''))}${f.emb ? ' <small>(incorporée)</small>' : ''}${f.lost ? ` <small class="warn" title="Ligatures ou symboles absents des polices standard">⚠ ${f.lost} caractère${f.lost > 1 ? 's' : ''} spécia${f.lost > 1 ? 'ux' : 'l'} perdu${f.lost > 1 ? 's' : ''}</small>` : ''}</span><span>${esc(f.sub)}</span><span>${esc(compactRanges([...f.pages].map(x => x - 1)))}</span>
+        <span>${f.can ? `<select data-k="${k}">${opts('')}</select>` : `<i class="hint">${esc(f.why)}</i>`}</span></div>`).join('')}</div>
+      <button class="btn" id="fAuto" style="margin-top:8px">Proposer automatiquement</button>`,
+  });
+  if (!el) return;
+  const choice = {}; el.querySelectorAll('select[data-k]').forEach(s => { if (s.value) choice[s.dataset.k] = s.value; });
+  if (!Object.keys(choice).length) return toast('Aucune police choisie.');
+  let n = 0;
+  const ok = await mutate(doc, async p2 => {
+    const list = collectFonts(p2), ctx = p2.context;
+    for (const [k, std] of Object.entries(choice)) {
+      const f = list[+k]; if (!f || !f.can) continue;
+      const d = f.dict, nd = { Type: 'Font', Subtype: 'Type1', BaseFont: std };
+      for (const key of ['FirstChar', 'LastChar', 'Widths', 'ToUnicode']) { const v = d.get(PDFName.of(key)); if (v) nd[key] = v; }
+      const enc = d.get(PDFName.of('Encoding'));
+      const fdsc = d.lookup(PDFName.of('FontDescriptor')), fl = fdsc && fdsc.lookup(PDFName.of('Flags')) ? fdsc.lookup(PDFName.of('Flags')).asNumber() : 32;
+      const tu = d.lookup(PDFName.of('ToUnicode'));
+      if ((fl & 4 || !enc) && tu) {
+        // codes propres à la police (sous-ensemble) : on les renomme d'après leur caractère Unicode
+        const map = parseToUnicode(PDFLib.decodePDFRawStream(tu).decode());
+        const diffs = [];
+        for (const [code, u] of [...map.entries()].sort((a, b) => a[0] - b[0])) { const gn = glyphNameOf(u); if (gn) diffs.push(code, PDFName.of(gn)); }
+        nd.Encoding = ctx.obj({ Type: 'Encoding', BaseEncoding: 'WinAnsiEncoding', Differences: ctx.obj(diffs) });
+      } else nd.Encoding = enc || PDFName.of('WinAnsiEncoding');
+      if (!nd.Widths) {   // sans largeurs d'origine : celles de la police standard
+        const sf = await p2.embedFont(StandardFonts[{ 'Helvetica': 'Helvetica', 'Helvetica-Bold': 'HelveticaBold', 'Helvetica-Oblique': 'HelveticaOblique', 'Helvetica-BoldOblique': 'HelveticaBoldOblique', 'Times-Roman': 'TimesRoman', 'Times-Bold': 'TimesRomanBold', 'Times-Italic': 'TimesRomanItalic', 'Times-BoldItalic': 'TimesRomanBoldItalic', 'Courier': 'Courier', 'Courier-Bold': 'CourierBold', 'Courier-Oblique': 'CourierOblique', 'Courier-BoldOblique': 'CourierBoldOblique' }[std]]);
+        delete nd.FirstChar; delete nd.LastChar;
+      }
+      const obj = ctx.obj(nd);
+      if (f.ref) ctx.assign(f.ref, obj); else f.holder.set(f.resKey, obj);
+      n++;
+    }
+  });
+  if (ok) toast(`${n} police${n > 1 ? 's' : ''} remplacée${n > 1 ? 's' : ''}.`);
+}
+document.addEventListener('click', ev => {
+  if (ev.target.id !== 'fAuto') return;
+  ev.preventDefault();
+  const dlg = ev.target.closest('dialog');
+  dlg.querySelectorAll('select[data-k]').forEach(s => { const name = s.closest('.frow2').querySelector('span').title; s.value = suggestStd(name); });
+});
+
+function parseToUnicode(bytes) {
+  const t = latin1(bytes), map = new Map();
+  const hx = h => parseInt(h, 16), uni = h => { let s = ''; for (let k = 0; k + 3 < h.length + 0; k += 4) s += String.fromCharCode(parseInt(h.substr(k, 4), 16)); return s; };
+  for (const blk of t.match(/beginbfchar([\s\S]*?)endbfchar/g) || []) { const re = /<([0-9a-fA-F]+)>\s*<([0-9a-fA-F]+)>/g; let m; while ((m = re.exec(blk))) map.set(hx(m[1]), uni(m[2])); }
+  for (const blk of t.match(/beginbfrange([\s\S]*?)endbfrange/g) || []) {
+    const re = /<([0-9a-fA-F]+)>\s*<([0-9a-fA-F]+)>\s*(<([0-9a-fA-F]+)>|\[([^\]]*)\])/g; let m;
+    while ((m = re.exec(blk))) {
+      const a = hx(m[1]), b = hx(m[2]);
+      if (m[4]) { const base = hx(m[4]); for (let c = a; c <= b && c - a < 512; c++) map.set(c, String.fromCharCode(base + c - a)); }
+      else { const arr = (m[5].match(/<([0-9a-fA-F]+)>/g) || []).map(x => uni(x.slice(1, -1))); arr.forEach((u, k) => map.set(a + k, u)); }
+    }
+  }
+  return map;
+}
+const GLYPH_NAMES = (() => {
+  const m = {}, names = 'space exclam quotedbl numbersign dollar percent ampersand quotesingle parenleft parenright asterisk plus comma hyphen period slash zero one two three four five six seven eight nine colon semicolon less equal greater question at'.split(' ');
+  names.forEach((n, k) => m[String.fromCharCode(32 + k)] = n);
+  for (let c = 65; c <= 90; c++) { m[String.fromCharCode(c)] = String.fromCharCode(c); m[String.fromCharCode(c + 32)] = String.fromCharCode(c + 32); }
+  Object.assign(m, { '[': 'bracketleft', '\\': 'backslash', ']': 'bracketright', '^': 'asciicircum', '_': 'underscore', '`': 'grave', '{': 'braceleft', '|': 'bar', '}': 'braceright', '~': 'asciitilde',
+    '\u00a0': 'space', '¡': 'exclamdown', '¢': 'cent', '£': 'sterling', '¤': 'currency', '¥': 'yen', '¦': 'brokenbar', '§': 'section', '¨': 'dieresis', '©': 'copyright', 'ª': 'ordfeminine', '«': 'guillemotleft', '¬': 'logicalnot', '\u00ad': 'hyphen', '®': 'registered', '¯': 'macron', '°': 'degree', '±': 'plusminus', '²': 'twosuperior', '³': 'threesuperior', '´': 'acute', 'µ': 'mu', '¶': 'paragraph', '·': 'periodcentered', '¸': 'cedilla', '¹': 'onesuperior', 'º': 'ordmasculine', '»': 'guillemotright', '¼': 'onequarter', '½': 'onehalf', '¾': 'threequarters', '¿': 'questiondown', '×': 'multiply', '÷': 'divide',
+    '€': 'Euro', '‚': 'quotesinglbase', 'ƒ': 'florin', '„': 'quotedblbase', '…': 'ellipsis', '†': 'dagger', '‡': 'daggerdbl', 'ˆ': 'circumflex', '‰': 'perthousand', 'Š': 'Scaron', '‹': 'guilsinglleft', 'Œ': 'OE', 'Ž': 'Zcaron', '‘': 'quoteleft', '’': 'quoteright', '“': 'quotedblleft', '”': 'quotedblright', '•': 'bullet', '–': 'endash', '—': 'emdash', '˜': 'tilde', '™': 'trademark', 'š': 'scaron', '›': 'guilsinglright', 'œ': 'oe', 'ž': 'zcaron', 'Ÿ': 'Ydieresis', '\u202f': 'space', '\u2009': 'space' });
+  const acc = { grave: 'ÀÈÌÒÙàèìòù', acute: 'ÁÉÍÓÚÝáéíóúý', circumflex: 'ÂÊÎÔÛâêîôû', tilde: 'ÃÑÕãñõ', dieresis: 'ÄËÏÖÜäëïöüÿ', ring: 'Åå', cedilla: 'Çç' };
+  for (const [suf, chars] of Object.entries(acc)) for (const ch of chars) m[ch] = ch.normalize('NFD')[0] + suf;
+  Object.assign(m, { 'Æ': 'AE', 'æ': 'ae', 'Ø': 'Oslash', 'ø': 'oslash', 'ß': 'germandbls', 'Ð': 'Eth', 'ð': 'eth', 'Þ': 'Thorn', 'þ': 'thorn' });
+  return m;
+})();
+const glyphNameOf = u => GLYPH_NAMES[u] || (u === 'fi' || u === '\ufb01' ? 'fi' : u === 'fl' || u === '\ufb02' ? 'fl' : null);
+cmdReplaceFonts = cmdReplaceFonts2;
+Object.assign(EXTRA_CMDS, { objEdit: () => setTool('objedit'), objMenu: cmdObjEditMenu, replaceFonts: cmdReplaceFonts2 });
+EXTRA_NEEDDOC.push('objMenu');
+// icônes des menus : svgIcon('BoxSelect') svgIcon('Type') svgIcon('ReplaceAll') svgIcon('ImageUp') svgIcon('Download') svgIcon('Trash2')
+window.PRELE_OBJ = { analyzePage, rewriteContent, pageObjects, collectFonts, applyObjEdit, objAction };
+
+/* =====================================================================
+   v2.0 — Bulles d'explication au survol de chaque bouton
+   (titre, raccourci clavier, à quoi sert le bouton), menu « Autres
+   outils » complet, outil Zoom, raccourcis clavier supplémentaires.
+   ===================================================================== */
+const TIPS = {
+  // barre du haut et onglets
+  'cmd:open': ['Ouvrir', 'Ouvre un ou plusieurs fichiers : PDF, Word, Excel, PowerPoint, images, texte. Les fichiers Office et les images sont convertis en PDF.', 'Ctrl+O'],
+  'cmd:save': ['Enregistrer', 'Enregistre le document dans son fichier d\'origine (ou demande où l\'enregistrer s\'il est nouveau).', 'Ctrl+S'],
+  'cmd:saveAs': ['Enregistrer sous', 'Enregistre une copie du document sous un autre nom ou dans un autre dossier.', 'Ctrl+Maj+S'],
+  'cmd:undo': ['Annuler', 'Annule la dernière action.', 'Ctrl+Z'],
+  'cmd:redo': ['Rétablir', 'Refait l\'action qui vient d\'être annulée.', 'Ctrl+Y'],
+  'id:searchInput': ['Rechercher', 'Cherche un mot ou une expression dans le document ouvert. Entrée = suivant, Maj+Entrée = précédent.', 'Ctrl+F'],
+  'cmd:searchPrev': ['Résultat précédent', 'Revient à l\'occurrence précédente de la recherche.', 'Maj+Entrée'],
+  'cmd:searchNext': ['Résultat suivant', 'Passe à l\'occurrence suivante de la recherche.', 'Entrée'],
+  'cmd:advSearch': ['Recherche avancée', 'Cherche un texte dans tous les PDF d\'un dossier (et ses sous-dossiers) ; un clic sur un résultat ouvre le fichier à la bonne page.', 'Ctrl+Maj+F'],
+  'cmd:install': ['Installer', 'Installe l\'éditeur comme un logiciel : fenêtre à part, menu Démarrer, ouverture des PDF par double-clic.'],
+  'cmd:help': ['Aide', 'Affiche l\'aide, les raccourcis clavier et les notes de chaque version.', 'F1'],
+  'rtab:file': ['Fichier', 'Ouvrir, enregistrer, fichiers récents, fermer le document.'],
+  'rtab:home': ['Accueil', 'Les outils les plus utilisés : sélection, affichage, édition du texte, commentaires, liens, organisation.'],
+  'rtab:view': ['Affichage', 'Zoom, rotation de l\'affichage, volets latéraux.'],
+  'rtab:comments': ['Commentaires', 'Annoter le document : textes, notes, surlignages, dessins, tampons, mesures, gestion des commentaires.'],
+  'rtab:organize': ['Organiser', 'Gérer les pages : insérer, supprimer, déplacer, diviser, recadrer, filigranes, en-têtes, numérotation.'],
+  'rtab:convert': ['Convertir', 'Créer des PDF, exporter vers Word / Excel / PowerPoint / images, OCR, améliorer les numérisations, couleurs.'],
+  'rtab:bookmarks': ['Signets', 'Créer et organiser la table des matières cliquable du document.'],
+  'rtab:format': ['Format', 'Propriétés de l\'élément ou de l\'outil sélectionné (commentaire, texte, outil Main). Surligné quand un élément est sélectionné.'],
+  // outils
+  'tool:hand': ['Main', 'Déplace la page en la faisant glisser. Clique aussi sur les liens et ouvre les notes (voir onglet Format pour les options).', 'H'],
+  'tool:select': ['Sélectionner du texte', 'Sélectionne du texte pour le copier (Ctrl+C).', 'V'],
+  'cmd:otherTools': ['Autres outils', 'Sélection des commentaires, instantané, presse-papiers, recherche, zoom et ajustements de l\'affichage.'],
+  'tool:selcomment': ['Sélectionner les commentaires', 'Sélectionne, déplace et redimensionne les commentaires. Double-clic pour modifier leur texte, Suppr pour les effacer.'],
+  'tool:snapshot': ['Instantané', 'Tracez un rectangle : la zone est copiée en image dans le presse-papiers (haute résolution).'],
+  'cmd:paste': ['Coller sur la page', 'Colle l\'image ou le texte du presse-papiers sur la page.', 'Ctrl+V'],
+  'cmd:pasteNewDoc': ['PDF depuis le presse-papiers', 'Crée un nouveau document PDF à partir de l\'image ou du texte copié.'],
+  // affichage
+  'cmd:zoomOut': ['Zoom arrière', 'Réduit l\'affichage.', 'Ctrl+−'],
+  'cmd:zoomIn': ['Zoom avant', 'Agrandit l\'affichage.', 'Ctrl++'],
+  'cmd:actualSize': ['Taille réelle', 'Affiche la page à 100 %, à sa taille d\'impression.', 'Ctrl+1'],
+  'cmd:fitPage': ['Page entière', 'Ajuste le zoom pour voir la page entière.', 'Ctrl+0'],
+  'cmd:fitWidth': ['Remplir en largeur', 'Ajuste le zoom à la largeur de la fenêtre.', 'Ctrl+2'],
+  'cmd:fitVisible': ['Ajustement visible', 'Ajuste le zoom à la largeur du contenu (sans les marges blanches).', 'Ctrl+3'],
+  'cmd:rotateViewLeft': ['Pivoter l\'affichage à gauche', 'Tourne l\'affichage de 90° vers la gauche, sans modifier le fichier.'],
+  'cmd:rotateViewRight': ['Pivoter l\'affichage à droite', 'Tourne l\'affichage de 90° vers la droite, sans modifier le fichier.'],
+  'pane:pages': ['Volet Pages', 'Affiche ou masque les miniatures des pages.'], 'pane:bookmarks': ['Volet Signets', 'Affiche ou masque les signets (table des matières).'],
+  'pane:comments': ['Volet Commentaires', 'Affiche ou masque la liste des commentaires.'], 'pane:attachments': ['Volet Pièces jointes', 'Affiche les fichiers joints au PDF.'],
+  'pane:props': ['Volet Propriétés', 'Affiche les informations du fichier et de la page.'], 'pane:folder': ['Volet Dossier', 'Parcourt un dossier de votre PC pour ouvrir ou combiner ses fichiers.'],
+  'cmd:togglePane': ['Volet latéral', 'Affiche ou masque le volet de gauche.', 'F4'],
+  'cmd:docProps': ['Propriétés du document', 'Titre, auteur, sujet et mots-clés du PDF.', 'Ctrl+D'],
+  // éléments
+  'tool:edittext': ['Éditer un texte', 'Cliquez sur une ligne pour modifier son texte directement dans la page ; le texte d\'origine est réellement remplacé.'],
+  'tool:objedit': ['Éditer des objets', 'Sélectionne les images, formes et blocs de texte existants de la page : les déplacer, les redimensionner (coins), les supprimer (Suppr) ou remplacer une image.'],
+  'tool:addtext': ['Ajouter du texte', 'Cliquez à l\'endroit voulu pour écrire un nouveau texte qui fera partie de la page.'],
+  'cmd:addImage': ['Ajouter une image', 'Place une image (logo, signature scannée, photo) sur la page ; déplaçable et redimensionnable.'],
+  'tool:cover': ['Masquer une zone', 'Tracez un rectangle : la zone est recouverte et le texte en dessous est réellement supprimé.'],
+  // commentaires
+  'tool:freetext': ['Machine à écrire', 'Cliquez puis tapez : le texte s\'écrit directement sur la page, sans cadre.'],
+  'tool:textbox': ['Boîte de texte', 'Texte dans un cadre à fond blanc. Cliquez puis tapez.'],
+  'tool:callout': ['Légende', 'Texte encadré relié par une flèche à l\'endroit visé : tracez de la pointe vers l\'emplacement du texte.'],
+  'tool:note': ['Note', 'Pose une icône de note ; sa bulle s\'ouvre sur le côté et reste ouverte jusqu\'à sa croix.'],
+  'tool:attach': ['Joindre un fichier', 'Intègre un fichier dans le PDF à l\'endroit cliqué (trombone) ; double-clic pour l\'ouvrir.'],
+  'tool:sound': ['Son', 'Enregistre un message au micro et le joint au PDF à l\'endroit cliqué.'],
+  'tool:highlight': ['Surligner le texte', 'Sélectionnez du texte pour le surligner (clic droit : couleur).'],
+  'tool:areahl': ['Surligner une zone', 'Tracez un rectangle surligné (pour les zones sans texte sélectionnable, ex. scans).'],
+  'tool:squiggly': ['Souligné ondulé', 'Souligne le texte sélectionné d\'une vague (à vérifier, à corriger).'],
+  'tool:underline': ['Souligner le texte', 'Souligne le texte sélectionné.'],
+  'tool:strike': ['Barrer le texte', 'Barre le texte sélectionné (à supprimer).'],
+  'tool:insert': ['Insérer du texte', 'Cliquez à l\'endroit de l\'ajout et tapez le texte proposé (marque d\'insertion ^).'],
+  'tool:replace': ['Remplacer le texte', 'Sélectionnez le texte à remplacer : il est barré et vous tapez le texte de remplacement.'],
+  'tool:tally': ['Calculatrice comptable', 'Cliquez sur des montants du document : ils s\'additionnent (ou se soustraient, multiplient, divisent) ; le total peut être posé sur la page.'],
+  'tool:line': ['Ligne', 'Tracez une ligne droite.'], 'tool:arrow': ['Flèche', 'Tracez une flèche, de son départ vers sa pointe.'],
+  'tool:rect': ['Rectangle', 'Tracez un rectangle (couleur, remplissage, nuage : onglet Format).'], 'tool:ellipse': ['Ovale', 'Tracez un ovale ou un cercle.'],
+  'tool:polygon': ['Polygone', 'Cliquez chaque sommet ; double-clic ou Entrée pour terminer.'], 'tool:polyline': ['Polyligne', 'Ligne brisée : cliquez chaque point ; double-clic ou Entrée pour terminer.'],
+  'tool:cloud': ['Nuage', 'Entoure une zone d\'un contour en nuage : cliquez chaque sommet ; double-clic pour terminer.'],
+  'tool:ink': ['Crayon', 'Dessin à main levée.'], 'tool:eraser': ['Gomme', 'Efface les traits de crayon en passant dessus.'],
+  'cmd:stampMenu': ['Tampon', 'Appose un tampon : APPROUVÉ, PAYÉ (daté, avec votre nom), CONFIDENTIEL… ou un tampon personnalisé / image.'],
+  'tool:distance': ['Distance', 'Mesure une longueur. Clic droit sur l\'outil : échelle (ex. plan au 1/100).'],
+  'tool:perimeter': ['Périmètre', 'Mesure la longueur d\'un tracé en plusieurs segments. Clic droit : échelle.'],
+  'tool:area': ['Région', 'Mesure une surface (m², cm²…). Clic droit : échelle.'],
+  'cmd:addVideo': ['Ajouter une vidéo', 'Joint une vidéo au PDF (lisible dans l\'éditeur ; les lecteurs PDF récents ne lisent plus les vidéos dans la page).'],
+  'cmd:addSound': ['Ajouter un son', 'Joint un fichier audio au PDF.'], 'cmd:add3d': ['Ajouter un objet 3D', 'Joint un modèle 3D au PDF (en fichier joint).'],
+  'cmd:summarizeComments': ['Résumer les commentaires', 'Crée un PDF récapitulatif de tous les commentaires, page par page.'],
+  'cmd:importComments': ['Importer', 'Importe des commentaires depuis un fichier XFDF (format standard Adobe).'],
+  'cmd:exportComments': ['Exporter', 'Exporte les commentaires dans un fichier XFDF, réimportable ici ou dans Acrobat / PDF-XChange.'],
+  'cmd:showMenu': ['Afficher', 'Afficher ou masquer tous les commentaires, ouvrir ou fermer toutes les notes.'],
+  'cmd:showComments': ['Volet Commentaires', 'Liste de tous les commentaires du document.'],
+  'cmd:flattenComments': ['Aplatir les commentaires', 'Intègre définitivement les commentaires au contenu des pages (ils ne sont plus modifiables).'],
+  'cmd:deleteAllComments': ['Supprimer tous les commentaires', 'Efface tous les commentaires et tampons du document.'],
+  'id:aColor': ['Couleur', 'Couleur de l\'outil ou du commentaire sélectionné. Astuce : clic droit sur un outil pour les couleurs rapides.'],
+  'id:aOpac': ['Opacité', 'Transparence de l\'outil ou du commentaire sélectionné.'], 'id:aWidth': ['Épaisseur du trait', 'Épaisseur des lignes et contours.'],
+  'id:aSize': ['Taille du texte', 'Taille des caractères (machine à écrire, boîte de texte, légende).'], 'id:aAuthor': ['Auteur', 'Votre nom, inscrit dans les commentaires et les tampons datés.'],
+  // liens et document (Accueil)
+  'tool:link': ['Ajouter / modifier les liens', 'Tracez une zone (ou cliquez sur une ligne) pour créer un lien vers une adresse web, un e-mail ou une page.'],
+  'cmd:linkFromUrls': ['Liens à partir des URL', 'Rend cliquables toutes les adresses web et e-mails écrits dans le document.'],
+  'cmd:removeWebLinks': ['Supprimer tous les liens web', 'Retire tous les liens vers des sites et e-mails.'],
+  'cmd:linksFromBarcodes': ['Liens à partir des QR codes', 'Lit les QR codes des pages et les rend cliquables.'],
+  'cmd:batchLink': ['Lien par lots', 'Crée un lien sur toutes les occurrences d\'un texte.'],
+  'cmd:combine': ['Combiner des fichiers', 'Réunit plusieurs fichiers (PDF, Word, Excel, images…) en un seul PDF, dans l\'ordre choisi.'],
+  'cmd:split': ['Diviser le document', 'Découpe le document en plusieurs PDF (toutes les N pages, par plages, par signets).'],
+  'cmd:insertFile': ['Insérer des pages', 'Insère les pages d\'un autre fichier dans le document.', 'Ctrl+Maj+I'],
+  'cmd:extract': ['Extraire des pages', 'Copie des pages dans un nouveau PDF (ou dans des fichiers séparés).'],
+  'cmd:deletePages': ['Supprimer des pages', 'Supprime les pages sélectionnées.', 'Ctrl+Maj+D'],
+  // Organiser
+  'cmd:insertMenu': ['Insérer', 'Insérer des pages d\'un fichier, des pages vides, le presse-papiers, des images, des numérisations ou du texte.', 'Ctrl+Maj+I'],
+  'cmd:deleteMenu': ['Supprimer', 'Supprimer des pages (choix des pages, paires/impaires) ou les pages vides.', 'Ctrl+Maj+D'],
+  'cmd:movePages': ['Déplacer des pages', 'Déplace des pages avant / après une page donnée, au début ou à la fin. (Ou glissez les miniatures.)'],
+  'cmd:mergePages': ['Fusionner les pages', 'Réunit plusieurs pages sur une même feuille : 2, 4, 6, 8 ou 9 par page.'],
+  'cmd:splitMenu': ['Diviser', 'Diviser le document en plusieurs fichiers, ou couper chaque page en deux / en quatre (scans de doubles pages).'],
+  'cmd:duplicatePages': ['Dupliquer des pages', 'Ajoute une copie des pages sélectionnées juste après elles.'],
+  'cmd:replacePages': ['Remplacer des pages', 'Remplace des pages par celles d\'un autre fichier (ex. version corrigée).'],
+  'cmd:swapPages': ['Échanger les pages', 'Intervertit deux pages (sélectionnez deux miniatures, ou indiquez leurs numéros).'],
+  'cmd:overlay': ['Superposition', 'Pose la page d\'un autre PDF sur ou sous vos pages (papier à en-tête, fond de formulaire, cachet).'],
+  'cmd:reversePages': ['Inverser l\'ordre des pages', 'Met la dernière page en premier, etc. (pratique après une numérisation recto/verso).'],
+  'cmd:deleteBlank': ['Supprimer les pages vides', 'Détecte et supprime les pages blanches.'],
+  'cmd:pageLabels': ['Numérotation des pages (étiquettes)', 'Change les numéros affichés par les lecteurs PDF (i, ii, iii puis 1, 2, 3…) sans rien écrire sur les pages.'],
+  'cmd:rotateDlg': ['Rotation', 'Fait pivoter des pages (toutes, paires, impaires, portrait ou paysage).', 'Ctrl+Maj+R'],
+  'cmd:cropMenu': ['Recadrer', 'Recadrer par marges, avec l\'outil de recadrage, aux marges blanches, ou supprimer le contenu hors cadre.', 'Ctrl+Maj+T'],
+  'cmd:resizePages': ['Redimensionner', 'Change le format des pages (A4, A3, Lettre…), avec mise à l\'échelle du contenu ou contenu centré.'],
+  'cmd:margins': ['Marges', 'Agrandit la feuille autour du contenu (marge de reliure, place pour annoter).'],
+  'cmd:wmMenu': ['Filigranes', 'Ajouter, supprimer ou gérer des filigranes (texte ou image, ex. « CONFIDENTIEL » en diagonale).'],
+  'cmd:bgMenu': ['Arrière-plan', 'Ajouter, supprimer ou gérer un arrière-plan (couleur, image ou PDF sous le contenu).'],
+  'cmd:hfMenu': ['En-tête et pied de page', 'Ajouter, supprimer ou gérer des textes en haut / bas de page (numéros de page, date, nom du fichier).'],
+  'cmd:batesMenu': ['Numérotation Bates', 'Numéro unique sur chaque page (ex. SCI-000001), sur un document ou sur plusieurs fichiers à la suite.'],
+  'cmd:numberPages': ['Numéroter les pages', 'Écrit « Page 1 sur 10 » (ou un autre format) sur chaque page.'],
+  'cmd:selectAllPages': ['Tout sélectionner', 'Sélectionne toutes les pages (miniatures).', 'Ctrl+A'], 'cmd:selectNone': ['Désélectionner', 'Annule la sélection de pages.'],
+  // Convertir
+  'cmd:scan': ['Numérisation', 'Comment numériser avec votre scanner (application Windows « Numériser ») puis ouvrir les fichiers ici.'],
+  'cmd:fromFiles': ['À partir de fichiers', 'Convertir des fichiers Word, Excel, PowerPoint, images ou texte en PDF, combiner, ou créer depuis le presse-papiers.'],
+  'cmd:newDoc': ['Blanc', 'Crée un nouveau document PDF vierge.', 'Ctrl+N'],
+  'cmd:rasterize': ['Rasteriser les pages', 'Transforme les pages en images (fige le contenu, supprime les éléments cachés).'],
+  'cmd:recompress': ['Recompresser les images', 'Réduit le poids du fichier en recompressant ses images (le texte n\'est pas touché).'],
+  'cmd:replaceFonts': ['Remplacer les polices', 'Remplace des polices du document par Helvetica, Times ou Courier, sans déplacer le texte.'],
+  'cmd:exportImages': ['Exporter en image(s)', 'Enregistre les pages en PNG, JPEG ou WebP.'],
+  'cmd:exportWord': ['Vers Word', 'Crée un fichier Word modifiable (paragraphes, gras, alignements, colonnes) ou identique à l\'original.'],
+  'cmd:exportExcel': ['Vers Excel', 'Crée un classeur Excel : colonnes retrouvées, montants et dates convertis en nombres et dates.'],
+  'cmd:exportPpt': ['Vers PowerPoint', 'Crée une présentation : une diapositive par page.'],
+  'cmd:ocr': ['OCR', 'Reconnaît le texte des pages numérisées (français) : le document devient consultable par recherche et le texte copiable.'],
+  'cmd:enhance': ['Améliorer les numérisations', 'Blanchit le fond, renforce le contraste, niveaux de gris ou noir et blanc.'],
+  'cmd:deskew': ['Redresser les pages', 'Remet droites les pages numérisées de travers (sans perte de qualité).'],
+  'cmd:correctScans': ['Corriger les numérisations', 'Redresse, efface les bords noirs du scanner et les poussières.'],
+  'cmd:convertColors': ['Convertir les couleurs', 'Passe les pages en niveaux de gris (texte conservé) ou en noir et blanc.'],
+  'cmd:recolor': ['Recolorer les pages', 'Papier teinté, teinte, sépia ou mode nuit, sans transformer le texte en image.'],
+  // Signets
+  'cmd:bmAdd': ['Ajouter un signet', 'Crée un signet vers l\'endroit affiché.', 'Ctrl+B'], 'cmd:bmAddChild': ['Ajouter un signet enfant', 'Crée un signet sous le signet sélectionné.'],
+  'cmd:bmRename': ['Renommer', 'Renomme le signet sélectionné.', 'F2'], 'cmd:bmDelete': ['Supprimer', 'Supprime le signet sélectionné.', 'Suppr'],
+  'cmd:bmUp': ['Monter', 'Monte le signet d\'un cran.'], 'cmd:bmDown': ['Descendre', 'Descend le signet d\'un cran.'],
+  'cmd:bmIn': ['Descendre d\'un niveau', 'Range le signet sous le précédent.'], 'cmd:bmOut': ['Remonter d\'un niveau', 'Sort le signet de son parent.'],
+  'cmd:bmExpand': ['Tout développer', 'Ouvre toute l\'arborescence.'], 'cmd:bmCollapse': ['Tout réduire', 'Referme toute l\'arborescence.'],
+  'cmd:bmFromHeadings': ['À partir des titres', 'Crée automatiquement les signets d\'après les titres du document (taille du texte).'],
+  'cmd:bmEachPage': ['Un signet par page', 'Crée un signet pour chaque page.'], 'cmd:showBookmarks': ['Volet Signets', 'Affiche ou masque les signets.'],
+  // Format
+  'fx:preset': ['Style de forme', 'Applique cette couleur au commentaire sélectionné (ou à l\'outil actif).'],
+  'fx:fill': ['Couleur de remplissage', 'Couleur de l\'intérieur (rectangle, ovale, polygone, boîte de texte), ou aucun remplissage.'],
+  'fx:stroke': ['Couleur du trait', 'Couleur du contour ou du texte.'],
+  'id:fxWidth': ['Largeur', 'Épaisseur du trait.'], 'id:fxBorder': ['Bordure', 'Trait plein, tirets, pointillés ou nuage (rectangles et polygones).'],
+  'id:fxOpac': ['Opacité', 'Transparence du commentaire.'], 'id:fxBlend': ['Mode de rendu', 'Façon dont le commentaire se mélange à la page (ex. Produit : le texte reste lisible dessous).'],
+  'id:fxStart': ['Début de ligne', 'Forme du départ de la ligne : flèche, rond, carré, losange…'], 'id:fxEnd': ['Fin de ligne', 'Forme de l\'extrémité de la ligne : flèche, rond, carré, losange…'],
+  'fx:styletools': ['Outils de style', 'Copier / coller un style, l\'utiliser par défaut pour l\'outil, rétablir le style d\'origine.'],
+  'fx:popOpen': ['Ouvrir le pop-up', 'Ouvre la bulle de texte du commentaire.'], 'fx:popHide': ['Masquer le pop-up', 'Ferme la bulle de texte du commentaire.'],
+  'fx:popReset': ['Réinitialiser l\'emplacement', 'Replace la bulle à côté de son icône.'],
+  'fx:props': ['Propriétés', 'Auteur, sujet, contenu, couleur, opacité, verrouillage et impression du commentaire.'],
+  'hopt:excl': ['Mode exclusif', 'La main sert uniquement à déplacer la page : elle n\'ouvre ni les liens ni les notes.'],
+  'hopt:inertia': ['Défilement inertiel', 'La page continue de glisser puis ralentit quand on la lâche.'],
+  'hopt:selText': ['Sélectionner du texte/des images', 'Au-dessus du texte, la main sélectionne comme l\'outil Texte ; ailleurs elle déplace la page.'],
+  'fx:handProps': ['Propriétés de l\'outil Main', 'Réglages de l\'outil Main.'],
+  'id:fFamily': ['Police', 'Police du texte modifié ou ajouté.'], 'id:fSize': ['Taille', 'Taille du texte (points).'], 'id:fBold': ['Gras', 'Met le texte en gras.', 'Ctrl+G'], 'id:fItalic': ['Italique', 'Met le texte en italique.', 'Ctrl+I'],
+  'id:fColor': ['Couleur du texte', 'Couleur du texte modifié ou ajouté.'], 'id:fAlignL': ['Ancrer à gauche', 'Le texte s\'allonge vers la droite.'], 'id:fAlignR': ['Ancrer à droite', 'Le texte s\'allonge vers la gauche (montants alignés à droite).'],
+  'id:fBg': ['Couleur du masque', 'Couleur du fond utilisé pour masquer l\'ancien texte.'],
+  'cmd:deleteEdit': ['Supprimer la modification', 'Supprime la modification sélectionnée.', 'Suppr'], 'cmd:clearPageEdits': ['Effacer les modifications de la page', 'Annule toutes les modifications de texte de la page courante.'],
+  'side:pages': ['Pages', 'Miniatures : glisser pour réordonner, clic droit pour les actions.'], 'side:bookmarks': ['Signets', 'Table des matières du document.'],
+  'side:comments': ['Commentaires', 'Liste des commentaires.'], 'side:attachments': ['Pièces jointes', 'Fichiers joints au PDF.'], 'side:props': ['Propriétés', 'Informations du fichier et de la page.'], 'side:folder': ['Dossier', 'Parcourir un dossier du PC.'],
+  'id:pgInput': ['Page', 'Numéro de la page affichée : tapez un numéro puis Entrée pour y aller.'],
+  'cmd:openFolder': ['Ouvrir un dossier', 'Affiche les fichiers d\'un dossier dans le volet de gauche.'], 'cmd:closeDoc': ['Fermer le document', 'Ferme l\'onglet du document.', 'Ctrl+W'],
+  'cmd:closeBackstage': ['Retour', 'Revient au document.', 'Échap'],
+};
+function tipKey(el) {
+  for (const [a, p] of [['cmd', 'cmd'], ['tool', 'tool'], ['fx', 'fx'], ['hopt', 'hopt'], ['pane', 'pane'], ['side', 'side'], ['rtab', 'rtab']]) if (el.dataset[a]) return p + ':' + el.dataset[a];
+  return el.id ? 'id:' + el.id : null;
+}
+function tipFor(el) {
+  const k = tipKey(el);
+  let t = k && TIPS[k];
+  if (!t && el.matches('[data-zoomsel]')) t = ['Zoom', 'Niveau de zoom : pleine largeur, page entière ou pourcentage.', 'Ctrl+molette'];
+  if (!t && el.dataset.tipTitle) t = [el.dataset.tipTitle, ''];
+  if (!t && el.title) t = [el.title, ''];
+  if (!t) return null;
+  if (el.dataset.tool && ANN_TOOLS.includes(el.dataset.tool)) t = [t[0], t[1] + ' Clic droit : choisir la couleur.', t[2]];
+  return t;
+}
+let tipTimer = null, tipEl = null, tipFor_ = null;
+function hideTip() { clearTimeout(tipTimer); tipTimer = null; if (tipEl) { tipEl.remove(); tipEl = null; } tipFor_ = null; }
+function showTip(el) {
+  const t = tipFor(el); if (!t) return;
+  hideTip(); tipFor_ = el;
+  tipEl = document.createElement('div'); tipEl.className = 'stip';
+  tipEl.innerHTML = `<div class="sth"><b>${esc(t[0])}</b>${t[2] ? `<span class="kbd">${esc(t[2])}</span>` : ''}</div>${t[1] ? `<div class="std">${esc(t[1])}</div>` : ''}${el.disabled ? '<div class="stdis">Ouvrez un document pour utiliser ce bouton.</div>' : ''}`;
+  document.body.appendChild(tipEl);
+  const r = el.getBoundingClientRect(), tr = tipEl.getBoundingClientRect();
+  const inRibbon = !!el.closest('.ribbon');
+  let x = Math.max(6, Math.min(r.left, innerWidth - tr.width - 6)), y = inRibbon ? Math.max(r.bottom + 6, (document.querySelector('.ribbon') || el).getBoundingClientRect().bottom + 2) : r.bottom + 6;
+  if (y + tr.height > innerHeight - 4) y = r.top - tr.height - 6;
+  Object.assign(tipEl.style, { left: x + 'px', top: y + 'px' });
+}
+function initTips() {
+  // les infobulles natives (title) sont remplacées par les bulles détaillées
+  $$('[title]').forEach(el => { if (el.matches('button,select,input,[data-pane],[data-side]') && tipFor(el) || (el.matches('button') && !tipKey(el))) { el.dataset.tipTitle = el.title; el.removeAttribute('title'); } });
+}
+document.addEventListener('mouseover', ev => {
+  const el = ev.target.closest && ev.target.closest('button, select, input[type=color], input[type=number], input[type=text], [data-pane], [data-side]');
+  if (!el || el === tipFor_) return;
+  if (!el.closest('.ribbon, .titlebar, .tabstrip, .sidetabs, .statusbar, [data-side], [data-pane]') && !el.closest('#app > *:not(main)')) { hideTip(); return; }
+  if (el.closest('dialog, .ctxmenu, .tally, .npop, .tpop')) { hideTip(); return; }
+  if (!tipFor(el)) { hideTip(); return; }
+  hideTip(); tipFor_ = el;
+  tipTimer = setTimeout(() => showTip(el), 450);
+});
+document.addEventListener('mouseout', ev => { if (tipFor_ && (!ev.relatedTarget || !tipFor_.contains(ev.relatedTarget))) hideTip(); });
+document.addEventListener('mousedown', hideTip, true);
+document.addEventListener('keydown', hideTip, true);
+document.addEventListener('scroll', hideTip, true);
+
+/* ---------- menu « Autres outils » (comme le logiciel d'origine) ---------- */
+cmdOtherTools = function () {
+  popMenu(anchorOf('otherTools'), [
+    ['MousePointer2', 'Sélectionner les commentaires', () => setTool('selcomment')],
+    ['BoxSelect', 'Éditer des objets', () => setTool('objedit')],
+    ['Scan', 'Outil Capture (instantané)', () => setTool('snapshot')],
+    ['ClipboardPaste', 'Presse-papier : coller sur la page  (Ctrl+V)', () => runCmd('paste')],
+    ['ClipboardList', 'Presse-papier : nouveau PDF', () => runCmd('pasteNewDoc')],
+    ['Search', 'Rechercher  (Ctrl+F)', () => { const i = $('#searchInput'); if (i) { i.focus(); i.select(); } }],
+    ['FolderSearch', 'Recherche avancée  (Ctrl+Maj+F)', () => runCmd('advSearch')],
+    '-',
+    ['Scan', 'Taille réelle  (Ctrl+1)', () => runCmd('actualSize')],
+    ['Expand', 'Page entière  (Ctrl+0)', () => runCmd('fitPage')],
+    ['MoveHorizontal', 'Remplir en largeur  (Ctrl+2)', () => runCmd('fitWidth')],
+    ['ScanEye', 'Ajustement visible  (Ctrl+3)', () => runCmd('fitVisible')],
+    ['ZoomIn', 'Outil Zoom avant/arrière', () => setTool('zoom')],
+    '-',
+    ['Link', 'Liens', () => setTool('link')], ['Calculator', 'Calculatrice comptable', () => setTool('tally')], ['Eraser', 'Gomme', () => setTool('eraser')], ['Crop', 'Outil recadrage de page', () => setTool('crop')],
+  ]);
+};
+EXTRA_CMDS.otherTools = cmdOtherTools;
+async function cmdFitVisible() {
+  const doc = S.active; if (!doc) return;
+  const i = doc.current, p = doc.pageObjs[i];
+  const vp = p.getViewport({ scale: 0.5, rotation: (p.rotate + (doc.viewRot || 0)) % 360 }), c = document.createElement('canvas'); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+  const g = c.getContext('2d', { willReadFrequently: true }); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  await p.render({ canvasContext: g, viewport: vp }).promise;
+  const px = g.getImageData(0, 0, c.width, c.height).data; let l = c.width, r = -1;
+  for (let y = 0; y < c.height; y += 2) for (let x = 0; x < c.width; x++) { const k = (y * c.width + x) * 4; if (px[k] < 240 || px[k + 1] < 240 || px[k + 2] < 240) { if (x < l) l = x; if (x > r) r = x; } }
+  if (r < 0) return setZoom('width');
+  const v = viewer(), avail = v.clientWidth - 40, contentPt = (r - l + 1) / 0.5 + 16;
+  setZoom('custom', avail / contentPt);
+  requestAnimationFrame(() => { const el = pageEl(i); if (el) v.scrollLeft = Math.max(0, el.offsetLeft + (l / 0.5 - 8) * doc.scale - 20); });
+}
+EXTRA_CMDS.fitVisible = cmdFitVisible;
+EXTRA_NEEDDOC.push('fitVisible');
+/* outil Zoom : clic = zoom avant, Alt+clic ou clic droit = zoom arrière */
+Object.assign(ANN_TOOL_NAMES, { zoom: 'Zoom — clic : zoom avant · Alt+clic : zoom arrière' });
+{
+  const base = annotMouseDown;
+  annotMouseDown = function (ev) {
+    if (S.tool !== 'zoom') return base(ev);
+    const d = S.active, v = viewer(), P = pagePoint(ev); ev.preventDefault();
+    const k = ev.altKey ? 1 / 1.4 : 1.4, old = d.scale;
+    const vr = v.getBoundingClientRect(), cx = ev.clientX - vr.left, cy = ev.clientY - vr.top;
+    const fx = (v.scrollLeft + cx) / old, fy = (v.scrollTop + cy) / old;
+    setZoom('custom', Math.max(0.1, Math.min(6, old * k)));
+    requestAnimationFrame(() => { v.scrollLeft = fx * d.scale - cx; v.scrollTop = fy * d.scale - cy; });
+    return true;
+  };
+}
+document.addEventListener('contextmenu', ev => { if (S.tool === 'zoom' && ev.target.closest && ev.target.closest('.page')) { ev.preventDefault(); const e2 = new MouseEvent('mousedown', { clientX: ev.clientX, clientY: ev.clientY, altKey: true, bubbles: true }); annotMouseDown(Object.assign(e2, {})); } });
+
+/* ---------- raccourcis clavier supplémentaires ---------- */
+document.addEventListener('keydown', ev => {
+  if (ev.target.closest && ev.target.closest('input,textarea,select,[contenteditable]')) return;
+  const c = ev.ctrlKey || ev.metaKey, k = ev.key.toLowerCase();
+  const go = cmd => { ev.preventDefault(); ev.stopPropagation(); runCmd(cmd); };
+  if (c && ev.shiftKey && k === 'i') return go('insertFile');
+  if (c && ev.shiftKey && k === 'd') return go('deletePagesDlg');
+  if (c && ev.shiftKey && k === 't') return go('cropDlg');
+  if (c && ev.shiftKey && k === 'r') return go('rotateDlg');
+  if (c && !ev.shiftKey && ev.key === '1') return go('actualSize');
+  if (c && !ev.shiftKey && ev.key === '0') return go('fitPage');
+  if (c && !ev.shiftKey && ev.key === '2') return go('fitWidth');
+  if (c && !ev.shiftKey && ev.key === '3') return go('fitVisible');
+}, true);
+setTimeout(initTips, 0);
+document.addEventListener('DOMContentLoaded', initTips);
+// icônes des menus : svgIcon('MousePointer2') svgIcon('BoxSelect') svgIcon('Scan') svgIcon('ClipboardPaste') svgIcon('ClipboardList') svgIcon('Search') svgIcon('FolderSearch') svgIcon('Expand') svgIcon('MoveHorizontal') svgIcon('ScanEye') svgIcon('ZoomIn') svgIcon('Link') svgIcon('Calculator') svgIcon('Eraser') svgIcon('Crop')
+window.PRELE_TIPS = { TIPS, tipFor, showTip, hideTip, initTips };
 
 /* =====================================================================
    Commandes
